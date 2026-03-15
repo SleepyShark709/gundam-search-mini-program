@@ -1,6 +1,5 @@
 import { getModels, filterModels, sortModels } from '../../utils/model-service';
-import { getWishlist, isInWishlist, toggleWishlist } from '../../utils/cloud-favorites';
-import { isPurchased, addPurchase, updatePurchase, getPurchaseRecord } from '../../utils/purchase-service';
+import { getFavorites, isFavorite, toggleFavorite } from '../../utils/favorites';
 import type { GundamModel, SeriesCode, FilterConfig, SortConfig } from '../../utils/types';
 
 const SERIES_NAMES: Record<string, string> = {
@@ -64,16 +63,6 @@ Page({
     selectedModel: null as GundamModel | null,
     detailOpen: false,
     selectedIsFav: false,
-    selectedIsPurchased: false,
-
-    // Purchase form
-    formOpen: false,
-    formModelId: '',
-    formModelName: '',
-    formPriceCny: null as number | null,
-    formPurchaseDate: null as string | null,
-    formChannel: null as string | null,
-    formNote: null as string | null,
 
     // UI
     statusBarHeight: 20,
@@ -109,21 +98,20 @@ Page({
   },
 
   onShow() {
-    const favorites = getWishlist();
-    const favMap: Record<string, boolean> = {};
-    favorites.forEach((id) => { favMap[id] = true; });
-    this.setData({ favorites, favMap });
-    // Update selected model states if detail is open
-    if (this.data.selectedModel) {
-      this.setData({
-        selectedIsFav: isInWishlist(this.data.selectedModel.id),
-        selectedIsPurchased: isPurchased(this.data.selectedModel.id),
-      });
-    }
-    // Update exchange rate
+    this._refreshFavMap();
     const app = getApp<IAppOption>();
     if (app.globalData.exchangeRate) {
       this.setData({ exchangeRate: app.globalData.exchangeRate });
+    }
+  },
+
+  _refreshFavMap() {
+    const favorites = getFavorites();
+    const favMap: Record<string, boolean> = {};
+    favorites.forEach((id) => { favMap[id] = true; });
+    this.setData({ favorites, favMap });
+    if (this.data.selectedModel) {
+      this.setData({ selectedIsFav: isFavorite(this.data.selectedModel.id) });
     }
   },
 
@@ -195,8 +183,7 @@ Page({
     this.setData({
       selectedModel: model,
       detailOpen: true,
-      selectedIsFav: isInWishlist(model.id),
-      selectedIsPurchased: isPurchased(model.id),
+      selectedIsFav: isFavorite(model.id),
     });
   },
 
@@ -204,51 +191,13 @@ Page({
     this.setData({ detailOpen: false });
   },
 
-  // Wishlist
-  async handleToggleFavorite(e: any) {
+  // Favorite toggle (local storage)
+  handleToggleFavorite(e: any) {
     const id = e.detail.id;
-    const nowFav = await toggleWishlist(id);
-    const favorites = getWishlist();
-    const favMap: Record<string, boolean> = {};
-    favorites.forEach((fid) => { favMap[fid] = true; });
-    this.setData({ favorites, favMap });
+    const nowFav = toggleFavorite(id);
+    this._refreshFavMap();
     if (this.data.selectedModel && this.data.selectedModel.id === id) {
       this.setData({ selectedIsFav: nowFav });
-    }
-  },
-
-  // Purchase
-  handlePurchaseAction(e: any) {
-    const { id, name } = e.detail;
-    const record = getPurchaseRecord(id);
-    this.setData({
-      formOpen: true,
-      formModelId: id,
-      formModelName: name,
-      formPriceCny: record ? record.priceCny : null,
-      formPurchaseDate: record ? record.purchaseDate : null,
-      formChannel: record ? record.channel : null,
-      formNote: record ? record.note : null,
-    });
-  },
-
-  handleFormClose() {
-    this.setData({ formOpen: false });
-  },
-
-  async handleFormSubmit(e: any) {
-    const data = e.detail;
-    const existing = getPurchaseRecord(data.modelId);
-    try {
-      if (existing) {
-        await updatePurchase(data.modelId, data);
-      } else {
-        await addPurchase(data);
-      }
-      this.setData({ formOpen: false, selectedIsPurchased: true });
-      wx.showToast({ title: '保存成功', icon: 'success' });
-    } catch (err) {
-      wx.showToast({ title: '保存失败', icon: 'none' });
     }
   },
 

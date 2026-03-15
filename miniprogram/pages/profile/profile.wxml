@@ -2,6 +2,22 @@
   <view style="height: {{statusBarHeight}}px;"></view>
   <view class="title">我的</view>
 
+  <!-- User avatar -->
+  <view class="user-section">
+    <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+      <image
+        class="avatar"
+        src="{{avatarUrl}}"
+        wx:if="{{avatarUrl}}"
+        mode="aspectFill"
+      />
+      <view class="avatar-placeholder" wx:else>
+        <text class="avatar-placeholder-text">+</text>
+      </view>
+    </button>
+  </view>
+
+  <!-- Menu -->
   <view class="menu-section">
     <view class="menu-item" bind:tap="handleWishlist" hover-class="menu-item-hover">
       <view class="menu-left">
@@ -11,7 +27,7 @@
         <text class="menu-label">心愿单</text>
       </view>
       <view class="menu-right">
-        <text class="menu-count" wx:if="{{!loading}}">{{wishlistCount}}</text>
+        <text class="menu-count">{{wishlistCount}}</text>
         <text class="menu-arrow">›</text>
       </view>
     </view>
@@ -26,7 +42,7 @@
         <text class="menu-label">已购买</text>
       </view>
       <view class="menu-right">
-        <text class="menu-count" wx:if="{{!loading}}">{{purchasedCount}}</text>
+        <text class="menu-count">{{purchasedCount}}</text>
         <text class="menu-arrow">›</text>
       </view>
     </view>

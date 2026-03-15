@@ -111,23 +111,8 @@
     model="{{selectedModel}}"
     open="{{detailOpen}}"
     isFavorite="{{selectedIsFav}}"
-    isPurchased="{{selectedIsPurchased}}"
     exchangeRate="{{exchangeRate}}"
     bind:close="handleDetailClose"
     bind:togglefavorite="handleToggleFavorite"
-    bind:purchase="handlePurchaseAction"
-  />
-
-  <!-- Purchase form -->
-  <purchase-form
-    open="{{formOpen}}"
-    modelId="{{formModelId}}"
-    modelName="{{formModelName}}"
-    priceCny="{{formPriceCny}}"
-    purchaseDate="{{formPurchaseDate}}"
-    channel="{{formChannel}}"
-    note="{{formNote}}"
-    bind:close="handleFormClose"
-    bind:submit="handleFormSubmit"
   />
 </view>

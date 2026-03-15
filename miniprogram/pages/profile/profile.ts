@@ -1,3 +1,6 @@
+import { getWishlist } from '../../utils/cloud-favorites';
+import { getPurchases } from '../../utils/purchase-service';
+
 const AVATAR_KEY = 'gundam-user-avatar';
 
 Page({
@@ -14,6 +17,12 @@ Page({
       statusBarHeight: app.globalData.statusBarHeight,
       safeAreaBottom: app.globalData.safeAreaBottom,
       avatarUrl: wx.getStorageSync(AVATAR_KEY) || '',
+    });
+  },
+  onShow() {
+    this.setData({
+      wishlistCount: getWishlist().length,
+      purchasedCount: getPurchases().length,
     });
   },
   onChooseAvatar(e: any) {

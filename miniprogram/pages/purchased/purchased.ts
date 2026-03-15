@@ -35,7 +35,8 @@ Page({
     });
   },
 
-  onShow() {
+  async onShow() {
+    await loadPurchases();
     this.refreshList();
     const app = getApp<IAppOption>();
     if (app.globalData.exchangeRate) {

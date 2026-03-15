@@ -1,5 +1,5 @@
 import { getAllModels } from '../../utils/model-service';
-import { getWishlist, isInWishlist, toggleWishlist } from '../../utils/cloud-favorites';
+import { loadWishlist, getWishlist, isInWishlist, toggleWishlist } from '../../utils/cloud-favorites';
 import { isPurchased, addPurchase, updatePurchase, getPurchaseRecord } from '../../utils/purchase-service';
 import type { GundamModel } from '../../utils/types';
 
@@ -36,7 +36,8 @@ Page({
     });
   },
 
-  onShow() {
+  async onShow() {
+    await loadWishlist();
     this.refreshList();
     if (this.data.selectedModel) {
       this.setData({

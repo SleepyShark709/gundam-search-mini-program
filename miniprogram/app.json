@@ -1,0 +1,49 @@
+{
+  "renderer": "skyline",
+  "pages": [
+    "pages/home/home",
+    "pages/series/series",
+    "pages/profile/profile",
+    "pages/wishlist/wishlist",
+    "pages/purchased/purchased"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationStyle": "custom",
+    "backgroundColor": "#0a0e17",
+    "backgroundColorTop": "#0a0e17",
+    "backgroundColorBottom": "#0a0e17"
+  },
+  "tabBar": {
+    "color": "#8892b0",
+    "selectedColor": "#00d4ff",
+    "backgroundColor": "#0a0e17",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "浏览",
+        "iconPath": "assets/tab-browse.png",
+        "selectedIconPath": "assets/tab-browse-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/tab-profile.png",
+        "selectedIconPath": "assets/tab-profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "rendererOptions": {
+    "skyline": {
+      "defaultDisplayBlock": true,
+      "disableABTest": true,
+      "sdkVersionBegin": "3.0.0",
+      "sdkVersionEnd": "15.255.255"
+    }
+  },
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

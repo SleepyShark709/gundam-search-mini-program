@@ -1,0 +1,38 @@
+<view class="card" bind:tap="handleTap" hover-class="card-hover">
+  <!-- Image area -->
+  <view class="image-wrapper">
+    <view class="image-skeleton" wx:if="{{!imgLoaded}}"></view>
+    <image
+      wx:if="{{!imgError && model.imageUrl}}"
+      class="image {{imgLoaded ? '' : 'image-hidden'}}"
+      src="{{model.imageUrl}}"
+      mode="aspectFill"
+      fade-in
+      binderror="handleImgError"
+      bindload="handleImgLoad"
+    />
+    <view class="image-placeholder" wx:if="{{imgError}}">
+      <text class="placeholder-text">NO IMAGE</text>
+    </view>
+
+    <!-- Limited badge -->
+    <view class="limited-badge" wx:if="{{showBadge}}">
+      <badge variant="{{badgeVariant}}">{{badgeLabel}}</badge>
+    </view>
+
+    <!-- Favorite button -->
+    <view class="favorite-btn" catch:tap="preventBubble">
+      <favorite-button active="{{isFavorite}}" bind:toggle="handleFavToggle" />
+    </view>
+  </view>
+
+  <!-- Info area -->
+  <view class="info">
+    <view class="info-header">
+      <text class="number">{{numberText}}</text>
+      <text class="date">{{dateText}}</text>
+    </view>
+    <text class="name">{{model.name}}</text>
+    <price-display price="{{model.price}}" exchangeRate="{{exchangeRate}}" />
+  </view>
+</view>

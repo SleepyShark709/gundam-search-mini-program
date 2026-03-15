@@ -1,0 +1,117 @@
+@import '../../styles/variables.less';
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: @color-bg-primary;
+  overflow: hidden;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
+.scroll-area {
+  flex: 1;
+  min-height: 0;
+}
+
+.search-wrapper {
+  padding: @spacing-sm @spacing-md;
+  flex-shrink: 0;
+}
+
+.sort-bar {
+  padding: 0 @spacing-md @spacing-sm;
+  flex-shrink: 0;
+}
+
+.result-count {
+  margin-bottom: @spacing-xs;
+}
+
+.result-count text {
+  font-size: @font-size-sm;
+  color: @color-text-muted;
+}
+
+.skeleton-card {
+  background: @color-bg-card;
+  border: 2rpx solid @color-border;
+  border-radius: @radius-lg;
+  overflow: hidden;
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 339rpx;
+  background: linear-gradient(90deg, @color-bg-tertiary 25%, @color-bg-secondary 50%, @color-bg-tertiary 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-info {
+  padding: @spacing-sm;
+  display: flex;
+  flex-direction: column;
+  gap: @spacing-xs;
+}
+
+.skeleton-text {
+  height: 24rpx;
+  border-radius: @radius-sm;
+  background: linear-gradient(90deg, @color-bg-tertiary 25%, @color-bg-secondary 50%, @color-bg-tertiary 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: @spacing-3xl @spacing-xl;
+}
+
+.empty-text {
+  font-size: @font-size-md;
+  color: @color-text-muted;
+  text-align: center;
+}
+
+.back-top {
+  position: absolute;
+  right: @spacing-md;
+  bottom: @spacing-lg;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: @radius-full;
+  border: 2rpx solid @color-border;
+  background: @color-bg-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.3);
+  z-index: 40;
+}
+
+.back-top-hover {
+  transform: scale(0.92);
+  background: @color-bg-tertiary;
+}
+
+.back-top-icon {
+  font-size: @font-size-xl;
+  color: @color-accent-primary;
+}
+

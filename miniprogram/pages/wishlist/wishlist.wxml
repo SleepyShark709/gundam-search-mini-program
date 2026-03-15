@@ -1,0 +1,67 @@
+<view class="page">
+  <header title="心愿单" showBack bind:back="handleBack" />
+
+  <view class="content">
+    <!-- Loading skeleton -->
+    <grid-view type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" style="padding: 24rpx;" wx:if="{{loading}}">
+      <view class="skeleton-card" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+        <view class="skeleton-image"></view>
+        <view class="skeleton-info">
+          <view class="skeleton-text" style="width: 40%;"></view>
+          <view class="skeleton-text" style="width: 90%;"></view>
+          <view class="skeleton-text" style="width: 55%;"></view>
+        </view>
+      </view>
+    </grid-view>
+
+    <!-- Empty state -->
+    <view class="empty-state" wx:elif="{{!loading && wishlistModels.length === 0}}">
+      <text class="empty-icon">♡</text>
+      <text class="empty-title">还没有心愿单中的模型</text>
+      <text class="empty-subtitle">浏览系列添加你想要的模型</text>
+      <view class="explore-button" bind:tap="handleExplore" hover-class="explore-hover">
+        <text>去探索</text>
+      </view>
+    </view>
+
+    <!-- Wishlist grid -->
+    <scroll-view class="scroll-area" type="custom" scroll-y wx:elif="{{!loading}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
+      <grid-view type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" cache-extent="{{600}}" style="padding: 24rpx;">
+        <model-card
+          wx:for="{{wishlistModels}}"
+          wx:key="id"
+          model="{{item}}"
+          isFavorite="{{true}}"
+          exchangeRate="{{exchangeRate}}"
+          bind:select="handleModelSelect"
+          bind:togglefavorite="handleToggleWishlist"
+        />
+      </grid-view>
+    </scroll-view>
+  </view>
+
+  <!-- Model detail bottom sheet -->
+  <model-detail
+    model="{{selectedModel}}"
+    open="{{detailOpen}}"
+    isFavorite="{{selectedIsWishlist}}"
+    isPurchased="{{selectedIsPurchased}}"
+    exchangeRate="{{exchangeRate}}"
+    bind:close="handleDetailClose"
+    bind:togglefavorite="handleToggleWishlist"
+    bind:purchase="handlePurchaseAction"
+  />
+
+  <!-- Purchase form -->
+  <purchase-form
+    open="{{formOpen}}"
+    modelId="{{formModelId}}"
+    modelName="{{formModelName}}"
+    priceCny="{{formPriceCny}}"
+    purchaseDate="{{formPurchaseDate}}"
+    channel="{{formChannel}}"
+    note="{{formNote}}"
+    bind:close="handleFormClose"
+    bind:submit="handleFormSubmit"
+  />
+</view>

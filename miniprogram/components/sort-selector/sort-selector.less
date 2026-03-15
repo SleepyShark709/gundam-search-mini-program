@@ -1,0 +1,36 @@
+@import '../../styles/variables.less';
+
+.track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: @spacing-xs;
+  padding: 4rpx 0;
+  align-items: center;
+}
+
+.pill {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 6rpx @spacing-sm;
+  border-radius: @radius-full;
+  font-size: 22rpx;
+  font-weight: 500;
+  border: 2rpx solid @color-border;
+  background: transparent;
+  color: @color-text-secondary;
+}
+
+.pill-hover {
+  opacity: 0.75;
+}
+
+.active {
+  background: @color-accent-primary;
+  color: @color-bg-primary;
+  border-color: @color-accent-primary;
+  font-weight: 600;
+  box-shadow: @glow-primary;
+}

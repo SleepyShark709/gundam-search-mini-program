@@ -1,0 +1,44 @@
+<view wx:if="{{open}}" class="overlay">
+  <view class="backdrop" bind:tap="handleBackdrop"></view>
+  <view class="sheet" catch:tap="preventBubble">
+    <view class="sheet-header">
+      <text class="sheet-title">记录已购买</text>
+      <view class="close-button" bind:tap="handleClose" hover-class="close-hover">
+        <text class="close-icon">✕</text>
+      </view>
+    </view>
+    <scroll-view class="sheet-content" scroll-y>
+      <view class="form-container" style="padding-bottom: {{safeAreaBottom}}px;">
+        <text class="model-name">{{modelName}}</text>
+
+        <view class="form-group">
+          <text class="form-label">实付价格（元）</text>
+          <input class="form-input" type="digit" placeholder="选填" value="{{formPrice}}" bindinput="handlePriceInput" />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">购买日期</text>
+          <picker mode="date" value="{{formDate}}" bindchange="handleDateChange">
+            <view class="form-picker">
+              <text class="{{formDate ? 'picker-value' : 'picker-placeholder'}}">{{formDate || '选填'}}</text>
+            </view>
+          </picker>
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">购买渠道</text>
+          <input class="form-input" placeholder="如淘宝、京东、实体店（选填）" value="{{formChannel}}" bindinput="handleChannelInput" />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">备注</text>
+          <textarea class="form-textarea" placeholder="选填" maxlength="500" value="{{formNote}}" bindinput="handleNoteInput" />
+        </view>
+
+        <view class="submit-button" bind:tap="handleSubmit" hover-class="submit-hover">
+          <text>保存</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

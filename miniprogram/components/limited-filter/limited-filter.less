@@ -1,0 +1,44 @@
+@import '../../styles/variables.less';
+
+.container {
+  overflow: hidden;
+  flex-shrink: 0;
+  padding: 0 @spacing-md;
+}
+
+.scroll-area {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  padding: 8rpx 0 24rpx;
+}
+
+.pill {
+  display: flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 28rpx;
+  border-radius: 200rpx;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: @color-text-primary;
+  font-size: @font-size-xs;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pill-active {
+  background: #0071e3;
+  color: #fff;
+}
+
+.pill-disabled {
+  opacity: 0.35;
+}
+
+.pill-count {
+  font-weight: 400;
+}

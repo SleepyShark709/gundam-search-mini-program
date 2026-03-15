@@ -1,0 +1,51 @@
+@import '../../styles/variables.less';
+
+.badge {
+  display: flex;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: center;
+  padding: 2rpx @spacing-xs;
+  border-radius: @radius-full;
+  font-size: @font-size-xs;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+
+.default {
+  background: rgba(0, 212, 255, 0.12);
+  color: @color-accent-primary;
+  border: 1rpx solid rgba(0, 212, 255, 0.3);
+}
+
+.danger {
+  background: rgba(255, 51, 102, 0.12);
+  color: @color-accent-danger;
+  border: 1rpx solid rgba(255, 51, 102, 0.3);
+}
+
+.pbandai {
+  background: rgba(0, 113, 227, 0.15);
+  color: @color-badge-pbandai;
+  border: 1rpx solid rgba(0, 113, 227, 0.3);
+}
+
+.gbase {
+  background: rgba(255, 149, 0, 0.15);
+  color: @color-badge-gbase;
+  border: 1rpx solid rgba(255, 149, 0, 0.3);
+}
+
+.event {
+  background: rgba(175, 82, 222, 0.15);
+  color: @color-badge-event;
+  border: 1rpx solid rgba(175, 82, 222, 0.3);
+}
+
+.sidef {
+  background: rgba(48, 176, 199, 0.15);
+  color: @color-badge-sidef;
+  border: 1rpx solid rgba(48, 176, 199, 0.3);
+}

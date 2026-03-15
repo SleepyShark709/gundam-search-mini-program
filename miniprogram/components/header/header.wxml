@@ -1,0 +1,16 @@
+<view class="header" style="padding-top: {{statusBarHeight}}px;">
+  <view class="inner">
+    <view class="left-slot">
+      <view wx:if="{{showBack}}" class="back-button" bind:tap="handleBack" hover-class="back-hover">
+        <text class="back-icon">‹</text>
+      </view>
+    </view>
+    <text class="title">{{title}}</text>
+    <view class="right-slot">
+      <view wx:if="{{showFilter}}" class="filter-button" bind:tap="handleFilter" hover-class="filter-hover">
+        <text class="filter-icon" style="color: {{filterActive ? '#00d4ff' : '#8892b0'}};">⫰</text>
+      </view>
+    </view>
+  </view>
+  <view class="border-bottom"></view>
+</view>

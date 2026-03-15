@@ -1,0 +1,14 @@
+<view class="container" wx:if="{{visible}}">
+  <view class="scroll-area">
+    <view
+      wx:for="{{filters}}"
+      wx:key="key"
+      class="pill {{value === item.key ? 'pill-active' : ''}} {{item.disabled ? 'pill-disabled' : ''}}"
+      data-key="{{item.key}}"
+      bind:tap="handleTap"
+    >
+      <text>{{item.label}}</text>
+      <text class="pill-count">({{item.count}})</text>
+    </view>
+  </view>
+</view>

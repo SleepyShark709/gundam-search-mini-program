@@ -1,0 +1,96 @@
+<view wx:if="{{open && model}}" class="overlay">
+  <!-- Backdrop -->
+  <view class="backdrop" bind:tap="handleBackdrop"></view>
+
+  <!-- Sheet -->
+  <view class="sheet" catch:tap="preventBubble">
+    <!-- Header -->
+    <view class="sheet-header">
+      <text class="sheet-title">{{model.name}}</text>
+      <view class="close-button" bind:tap="handleClose" hover-class="close-hover">
+        <text class="close-icon">✕</text>
+      </view>
+    </view>
+
+    <!-- Content -->
+    <scroll-view class="sheet-content" scroll-y>
+      <view class="detail-container" style="padding-bottom: {{safeAreaBottom}}px;">
+        <!-- Image -->
+        <view class="image-wrapper">
+          <view class="image-skeleton" wx:if="{{!imgLoaded}}"></view>
+          <image
+            class="detail-image {{imgLoaded ? 'visible' : 'hidden'}}"
+            src="{{model.imageUrl}}"
+            mode="aspectFit"
+            bindload="handleImgLoad"
+          />
+        </view>
+
+        <!-- Name section -->
+        <view class="name-section">
+          <text class="detail-name">{{model.name}}</text>
+          <text class="name-ja" wx:if="{{model.nameJa && model.nameJa !== model.name}}">{{model.nameJa}}</text>
+          <text class="name-en" wx:if="{{model.nameEn}}">{{model.nameEn}}</text>
+        </view>
+
+        <!-- Badge row -->
+        <view class="info-row">
+          <badge variant="default">{{seriesLabel}}</badge>
+          <badge variant="default">{{numberLabel}}</badge>
+          <badge wx:if="{{model.isLimited}}" variant="danger">限定</badge>
+        </view>
+
+        <!-- Price section -->
+        <view class="price-section" wx:if="{{model.price > 0}}">
+          <view class="price-row">
+            <text class="price-label">JPY含税</text>
+            <text class="price-jpy">{{priceJPY}}</text>
+          </view>
+          <view class="price-row">
+            <text class="price-label">人民币约</text>
+            <text class="price-cny">{{priceCNY}}</text>
+          </view>
+          <view class="price-row">
+            <text class="price-label">日元免税</text>
+            <text class="price-taxfree">{{priceTaxFree}}</text>
+          </view>
+        </view>
+        <view class="price-section" wx:elif="{{model.price === 0}}">
+          <view class="price-row">
+            <text class="price-label">价格</text>
+            <text class="price-unknown">价格未知</text>
+          </view>
+        </view>
+
+        <!-- Release date -->
+        <view class="date-row">
+          <text class="date-label">发售日期</text>
+          <text class="date-value">{{dateText}}</text>
+        </view>
+
+        <!-- Tags -->
+        <view class="tags-section" wx:if="{{hasTags}}">
+          <view class="tag" wx:for="{{model.tags}}" wx:key="*this">
+            <text>{{item}}</text>
+          </view>
+        </view>
+
+        <!-- Actions -->
+        <view class="actions">
+          <view class="action-btn" bind:tap="handleFavToggle" hover-class="action-hover">
+            <text class="action-icon {{isFavorite ? 'action-icon-active' : ''}}">{{isFavorite ? '❤' : '♡'}}</text>
+            <text class="action-label">{{isFavorite ? '已想要' : '想要'}}</text>
+          </view>
+          <view class="action-btn" bind:tap="handlePurchase" hover-class="action-hover">
+            <text class="action-icon {{isPurchased ? 'action-icon-purchased' : ''}}">{{isPurchased ? '✓' : '＋'}}</text>
+            <text class="action-label">{{isPurchased ? '已入手' : '入手'}}</text>
+          </view>
+          <view class="action-btn" bind:tap="handleOpenUrl" hover-class="action-hover">
+            <text class="action-icon">🔗</text>
+            <text class="action-label">复制链接</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

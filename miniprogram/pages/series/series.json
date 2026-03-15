@@ -1,0 +1,13 @@
+{
+  "usingComponents": {
+    "header": "../../components/header/header",
+    "search-bar": "../../components/search-bar/search-bar",
+    "category-tabs": "../../components/category-tabs/category-tabs",
+    "limited-filter": "../../components/limited-filter/limited-filter",
+    "sort-selector": "../../components/sort-selector/sort-selector",
+    "filter-panel": "../../components/filter-panel/filter-panel",
+    "model-card": "../../components/model-card/model-card",
+    "model-detail": "../../components/model-detail/model-detail",
+    "purchase-form": "../../components/purchase-form/purchase-form"
+  }
+}

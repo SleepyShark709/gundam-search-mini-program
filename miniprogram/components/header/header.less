@@ -1,0 +1,85 @@
+@import '../../styles/variables.less';
+
+.header {
+  flex-shrink: 0;
+  z-index: 100;
+  background: rgba(10, 14, 23, 0.95);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+  padding: 0 @spacing-lg;
+  gap: @spacing-sm;
+}
+
+.left-slot {
+  width: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: @radius-md;
+}
+
+.back-hover {
+  background-color: rgba(0, 212, 255, 0.1);
+}
+
+.back-icon {
+  font-size: 96rpx;
+  color: @color-accent-primary;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.title {
+  flex: 1;
+  text-align: center;
+  font-size: @font-size-lg;
+  font-weight: 600;
+  color: @color-text-primary;
+  letter-spacing: 4rpx;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.right-slot {
+  width: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: @radius-md;
+}
+
+.filter-hover {
+  background-color: rgba(0, 212, 255, 0.1);
+}
+
+.filter-icon {
+  font-size: 36rpx;
+}
+
+.border-bottom {
+  height: 2rpx;
+  background: linear-gradient(90deg, rgba(10, 14, 23, 0) 0%, @color-border 30%, @color-border-active 50%, @color-border 70%, rgba(10, 14, 23, 0) 100%);
+}

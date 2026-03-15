@@ -1,0 +1,20 @@
+<view class="tab-bar">
+  <view
+    class="tab {{activeTab === 'regular' ? 'tab-active' : ''}}"
+    data-tab="regular"
+    bind:tap="handleTabTap"
+  >
+    <text class="tab-label">通販</text>
+    <text class="tab-count">({{regularCount}})</text>
+    <view class="indicator" wx:if="{{activeTab === 'regular'}}"></view>
+  </view>
+  <view
+    class="tab {{activeTab === 'limited' ? 'tab-active' : ''}}"
+    data-tab="limited"
+    bind:tap="handleTabTap"
+  >
+    <text class="tab-label">限定</text>
+    <text class="tab-count">({{limitedCount}})</text>
+    <view class="indicator" wx:if="{{activeTab === 'limited'}}"></view>
+  </view>
+</view>

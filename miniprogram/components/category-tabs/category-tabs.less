@@ -1,0 +1,47 @@
+@import '../../styles/variables.less';
+
+.tab-bar {
+  display: flex;
+  flex-direction: row;
+  height: 80rpx;
+  border-bottom: 2rpx solid @color-border;
+  flex-shrink: 0;
+  padding: 0 @spacing-md;
+  margin-bottom: @spacing-md;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  position: relative;
+  color: @color-text-muted;
+}
+
+.tab-active {
+  color: @color-accent-primary;
+}
+
+.tab-label {
+  font-size: @font-size-sm;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.tab-count {
+  font-size: @font-size-xs;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.indicator {
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 4rpx;
+  background: @color-accent-primary;
+  border-radius: 2rpx;
+}

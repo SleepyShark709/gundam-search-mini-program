@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "badge": "../badge/badge",
+    "price-display": "../price-display/price-display",
+    "favorite-button": "../favorite-button/favorite-button"
+  }
+}

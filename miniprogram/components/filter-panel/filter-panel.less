@@ -1,0 +1,83 @@
+@import '../../styles/variables.less';
+
+.backdrop {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 14, 23, 0.6);
+  z-index: 40;
+}
+
+.panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: @color-bg-secondary;
+  border-bottom: 2rpx solid @color-border;
+  z-index: 41;
+  padding-top: 200rpx;
+}
+
+.filter-content {
+  padding: @spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: @spacing-md;
+}
+
+.filter-title {
+  font-size: @font-size-md;
+  font-weight: 600;
+  color: @color-text-primary;
+  margin-bottom: @spacing-sm;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: @spacing-xs;
+}
+
+.filter-label {
+  font-size: @font-size-sm;
+  color: @color-text-secondary;
+  font-weight: 500;
+}
+
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: @spacing-sm;
+}
+
+.range-input {
+  flex: 1;
+  padding: @spacing-sm;
+  background: @color-bg-primary;
+  border: 2rpx solid @color-border;
+  border-radius: @radius-md;
+  color: @color-text-primary;
+  font-size: @font-size-sm;
+  min-width: 0;
+}
+
+.range-sep {
+  color: @color-text-muted;
+  flex-shrink: 0;
+}
+
+.reset-button {
+  margin-top: @spacing-xs;
+  padding: @spacing-sm @spacing-lg;
+  background: transparent;
+  border: 2rpx solid @color-border;
+  border-radius: @radius-md;
+  color: @color-text-secondary;
+  font-size: @font-size-sm;
+  text-align: center;
+}
+
+.reset-hover {
+  background: @color-bg-tertiary;
+  color: @color-text-primary;
+}

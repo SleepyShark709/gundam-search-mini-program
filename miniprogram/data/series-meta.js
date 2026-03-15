@@ -1,0 +1,34 @@
+module.exports = [
+  {
+    "code": "hg",
+    "name": "High Grade",
+    "shortName": "HG",
+    "scale": "1/144",
+    "coverImage": "https://bandai-hobby.net/images/154_2389_s_v9jlq7vquqf1agrwz92lbnqk0fyg.jpg",
+    "totalCount": 1404
+  },
+  {
+    "code": "rg",
+    "name": "Real Grade",
+    "shortName": "RG",
+    "scale": "1/144",
+    "coverImage": "https://bandai-hobby.net/images/ecms_154_3172_o_1d3oms1mb1is6137c1aenhac89a28.jpg",
+    "totalCount": 176
+  },
+  {
+    "code": "mg",
+    "name": "Master Grade",
+    "shortName": "MG",
+    "scale": "1/100",
+    "coverImage": "https://bandai-hobby.net/images/ecms_154_2461_o_1f0896fie12qqtjd1kq41pjl1b8123.jpg",
+    "totalCount": 565
+  },
+  {
+    "code": "pg",
+    "name": "Perfect Grade",
+    "shortName": "PG",
+    "scale": "1/60",
+    "coverImage": "https://bandai-hobby.net/images/ecms_154_3856_o_1e7k1atfram41p9610d21le3vmu23.jpg",
+    "totalCount": 52
+  }
+];

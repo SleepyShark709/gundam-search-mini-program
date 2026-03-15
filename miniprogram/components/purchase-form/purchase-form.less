@@ -1,0 +1,150 @@
+@import '../../styles/variables.less';
+
+.overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 50;
+}
+
+.backdrop {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 14, 23, 0.75);
+}
+
+.sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 75%;
+  background: @color-bg-secondary;
+  border-top: 2rpx solid @color-border;
+  border-top-left-radius: @radius-xl;
+  border-top-right-radius: @radius-xl;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -8rpx 48rpx rgba(0, 212, 255, 0.08);
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: @spacing-md @spacing-lg;
+  border-bottom: 2rpx solid @color-border;
+  flex-shrink: 0;
+}
+
+.sheet-title {
+  font-size: @font-size-lg;
+  font-weight: 600;
+  color: @color-text-primary;
+}
+
+.close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: @radius-full;
+  background: rgba(136, 146, 176, 0.1);
+}
+
+.close-hover {
+  background: rgba(136, 146, 176, 0.2);
+}
+
+.close-icon {
+  font-size: @font-size-lg;
+  color: @color-text-secondary;
+}
+
+.sheet-content {
+  flex: 1;
+  min-height: 0;
+  padding: @spacing-lg;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: @spacing-lg;
+}
+
+.model-name {
+  font-size: @font-size-xl;
+  font-weight: 700;
+  color: @color-text-primary;
+  margin-bottom: @spacing-sm;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: @spacing-xs;
+}
+
+.form-label {
+  font-size: @font-size-sm;
+  color: @color-text-muted;
+}
+
+.form-input {
+  height: 88rpx;
+  padding: 0 @spacing-md;
+  background: @color-bg-tertiary;
+  border: 2rpx solid @color-border;
+  border-radius: @radius-md;
+  color: @color-text-primary;
+  font-size: @font-size-md;
+}
+
+.form-picker {
+  height: 88rpx;
+  padding: 0 @spacing-md;
+  background: @color-bg-tertiary;
+  border: 2rpx solid @color-border;
+  border-radius: @radius-md;
+  display: flex;
+  align-items: center;
+}
+
+.picker-value {
+  color: @color-text-primary;
+  font-size: @font-size-md;
+}
+
+.picker-placeholder {
+  color: @color-text-muted;
+  font-size: @font-size-md;
+}
+
+.form-textarea {
+  min-height: 160rpx;
+  padding: @spacing-md;
+  background: @color-bg-tertiary;
+  border: 2rpx solid @color-border;
+  border-radius: @radius-md;
+  color: @color-text-primary;
+  font-size: @font-size-md;
+}
+
+.submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  background: @color-accent-primary;
+  color: @color-bg-primary;
+  border-radius: @radius-md;
+  font-size: @font-size-lg;
+  font-weight: 600;
+  margin-top: @spacing-md;
+}
+
+.submit-hover {
+  opacity: 0.85;
+}

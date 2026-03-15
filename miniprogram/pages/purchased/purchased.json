@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "header": "../../components/header/header",
+    "model-card": "../../components/model-card/model-card",
+    "model-detail": "../../components/model-detail/model-detail",
+    "purchase-form": "../../components/purchase-form/purchase-form"
+  }
+}

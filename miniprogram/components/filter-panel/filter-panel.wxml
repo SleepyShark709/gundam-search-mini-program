@@ -1,0 +1,33 @@
+<view wx:if="{{open}}">
+  <!-- Backdrop -->
+  <view class="backdrop" bind:tap="handleBackdropTap"></view>
+
+  <!-- Panel -->
+  <view class="panel">
+    <view class="filter-content">
+      <text class="filter-title">筛选条件</text>
+
+      <view class="filter-group">
+        <text class="filter-label">发售时间范围</text>
+        <view class="range-row">
+          <input class="range-input" type="text" placeholder="YYYY-MM" value="{{releaseDateFrom}}" bindinput="handleDateFromInput" maxlength="7" />
+          <text class="range-sep">—</text>
+          <input class="range-input" type="text" placeholder="YYYY-MM" value="{{releaseDateTo}}" bindinput="handleDateToInput" maxlength="7" />
+        </view>
+      </view>
+
+      <view class="filter-group">
+        <text class="filter-label">编号范围</text>
+        <view class="range-row">
+          <input class="range-input" type="number" placeholder="起始编号" value="{{numberFrom}}" bindinput="handleNumFromInput" />
+          <text class="range-sep">—</text>
+          <input class="range-input" type="number" placeholder="结束编号" value="{{numberTo}}" bindinput="handleNumToInput" />
+        </view>
+      </view>
+
+      <view class="reset-button" bind:tap="handleReset" hover-class="reset-hover">
+        <text>重置筛选</text>
+      </view>
+    </view>
+  </view>
+</view>

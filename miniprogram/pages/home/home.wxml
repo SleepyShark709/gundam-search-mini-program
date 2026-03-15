@@ -1,0 +1,52 @@
+<view class="page">
+  <!-- Header -->
+  <header title="GUNDAM SEARCH" showBack="{{false}}" />
+
+  <!-- Main content -->
+  <view class="content">
+    <view class="main" wx:if="{{!loading && series.length > 0}}">
+      <!-- Carousel: scroll-view replaces swiper (swiper crashes Skyline on tab switch) -->
+      <scroll-view
+        class="carousel"
+        scroll-x
+        enhanced
+        show-scrollbar="{{false}}"
+        scroll-left="{{scrollLeft}}"
+        scroll-with-animation
+        bindtouchstart="handleTouchStart"
+        bindtouchend="handleTouchEnd"
+      >
+        <view class="carousel-track">
+          <view
+            wx:for="{{series}}"
+            wx:key="code"
+            class="carousel-item"
+          >
+            <view class="card-wrapper">
+              <series-card series="{{item}}" />
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- Page dots -->
+      <view class="dots">
+        <view
+          wx:for="{{series}}"
+          wx:key="code"
+          class="dot {{index === activeIndex ? 'dot-active' : ''}}"
+          data-index="{{index}}"
+          bind:tap="scrollToIndex"
+        ></view>
+      </view>
+
+      <!-- Subtitle -->
+      <text class="subtitle">选择系列开始探索</text>
+    </view>
+
+    <!-- Loading -->
+    <view class="loading" wx:if="{{loading}}">
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+</view>

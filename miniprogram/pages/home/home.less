@@ -1,0 +1,85 @@
+@import '../../styles/variables.less';
+
+.page {
+  position: relative;
+  height: 100%;
+  background: @color-bg-primary;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: @spacing-xl;
+  padding: @spacing-xl 0;
+}
+
+.carousel {
+  width: 100%;
+  height: 780rpx;
+}
+
+.carousel-track {
+  display: flex;
+  flex-direction: row;
+  padding: 0 85rpx;
+}
+
+.carousel-item {
+  flex-shrink: 0;
+  width: calc(100vw - 170rpx);
+}
+
+.card-wrapper {
+  padding: 0 24rpx;
+}
+
+.dots {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: @spacing-sm;
+}
+
+.dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: @radius-full;
+  background: @color-text-muted;
+}
+
+.dot-active {
+  width: 40rpx;
+  background: @color-accent-primary;
+  box-shadow: 0 0 16rpx rgba(0, 212, 255, 0.6);
+}
+
+.subtitle {
+  font-size: @font-size-sm;
+  color: @color-text-muted;
+  letter-spacing: 4rpx;
+  text-align: center;
+}
+
+.loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-text {
+  font-size: @font-size-md;
+  color: @color-text-muted;
+}

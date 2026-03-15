@@ -1,0 +1,145 @@
+@import '../../styles/variables.less';
+
+.card {
+  position: relative;
+  width: 560rpx;
+  height: 720rpx;
+  border-radius: @radius-xl;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: @gradient-card;
+  border: 2rpx solid @color-border;
+}
+
+.card-hover {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+.circuit-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  opacity: 0.04;
+  background-image:
+    linear-gradient(0deg, rgba(255,255,255,0) 24%, rgba(255,255,255,0.5) 25%, rgba(255,255,255,0.5) 26%, rgba(255,255,255,0) 27%, rgba(255,255,255,0) 74%, rgba(255,255,255,0.5) 75%, rgba(255,255,255,0.5) 76%, rgba(255,255,255,0) 77%),
+    linear-gradient(90deg, rgba(255,255,255,0) 24%, rgba(255,255,255,0.5) 25%, rgba(255,255,255,0.5) 26%, rgba(255,255,255,0) 27%, rgba(255,255,255,0) 74%, rgba(255,255,255,0.5) 75%, rgba(255,255,255,0.5) 76%, rgba(255,255,255,0) 77%);
+  background-size: 60rpx 60rpx;
+}
+
+.accent-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  opacity: 0.06;
+}
+
+.corner-tl, .corner-tr, .corner-bl, .corner-br {
+  position: absolute;
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.corner-tl {
+  top: 24rpx; left: 24rpx;
+  border-top: 4rpx solid;
+  border-left: 4rpx solid;
+  border-top-left-radius: 6rpx;
+}
+
+.corner-tr {
+  top: 24rpx; right: 24rpx;
+  border-top: 4rpx solid;
+  border-right: 4rpx solid;
+  border-top-right-radius: 6rpx;
+}
+
+.corner-bl {
+  bottom: 24rpx; left: 24rpx;
+  border-bottom: 4rpx solid;
+  border-left: 4rpx solid;
+  border-bottom-left-radius: 6rpx;
+}
+
+.corner-br {
+  bottom: 24rpx; right: 24rpx;
+  border-bottom: 4rpx solid;
+  border-right: 4rpx solid;
+  border-bottom-right-radius: 6rpx;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 64rpx 40rpx;
+  gap: @spacing-lg;
+}
+
+.short-name {
+  font-size: 144rpx;
+  font-weight: 900;
+  letter-spacing: -4rpx;
+  line-height: 1;
+}
+
+.divider {
+  width: 120rpx;
+  height: 2rpx;
+  opacity: 0.7;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: @spacing-sm;
+}
+
+.full-name {
+  font-size: @font-size-lg;
+  font-weight: 600;
+  color: @color-text-primary;
+  letter-spacing: 2rpx;
+  text-align: center;
+}
+
+.scale {
+  font-size: @font-size-sm;
+  color: @color-text-secondary;
+  letter-spacing: 4rpx;
+  font-family: monospace;
+}
+
+.count-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: @spacing-xs;
+  margin-top: @spacing-sm;
+}
+
+.count-label {
+  font-size: @font-size-xs;
+  color: @color-text-muted;
+  letter-spacing: 2rpx;
+}
+
+.count-badge {
+  padding: 8rpx 28rpx;
+  border-radius: @radius-full;
+  font-size: @font-size-sm;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+
+.bottom-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  opacity: 0.5;
+}

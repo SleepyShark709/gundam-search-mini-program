@@ -1,0 +1,86 @@
+@import '../../styles/variables.less';
+
+.page {
+  height: 100%;
+  background: @color-bg-primary;
+}
+
+.title {
+  color: @color-text-primary;
+  font-size: @font-size-xl;
+  font-weight: 700;
+  padding: 32rpx 40rpx;
+}
+
+.menu-section {
+  margin: @spacing-md @spacing-lg;
+  background: @color-bg-secondary;
+  border-radius: @radius-lg;
+  border: 2rpx solid @color-border;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: @spacing-lg @spacing-lg;
+}
+
+.menu-item-hover {
+  background: @color-bg-tertiary;
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+  gap: @spacing-md;
+}
+
+.menu-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: @radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: @font-size-lg;
+}
+
+.wishlist-icon {
+  background: rgba(255, 51, 102, 0.15);
+  color: @color-accent-danger;
+}
+
+.purchased-icon {
+  background: rgba(0, 255, 136, 0.15);
+  color: @color-accent-success;
+}
+
+.menu-label {
+  font-size: @font-size-md;
+  color: @color-text-primary;
+  font-weight: 500;
+}
+
+.menu-right {
+  display: flex;
+  align-items: center;
+  gap: @spacing-sm;
+}
+
+.menu-count {
+  font-size: @font-size-sm;
+  color: @color-text-secondary;
+}
+
+.menu-arrow {
+  font-size: @font-size-lg;
+  color: @color-text-muted;
+}
+
+.menu-divider {
+  height: 2rpx;
+  background: @color-border;
+  margin-left: 104rpx;
+}

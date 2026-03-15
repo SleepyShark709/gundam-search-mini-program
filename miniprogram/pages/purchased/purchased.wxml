@@ -1,0 +1,66 @@
+<view class="page">
+  <header title="已购买" showBack bind:back="handleBack" />
+
+  <view class="content">
+    <!-- Loading skeleton -->
+    <grid-view type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" style="padding: 24rpx;" wx:if="{{loading}}">
+      <view class="skeleton-card" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+        <view class="skeleton-image"></view>
+        <view class="skeleton-info">
+          <view class="skeleton-text" style="width: 40%;"></view>
+          <view class="skeleton-text" style="width: 90%;"></view>
+          <view class="skeleton-text" style="width: 55%;"></view>
+        </view>
+      </view>
+    </grid-view>
+
+    <!-- Empty state -->
+    <view class="empty-state" wx:elif="{{!loading && purchasedModels.length === 0}}">
+      <text class="empty-icon">✓</text>
+      <text class="empty-title">还没有已购买的模型</text>
+      <text class="empty-subtitle">记录你入手的每一台高达</text>
+      <view class="explore-button" bind:tap="handleExplore" hover-class="explore-hover">
+        <text>去探索</text>
+      </view>
+    </view>
+
+    <!-- Purchased grid -->
+    <scroll-view class="scroll-area" type="custom" scroll-y wx:elif="{{!loading}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
+      <grid-view type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" cache-extent="{{600}}" style="padding: 24rpx;">
+        <model-card
+          wx:for="{{purchasedModels}}"
+          wx:key="id"
+          model="{{item}}"
+          isFavorite="{{false}}"
+          exchangeRate="{{exchangeRate}}"
+          bind:select="handleModelSelect"
+        />
+      </grid-view>
+    </scroll-view>
+  </view>
+
+  <!-- Model detail bottom sheet -->
+  <model-detail
+    model="{{selectedModel}}"
+    open="{{detailOpen}}"
+    isFavorite="{{selectedIsWishlist}}"
+    isPurchased="{{true}}"
+    exchangeRate="{{exchangeRate}}"
+    bind:close="handleDetailClose"
+    bind:togglefavorite="handleToggleWishlist"
+    bind:purchase="handlePurchaseAction"
+  />
+
+  <!-- Purchase form -->
+  <purchase-form
+    open="{{formOpen}}"
+    modelId="{{formModelId}}"
+    modelName="{{formModelName}}"
+    priceCny="{{formPriceCny}}"
+    purchaseDate="{{formPurchaseDate}}"
+    channel="{{formChannel}}"
+    note="{{formNote}}"
+    bind:close="handleFormClose"
+    bind:submit="handleFormSubmit"
+  />
+</view>

@@ -1,0 +1,15 @@
+<view class="wrapper">
+  <text class="search-icon">🔍</text>
+  <input
+    class="input"
+    type="text"
+    value="{{value}}"
+    placeholder="{{placeholder}}"
+    placeholder-class="placeholder"
+    confirm-type="search"
+    bindinput="handleInput"
+  />
+  <view class="clear-button" wx:if="{{value.length > 0}}" bind:tap="handleClear" hover-class="clear-hover">
+    <text class="clear-icon">✕</text>
+  </view>
+</view>

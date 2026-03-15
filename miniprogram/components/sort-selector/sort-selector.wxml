@@ -1,0 +1,12 @@
+<view class="track">
+  <view
+    wx:for="{{options}}"
+    wx:key="value"
+    class="pill {{item.value === value ? 'active' : ''}}"
+    data-value="{{item.value}}"
+    bind:tap="handleTap"
+    hover-class="pill-hover"
+  >
+    <text>{{item.label}}</text>
+  </view>
+</view>

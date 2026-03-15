@@ -1,0 +1,3 @@
+<view class="button {{active ? 'active' : ''}}" bind:tap="handleTap" hover-class="button-hover">
+  <text class="icon">{{active ? '♥' : '♡'}}</text>
+</view>

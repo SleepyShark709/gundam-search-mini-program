@@ -1,0 +1,10 @@
+<view class="wrapper" wx:if="{{isUnknown}}">
+  <text class="unknown-price">价格未知</text>
+</view>
+<view class="wrapper" wx:else>
+  <text class="main-price">{{mainPriceText}}</text>
+  <view class="sub-prices">
+    <text class="cny-price" wx:if="{{cnyText}}">{{cnyText}}</text>
+    <text class="tax-free-price">{{taxFreeText}}</text>
+  </view>
+</view>

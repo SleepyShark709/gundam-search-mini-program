@@ -1,0 +1,32 @@
+<view class="card" bind:tap="handleTap" hover-class="card-hover">
+  <!-- Circuit pattern background -->
+  <view class="circuit-bg"></view>
+
+  <!-- Accent overlay -->
+  <view class="accent-overlay" style="background: radial-gradient(ellipse at 50% 30%, {{accent}} 0%, rgba(0,0,0,0) 70%);"></view>
+
+  <!-- Corner brackets -->
+  <view class="corner-tl" style="border-color: {{accent}};"></view>
+  <view class="corner-tr" style="border-color: {{accent}};"></view>
+  <view class="corner-bl" style="border-color: {{accent}};"></view>
+  <view class="corner-br" style="border-color: {{accent}};"></view>
+
+  <!-- Content -->
+  <view class="content">
+    <text class="short-name" style="color: {{accent}}; text-shadow: 0 0 40rpx {{accent}}, 0 0 80rpx {{accent}};">{{series.shortName}}</text>
+    <view class="divider" style="background: linear-gradient(90deg, rgba(0,0,0,0), {{accent}}, rgba(0,0,0,0));"></view>
+    <view class="info">
+      <text class="full-name">{{series.name}}</text>
+      <text class="scale">{{series.scale}}</text>
+    </view>
+    <view class="count-area">
+      <text class="count-label">收录型号</text>
+      <view class="count-badge" style="background: rgba(0,0,0,0.3); border: 2rpx solid {{accent}}; color: {{accent}};">
+        <text>{{series.totalCount > 0 ? series.totalCount : '—'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Bottom accent line -->
+  <view class="bottom-line" style="background: linear-gradient(90deg, rgba(0,0,0,0), {{accent}}, rgba(0,0,0,0));"></view>
+</view>

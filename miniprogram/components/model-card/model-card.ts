@@ -29,15 +29,20 @@ Component({
       const num = String(model.number || 0).padStart(3, '0');
       const dateText = model.releaseDate ? formatDate(model.releaseDate) : '';
       const badgeInfo = model.isLimited ? (LIMITED_BADGE[model.limitedType || 'other'] || LIMITED_BADGE['other']) : null;
-      this.setData({
-        imgLoaded: false,
-        imgError: false,
+      const data: Record<string, any> = {
         numberText: `#${num}`,
         dateText,
         showBadge: !!badgeInfo,
         badgeLabel: badgeInfo ? badgeInfo.label : '',
         badgeVariant: badgeInfo ? badgeInfo.variant : '',
-      });
+      };
+      // Only reset image state when the model actually changes
+      if ((this as any)._lastModelId !== model.id) {
+        (this as any)._lastModelId = model.id;
+        data.imgLoaded = false;
+        data.imgError = false;
+      }
+      this.setData(data);
     },
   },
   methods: {

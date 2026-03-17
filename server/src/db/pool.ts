@@ -19,4 +19,13 @@ const pool = mysql.createPool({
   keepAliveInitialDelay: 0,
 });
 
+// 每 30 秒 ping 一次数据库，保持连接活跃
+setInterval(async () => {
+  try {
+    await pool.query('SELECT 1');
+  } catch (e) {
+    console.error('[DB keepalive] failed:', e);
+  }
+}, 30000);
+
 export default pool;

@@ -3,19 +3,19 @@
 
   <view class="content">
     <!-- Loading skeleton -->
-    <grid-view type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" style="padding: 24rpx;" wx:if="{{loading}}">
+    <view class="skeleton-list" wx:if="{{loading}}">
       <view class="skeleton-card" wx:for="{{[1,2,3,4]}}" wx:key="*this">
-        <view class="skeleton-image"></view>
+        <view class="skeleton-thumb"></view>
         <view class="skeleton-info">
           <view class="skeleton-text" style="width: 40%;"></view>
           <view class="skeleton-text" style="width: 90%;"></view>
           <view class="skeleton-text" style="width: 55%;"></view>
         </view>
       </view>
-    </grid-view>
+    </view>
 
     <!-- Empty state -->
-    <view class="empty-state" wx:elif="{{!loading && purchasedModels.length === 0}}">
+    <view class="empty-state" wx:elif="{{!loading && purchaseItems.length === 0}}">
       <text class="empty-icon">✓</text>
       <text class="empty-title">还没有已购买的模型</text>
       <text class="empty-subtitle">记录你入手的每一台高达</text>
@@ -24,18 +24,119 @@
       </view>
     </view>
 
-    <!-- Purchased grid -->
-    <scroll-view class="scroll-area" type="custom" scroll-y wx:elif="{{!loading}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
-      <grid-view type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" cache-extent="{{600}}" style="padding: 24rpx;">
-        <model-card
-          wx:for="{{purchasedModels}}"
-          wx:key="id"
-          model="{{item}}"
-          isFavorite="{{false}}"
-          exchangeRate="{{exchangeRate}}"
-          bind:select="handleModelSelect"
-        />
-      </grid-view>
+    <!-- Main content -->
+    <scroll-view class="scroll-area" scroll-y wx:elif="{{!loading}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
+
+      <!-- Stats section -->
+      <view class="stats-section" wx:if="{{hasStats}}">
+
+        <!-- Stats header -->
+        <view class="stats-header">
+          <view class="stats-count">
+            <text class="stats-count-label">已入手</text>
+            <text class="stats-count-value">{{totalCount}}</text>
+            <text class="stats-count-label">台</text>
+          </view>
+          <view class="stats-spent">
+            <text class="stats-spent-label">总花费</text>
+            <text class="stats-spent-currency">¥</text>
+            <text class="stats-spent-value">{{totalSpentText}}</text>
+          </view>
+        </view>
+
+        <!-- Radar chart section -->
+        <view class="radar-section">
+          <view class="radar-canvas-wrapper">
+            <canvas id="radarCanvas" type="2d" class="radar-canvas"></canvas>
+          </view>
+          <view class="pilot-info">
+            <text class="pilot-rank">{{pilotRank}}</text>
+            <text class="pilot-title">{{pilotTitle}}</text>
+          </view>
+        </view>
+
+        <!-- Power gauge (price comparison) -->
+        <view class="power-gauge" wx:if="{{hasCompare}}">
+          <view class="gauge-row">
+            <text class="gauge-label">原价折合</text>
+            <view class="gauge-track">
+              <view class="gauge-fill original" style="width: 100%;"></view>
+            </view>
+            <text class="gauge-value">¥{{totalOriginalText}}</text>
+          </view>
+          <view class="gauge-row">
+            <text class="gauge-label">实付总额</text>
+            <view class="gauge-track">
+              <view class="gauge-fill actual" style="width: {{spentPercent}}%;"></view>
+            </view>
+            <text class="gauge-value">¥{{totalSpentText}}</text>
+          </view>
+          <view class="saved-row">
+            <text class="{{savedIsNegative ? 'saved-amount-negative' : 'saved-amount'}}">{{savedIsNegative ? '多花' : '已省'}} ¥{{savedAmountText}}</text>
+            <text class="saved-label">{{savedFunText}}</text>
+          </view>
+        </view>
+
+        <!-- Series breakdown bar -->
+        <view class="series-bar-section" wx:if="{{seriesBreakdown.length > 1}}">
+          <view class="series-bar">
+            <view
+              wx:for="{{seriesBreakdown}}"
+              wx:key="code"
+              class="series-segment {{item.code}}"
+              style="width: {{item.percent}}%;"
+            ></view>
+          </view>
+          <view class="series-legend">
+            <view class="legend-item" wx:for="{{seriesBreakdown}}" wx:key="code">
+              <view class="legend-dot {{item.code}}"></view>
+              <text class="legend-text">{{item.label}} {{item.count}}台</text>
+            </view>
+          </view>
+        </view>
+
+      </view>
+
+      <!-- Purchase list -->
+      <view class="purchase-list">
+        <view class="purchase-card-wrapper" wx:for="{{purchaseItems}}" wx:key="modelId">
+          <view
+            class="swipe-container"
+            bind:touchstart="handleTouchStart"
+            bind:touchmove="handleTouchMove"
+            bind:touchend="handleTouchEnd"
+            data-index="{{index}}"
+          >
+            <view class="purchase-card {{swipeOpenIndex === index ? 'swipe-open' : ''}}">
+              <view class="card-thumb" catch:tap="handleThumbTap" data-index="{{index}}">
+                <image
+                  src="{{item.model.imageUrl}}"
+                  mode="aspectFill"
+                  lazy-load
+                ></image>
+              </view>
+              <view class="card-info" catch:tap="handleInfoTap" data-index="{{index}}">
+                <view class="card-top-row">
+                  <text class="card-series">{{item.seriesLabel}} #{{item.numberText}}</text>
+                  <text class="card-date">{{item.displayDate}}</text>
+                </view>
+                <text class="card-name">{{item.model.name}}</text>
+                <view class="card-bottom-row">
+                  <text class="card-price" wx:if="{{item.priceText}}">¥{{item.priceText}}</text>
+                  <text class="card-no-price" wx:else>未填写价格</text>
+                  <badge variant="default" wx:if="{{item.record.channel}}">{{item.record.channel}}</badge>
+                </view>
+                <text class="card-note" wx:if="{{item.record.note}}">{{item.record.note}}</text>
+                <text class="card-edit-hint">编辑</text>
+              </view>
+            </view>
+            <view class="delete-action" catch:tap="handleDelete" data-model-id="{{item.record.modelId}}">
+              <text>删除</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
     </scroll-view>
   </view>
 

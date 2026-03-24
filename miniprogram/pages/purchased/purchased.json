@@ -1,7 +1,7 @@
 {
   "usingComponents": {
     "header": "../../components/header/header",
-    "model-card": "../../components/model-card/model-card",
+    "badge": "../../components/badge/badge",
     "model-detail": "../../components/model-detail/model-detail",
     "purchase-form": "../../components/purchase-form/purchase-form"
   }

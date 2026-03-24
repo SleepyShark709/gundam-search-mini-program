@@ -4,13 +4,23 @@ import { PurchaseRecord } from './types';
 let cachedPurchases: PurchaseRecord[] = [];
 let cacheLoaded = false;
 
+/** 将 ISO 日期时间字符串截取为 YYYY-MM-DD 格式 */
+function normalizeDate(d: string | null): string | null {
+  if (!d) return null;
+  // 处理 "2025-11-11T00:00:00.000Z" 或 "2025-11-11" 等格式
+  return d.slice(0, 10);
+}
+
 export async function loadPurchases(): Promise<PurchaseRecord[]> {
   try {
     const res = await callAPI<{ purchases: PurchaseRecord[] }>({
       path: '/api/purchases',
       method: 'GET',
     });
-    cachedPurchases = res.purchases || [];
+    cachedPurchases = (res.purchases || []).map((p) => ({
+      ...p,
+      purchaseDate: normalizeDate(p.purchaseDate),
+    }));
     cacheLoaded = true;
     return cachedPurchases;
   } catch (e) {

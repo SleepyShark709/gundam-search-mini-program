@@ -20,6 +20,7 @@ Component({
     priceTaxFree: '',
     dateText: '',
     imgLoaded: false,
+    imgVisible: true,
     hasTags: false,
     safeAreaBottom: 0,
   },
@@ -27,6 +28,17 @@ Component({
     attached() {
       const app = getApp<IAppOption>();
       this.setData({ safeAreaBottom: app.globalData.safeAreaBottom });
+    },
+  },
+  pageLifetimes: {
+    show() {
+      // Skyline 渲染器从后台恢复时图片可能丢失渲染，强制重建 image 元素
+      if (this.data.open && this.data.model) {
+        this.setData({ imgVisible: false, imgLoaded: false });
+        wx.nextTick(() => {
+          this.setData({ imgVisible: true });
+        });
+      }
     },
   },
   observers: {

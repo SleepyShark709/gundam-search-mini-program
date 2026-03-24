@@ -19,6 +19,7 @@
         <view class="image-wrapper">
           <view class="image-skeleton" wx:if="{{!imgLoaded}}"></view>
           <image
+            wx:if="{{imgVisible}}"
             class="detail-image {{imgLoaded ? 'visible' : 'hidden'}}"
             src="{{model.imageUrl}}"
             mode="aspectFit"

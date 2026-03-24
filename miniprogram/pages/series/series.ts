@@ -263,6 +263,22 @@ Page({
     this.setData({ scrollTop: 0 });
   },
 
+  onShareAppMessage() {
+    const { seriesCode, seriesTitle } = this.data;
+    return {
+      title: `${seriesTitle} - 高达模型目录`,
+      path: `/pages/series/series?code=${seriesCode}`,
+    };
+  },
+
+  onShareTimeline() {
+    const { seriesCode, seriesTitle } = this.data;
+    return {
+      title: `${seriesTitle} - 高达模型目录`,
+      query: `code=${seriesCode}`,
+    };
+  },
+
   // Apply all filters and sorting
   applyFilters() {
     const { activeTab, regularModels, limitedModels, limitedSubFilter, debouncedKeyword, releaseDateFrom, releaseDateTo, numberFrom, numberTo, sortValue } = this.data;

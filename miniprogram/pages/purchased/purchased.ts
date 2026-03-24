@@ -51,6 +51,19 @@ Page({
     this.setData({ purchasedModels, loading: false });
   },
 
+  onShareAppMessage() {
+    return {
+      title: '我的高达收藏',
+      path: '/pages/home/home',
+    };
+  },
+
+  onShareTimeline() {
+    return {
+      title: '高达模型目录 - 万代高达塑料模型大全',
+    };
+  },
+
   handleBack() {
     wx.navigateBack();
   },

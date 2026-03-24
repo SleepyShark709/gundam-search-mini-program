@@ -59,4 +59,17 @@ Page({
     const index = e.currentTarget.dataset.index;
     this.goTo(index);
   },
+
+  onShareAppMessage() {
+    return {
+      title: '高达模型目录 - 万代高达塑料模型大全',
+      path: '/pages/home/home',
+    };
+  },
+
+  onShareTimeline() {
+    return {
+      title: '高达模型目录 - 万代高达塑料模型大全',
+    };
+  },
 });

@@ -72,7 +72,13 @@ A WeChat Mini Program for browsing Bandai Gundam plastic model (Gunpla) catalogs
 │       ├── db/pool.ts                 # MySQL pool 数据库连接池
 │       ├── routes/wishlist.ts         # Wishlist API 心愿单接口
 │       ├── routes/purchases.ts        # Purchases API 购买记录接口
-│       └── middleware/auth.ts         # Auth middleware 认证中间件
+│       ├── middleware/auth.ts         # Auth middleware 认证中间件
+│       └── scripts/
+│           ├── scrape-bandai.ts       # Bandai website scraper 万代官网爬虫
+│           ├── seed.ts                # DB data seeder 数据库初始化
+│           ├── update-data.ts         # Data import + image download 数据导入
+│           ├── download-images.ts     # Image downloader 图片下载
+│           └── scrape-images.ts       # Multi-image scraper 多图爬虫
 ├── typings/                           # TypeScript declarations 类型声明
 ├── project.config.json                # WeChat DevTools config 开发工具配置
 └── tsconfig.json
@@ -96,6 +102,80 @@ A WeChat Mini Program for browsing Bandai Gundam plastic model (Gunpla) catalogs
 cd server
 npm install
 npm run dev
+```
+
+## Data Update 数据更新
+
+Script to automatically scrape new products from Bandai's official website and update local JSON data files.
+
+自动从万代官网爬取最新产品数据并更新本地 JSON 文件的脚本。
+
+### Quick Start 快速开始
+
+```bash
+# 安装依赖（首次）
+cd server && npm install
+
+# 一键更新：爬取万代官网最新数据（默认扫描每个系列前 5 页）
+npx ts-node src/scripts/scrape-bandai.ts
+```
+
+### Usage 用法
+
+```bash
+# 预览模式：只查看有哪些新产品，不写入文件
+npx ts-node src/scripts/scrape-bandai.ts --dry-run
+
+# 只更新指定系列
+npx ts-node src/scripts/scrape-bandai.ts --series hg
+
+# 全量扫描（爬取所有页面，首次使用或怀疑有遗漏时）
+npx ts-node src/scripts/scrape-bandai.ts --full
+
+# 强制更新已有产品的价格和发售日期
+npx ts-node src/scripts/scrape-bandai.ts --force
+
+# 同时同步到数据库（需要数据库连接）
+npx ts-node src/scripts/scrape-bandai.ts --sync-db
+
+# 组合使用
+npx ts-node src/scripts/scrape-bandai.ts --series rg --max-pages 3 --dry-run
+```
+
+### Parameters 参数
+
+| Parameter 参数 | Default 默认值 | Description 说明 |
+|----------------|----------------|------------------|
+| `--series <code>` | all | 只爬取指定系列 (hg/rg/mg/pg) |
+| `--max-pages <n>` | 5 | 每个系列最多爬取页数，设 0 爬全部 |
+| `--delay <ms>` | 1500 | 请求间隔毫秒数（避免被封 IP） |
+| `--dry-run` | false | 只展示新产品，不写入文件 |
+| `--full` | false | 全量爬取所有页面 |
+| `--force` | false | 更新已有产品的价格和发售日期 |
+| `--sync-db` | false | 同时更新数据库 |
+
+### How It Works 工作原理
+
+1. 从 `bandai-hobby.net/brand/{hg,rg,mg,pg}/` 列表页爬取产品信息
+2. 与 `miniprogram/data/*.json` 中的现有数据对比，通过 `productUrl` 识别新产品
+3. 连续 3 页无新产品时自动停止（增量模式高效）
+4. 新产品自动分配 ID 和编号，写入对应的 JSON 文件并更新 `series-meta.json`
+5. 可选通过 `--sync-db` 同步到 MySQL 数据库
+
+### Other Data Scripts 其他数据脚本
+
+```bash
+# 将本地 JSON 数据导入数据库（初始化）
+npx ts-node src/scripts/seed.ts
+
+# 综合数据更新：JSON 导入 + 图片下载
+npx ts-node src/scripts/update-data.ts
+
+# 下载产品图片到本地
+npx ts-node src/scripts/download-images.ts
+
+# 爬取产品多图（详情页图片）
+npx ts-node src/scripts/scrape-images.ts --skip-existing
 ```
 
 ## Design 设计

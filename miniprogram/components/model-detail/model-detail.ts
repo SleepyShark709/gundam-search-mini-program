@@ -1,5 +1,6 @@
 import { formatJPY, formatCNY, calcTaxFree } from '../../utils/price';
 import { formatDate } from '../../utils/format';
+import { getModelImages } from '../../utils/model-service';
 
 Component({
   options: {
@@ -19,10 +20,12 @@ Component({
     priceCNY: '',
     priceTaxFree: '',
     dateText: '',
-    imgLoaded: false,
-    imgVisible: true,
     hasTags: false,
     safeAreaBottom: 0,
+    // 多图相关
+    images: [] as string[],
+    currentImageIndex: 0,
+    imgLoadedMap: {} as Record<string, boolean>,
   },
   lifetimes: {
     attached() {
@@ -32,11 +35,12 @@ Component({
   },
   pageLifetimes: {
     show() {
-      // Skyline 渲染器从后台恢复时图片可能丢失渲染，强制重建 image 元素
-      if (this.data.open && this.data.model) {
-        this.setData({ imgVisible: false, imgLoaded: false });
+      // Skyline 渲染器从后台恢复时图片可能丢失渲染，强制重建 swiper
+      if (this.data.open && this.data.model && this.data.images.length > 0) {
+        const currentImages = this.data.images;
+        this.setData({ images: [], imgLoadedMap: {} });
         wx.nextTick(() => {
-          this.setData({ imgVisible: true });
+          this.setData({ images: currentImages, currentImageIndex: 0 });
         });
       }
     },
@@ -52,20 +56,43 @@ Component({
         priceCNY: model.price > 0 ? formatCNY(cny) : '',
         priceTaxFree: model.price > 0 ? formatJPY(calcTaxFree(model.price)) : '',
         dateText: model.releaseDate ? formatDate(model.releaseDate) : '',
-        imgLoaded: false,
         hasTags: !!(model.tags && model.tags.length > 0),
       });
     },
+    'model, open': function (model: any, open: boolean) {
+      if (!model || !model.id || !open) return;
+
+      // 立即显示主图
+      this.setData({
+        images: [model.imageUrl],
+        currentImageIndex: 0,
+        imgLoadedMap: {},
+      });
+
+      // 异步加载多图
+      this._loadImages(model.series, model.id, model.imageUrl);
+    },
   },
   methods: {
+    async _loadImages(seriesCode: string, modelId: string, fallbackUrl: string) {
+      const images = await getModelImages(seriesCode as any, modelId);
+      if (images.length > 0) {
+        this.setData({ images, imgLoadedMap: {} });
+      }
+      // 如果 API 返回空数组，保持单图（已在 observer 中设置）
+    },
+    handleSwiperChange(e: any) {
+      this.setData({ currentImageIndex: e.detail.current });
+    },
+    handleSwiperImgLoad(e: any) {
+      const index = e.currentTarget.dataset.index;
+      this.setData({ [`imgLoadedMap.${index}`]: true });
+    },
     handleClose() {
       this.triggerEvent('close');
     },
     handleBackdrop() {
       this.triggerEvent('close');
-    },
-    handleImgLoad() {
-      this.setData({ imgLoaded: true });
     },
     handleFavToggle() {
       if (this.data.model) {
@@ -75,16 +102,6 @@ Component({
     handlePurchase() {
       if (this.data.model) {
         this.triggerEvent('purchase', { id: this.data.model.id, name: this.data.model.name });
-      }
-    },
-    handleOpenUrl() {
-      if (this.data.model && this.data.model.productUrl) {
-        wx.setClipboardData({
-          data: this.data.model.productUrl,
-          success: () => {
-            wx.showToast({ title: '链接已复制', icon: 'success' });
-          },
-        });
       }
     },
     preventBubble() {},

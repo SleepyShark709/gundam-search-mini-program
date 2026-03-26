@@ -1,4 +1,4 @@
-import { getModels, filterModels, sortModels } from '../../utils/model-service';
+import { getModels, filterModels, sortModels, refreshModels } from '../../utils/model-service';
 import { getWishlist, isInWishlist, toggleWishlist } from '../../utils/cloud-favorites';
 import { isPurchased, getPurchaseRecord, addPurchase, updatePurchase } from '../../utils/purchase-service';
 import type { GundamModel, SeriesCode, FilterConfig, SortConfig } from '../../utils/types';
@@ -106,6 +106,15 @@ Page({
     });
 
     this.applyFilters();
+
+    // 异步从服务器刷新模型数据（5s 超时后降级为本地数据）
+    refreshModels(code).then((newModels) => {
+      if (newModels.length === 0) return;
+      const newRegular = newModels.filter((m) => !m.isLimited);
+      const newLimited = newModels.filter((m) => m.isLimited);
+      this.setData({ allModels: newModels, regularModels: newRegular, limitedModels: newLimited });
+      this.applyFilters();
+    });
   },
 
   onShow() {

@@ -10,11 +10,17 @@ interface CallOptions {
   path: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   data?: any;
+  timeout?: number;
 }
+
+const DEFAULT_TIMEOUT = 5000;
 
 export function callAPI<T = any>(options: CallOptions): Promise<T> {
   ensureCloudInit();
-  return new Promise((resolve, reject) => {
+
+  const timeout = options.timeout ?? DEFAULT_TIMEOUT;
+
+  const request = new Promise<T>((resolve, reject) => {
     wx.cloud.callContainer({
       config: {
         env: 'prod-7gn6i50ma7c135ba',
@@ -38,4 +44,10 @@ export function callAPI<T = any>(options: CallOptions): Promise<T> {
       },
     });
   });
+
+  const timer = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error(`请求超时 (${timeout}ms)`)), timeout);
+  });
+
+  return Promise.race([request, timer]);
 }

@@ -1,0 +1,297 @@
+/* 深色科技风主题覆盖 */
+:root[data-theme="dark"] {
+  --pico-primary: #00d4ff;
+  --pico-primary-hover: #00a8cc;
+  --pico-background-color: #0a0e14;
+  --pico-card-background-color: #12171f;
+  --pico-card-border-color: #1e2a3a;
+  --pico-table-border-color: #1e2a3a;
+  --pico-muted-border-color: #1e2a3a;
+}
+
+/* 导航 */
+header.container-fluid {
+  border-bottom: 1px solid var(--pico-card-border-color);
+  padding-bottom: 0;
+}
+header nav strong {
+  color: var(--pico-primary);
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+}
+.nav-link {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+.nav-link.active {
+  border-bottom-color: var(--pico-primary);
+  color: var(--pico-primary);
+}
+
+/* 统计卡片 */
+.stat-card {
+  text-align: center;
+  padding: 1.5rem 1rem;
+}
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--pico-primary);
+  line-height: 1.2;
+}
+.stat-card .stat-label {
+  font-size: 0.85rem;
+  color: var(--pico-muted-color);
+  margin-top: 0.25rem;
+}
+
+/* 系列卡片 */
+.series-card {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.series-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #1a2030;
+}
+.series-card .series-info h4 {
+  margin: 0;
+  color: var(--pico-primary);
+}
+.series-card .series-info p {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--pico-muted-color);
+}
+
+/* 筛选栏 */
+.filter-bar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.filter-bar select,
+.filter-bar input {
+  margin-bottom: 0;
+}
+.filter-bar select { max-width: 150px; }
+.filter-bar input[type="search"] { flex: 1; min-width: 200px; }
+
+/* 表格 */
+.table-wrapper {
+  overflow-x: auto;
+}
+#models-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+#models-table tbody tr:hover {
+  background-color: rgba(0, 212, 255, 0.05);
+}
+.limited-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(255, 165, 0, 0.15);
+  color: #ffa500;
+}
+
+/* 分页 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.pagination button {
+  width: auto;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+.pagination .page-info {
+  font-size: 0.85rem;
+  color: var(--pico-muted-color);
+}
+
+/* 任务卡片 */
+.task-cards article {
+  margin-bottom: 0;
+}
+.task-cards article header {
+  font-weight: 600;
+  color: var(--pico-primary);
+}
+.task-cards fieldset {
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+.task-cards fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
+.task-btn {
+  width: 100%;
+}
+.task-btn:disabled {
+  opacity: 0.5;
+}
+
+/* 日志终端 */
+#log-panel {
+  margin-top: 1.5rem;
+}
+#log-panel header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#log-output {
+  background: #050810;
+  color: #d4d4d4;
+  padding: 1rem;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+}
+.log-line-stderr {
+  color: #ff6b6b;
+}
+.log-line-success {
+  color: #51cf66;
+}
+
+/* 状态指示 */
+.status-running {
+  color: #ffd43b;
+}
+.status-running::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffd43b;
+  margin-right: 0.5rem;
+  animation: pulse 1s infinite;
+}
+.status-completed {
+  color: #51cf66;
+}
+.status-completed::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #51cf66;
+  margin-right: 0.5rem;
+}
+.status-failed {
+  color: #ff6b6b;
+}
+.status-failed::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  margin-right: 0.5rem;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* 模型详情弹窗 */
+#model-dialog {
+  max-width: 720px;
+}
+#model-dialog article {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.detail-hero-img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  background: #1a2030;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 1rem;
+}
+.detail-info-grid dt {
+  font-size: 0.8rem;
+  color: var(--pico-muted-color);
+  margin: 0;
+}
+.detail-info-grid dd {
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+}
+.detail-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+.detail-images-grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #1a2030;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.detail-images-grid img:hover {
+  transform: scale(1.05);
+}
+.detail-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  margin-right: 1rem;
+  color: var(--pico-muted-color);
+}
+
+/* 小按钮 */
+button.small {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+/* 历史任务表格的按钮 */
+#history-table button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  width: auto;
+}

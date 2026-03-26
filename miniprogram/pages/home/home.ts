@@ -1,4 +1,4 @@
-import { getSeriesMeta } from '../../utils/model-service';
+import { getSeriesMeta, refreshSeriesMeta } from '../../utils/model-service';
 import { migrateFavoritesIfNeeded } from '../../utils/favorites';
 
 Page({
@@ -25,6 +25,13 @@ Page({
       loading: false,
       statusBarHeight: app.globalData.statusBarHeight,
       itemWidth,
+    });
+
+    // 异步从服务器刷新系列元信息（5s 超时后降级为本地数据）
+    refreshSeriesMeta().then((newMeta) => {
+      if (newMeta.length > 0) {
+        this.setData({ series: newMeta });
+      }
     });
   },
   handleTouchStart(e: any) {

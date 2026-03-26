@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>高达模型目录 - 管理后台</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header class="container-fluid">
+    <nav>
+      <ul>
+        <li><strong>GUNDAM MENU Admin</strong></li>
+      </ul>
+      <ul>
+        <li><a href="#dashboard" class="nav-link" data-view="dashboard">仪表盘</a></li>
+        <li><a href="#models" class="nav-link" data-view="models">模型数据</a></li>
+        <li><a href="#tasks" class="nav-link" data-view="tasks">数据更新</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container-fluid">
+    <!-- 仪表盘 -->
+    <section id="view-dashboard" class="view">
+      <h2>数据概览</h2>
+      <div id="stats-cards" class="grid"></div>
+      <h3>系列信息</h3>
+      <div id="series-cards" class="grid"></div>
+    </section>
+
+    <!-- 模型数据 -->
+    <section id="view-models" class="view" style="display:none">
+      <h2>模型数据</h2>
+      <div class="filter-bar">
+        <select id="filter-series">
+          <option value="">全部系列</option>
+          <option value="hg">HG</option>
+          <option value="rg">RG</option>
+          <option value="mg">MG</option>
+          <option value="pg">PG</option>
+        </select>
+        <input type="search" id="filter-search" placeholder="搜索名称 / ID...">
+        <select id="filter-limited">
+          <option value="">全部类型</option>
+          <option value="0">普通</option>
+          <option value="1">限定</option>
+        </select>
+        <button id="btn-search" class="outline">搜索</button>
+      </div>
+      <div class="table-wrapper">
+        <table id="models-table" role="grid">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>名称</th>
+              <th>价格</th>
+              <th>发售日</th>
+              <th>限定</th>
+              <th>详情图</th>
+            </tr>
+          </thead>
+          <tbody id="models-tbody"></tbody>
+        </table>
+      </div>
+      <div id="pagination" class="pagination"></div>
+    </section>
+
+    <!-- 数据更新 -->
+    <section id="view-tasks" class="view" style="display:none">
+      <h2>数据更新</h2>
+      <div class="grid task-cards">
+        <!-- 爬取产品数据 -->
+        <article>
+          <header>爬取产品数据</header>
+          <p>从万代官网爬取最新产品信息，更新本地 JSON</p>
+          <label>系列
+            <select id="scrape-series"><option value="">全部</option><option value="hg">HG</option><option value="rg">RG</option><option value="mg">MG</option><option value="pg">PG</option></select>
+          </label>
+          <fieldset>
+            <label><input type="checkbox" id="scrape-full"> 全量爬取</label>
+            <label><input type="checkbox" id="scrape-force"> 强制更新</label>
+            <label><input type="checkbox" id="scrape-syncdb" checked> 同步数据库</label>
+            <label><input type="checkbox" id="scrape-dryrun"> Dry Run</label>
+          </fieldset>
+          <button class="task-btn" data-type="scrape-bandai">开始爬取</button>
+        </article>
+
+        <!-- 爬取产品多图 -->
+        <article>
+          <header>爬取产品多图</header>
+          <p>从万代官网产品页下载详情图片</p>
+          <label>系列
+            <select id="images-series"><option value="">全部</option><option value="hg">HG</option><option value="rg">RG</option><option value="mg">MG</option><option value="pg">PG</option></select>
+          </label>
+          <label>数量限制
+            <input type="number" id="images-limit" placeholder="留空=全部" min="1">
+          </label>
+          <fieldset>
+            <label><input type="checkbox" id="images-skip" checked> 跳过已有</label>
+            <label><input type="checkbox" id="images-dryrun"> Dry Run</label>
+          </fieldset>
+          <button class="task-btn" data-type="scrape-images">开始爬取</button>
+        </article>
+
+        <!-- 数据导入 -->
+        <article>
+          <header>数据导入</header>
+          <p>从本地 JSON 导入到数据库并下载图片</p>
+          <label>系列
+            <select id="update-series"><option value="">全部</option><option value="hg">HG</option><option value="rg">RG</option><option value="mg">MG</option><option value="pg">PG</option></select>
+          </label>
+          <fieldset>
+            <label><input type="checkbox" id="update-skip-images"> 跳过图片</label>
+            <label><input type="checkbox" id="update-skip-data"> 跳过数据</label>
+          </fieldset>
+          <button class="task-btn" data-type="update-data">开始导入</button>
+        </article>
+      </div>
+
+      <!-- 日志终端 -->
+      <article id="log-panel" style="display:none">
+        <header>
+          <span id="log-status">就绪</span>
+          <div>
+            <button class="outline small" id="btn-clear-log">清空</button>
+          </div>
+        </header>
+        <pre id="log-output"></pre>
+      </article>
+
+      <!-- 历史任务 -->
+      <h3>历史任务</h3>
+      <table id="history-table" role="grid">
+        <thead>
+          <tr><th>时间</th><th>类型</th><th>状态</th><th>耗时</th><th>操作</th></tr>
+        </thead>
+        <tbody id="history-tbody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- 模型详情弹窗 -->
+  <dialog id="model-dialog">
+    <article>
+      <header>
+        <button aria-label="Close" rel="prev" id="dialog-close"></button>
+        <h3 id="dialog-title"></h3>
+      </header>
+      <div id="dialog-body"></div>
+    </article>
+  </dialog>
+
+  <script src="admin.js"></script>
+</body>
+</html>

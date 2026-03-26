@@ -15,6 +15,7 @@ export interface GundamModel {
   isLimited: boolean;
   limitedType?: LimitedType;
   imageUrl: string;
+  images?: string[];
   productUrl: string;
   tags?: string[];
 }

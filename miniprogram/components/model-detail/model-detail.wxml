@@ -13,18 +13,44 @@
     </view>
 
     <!-- Content -->
-    <scroll-view class="sheet-content" scroll-y>
+    <scroll-view class="sheet-content" scroll-y enhanced show-scrollbar="{{false}}">
       <view class="detail-container" style="padding-bottom: {{safeAreaBottom}}px;">
-        <!-- Image -->
+        <!-- Image Swiper -->
         <view class="image-wrapper">
-          <view class="image-skeleton" wx:if="{{!imgLoaded}}"></view>
-          <image
-            wx:if="{{imgVisible}}"
-            class="detail-image {{imgLoaded ? 'visible' : 'hidden'}}"
-            src="{{model.imageUrl}}"
-            mode="aspectFit"
-            bindload="handleImgLoad"
-          />
+          <!-- 骨架屏：首张图未加载时显示 -->
+          <view class="image-skeleton" wx:if="{{!imgLoadedMap['0']}}"></view>
+
+          <swiper
+            class="image-swiper"
+            current="{{currentImageIndex}}"
+            bindchange="handleSwiperChange"
+            circular="{{images.length > 1}}"
+            indicator-dots="{{false}}"
+          >
+            <swiper-item wx:for="{{images}}" wx:key="*this">
+              <image
+                class="detail-image {{imgLoadedMap[index + ''] ? 'visible' : 'hidden'}}"
+                src="{{item}}"
+                mode="aspectFit"
+                data-index="{{index}}"
+                bindload="handleSwiperImgLoad"
+              />
+            </swiper-item>
+          </swiper>
+
+          <!-- 自定义指示器（多图时显示） -->
+          <view class="swiper-indicator" wx:if="{{images.length > 1}}">
+            <view
+              wx:for="{{images}}"
+              wx:key="*this"
+              class="indicator-dot {{currentImageIndex === index ? 'indicator-dot-active' : ''}}"
+            ></view>
+          </view>
+
+          <!-- 图片计数器 -->
+          <view class="image-counter" wx:if="{{images.length > 1}}">
+            <text>{{currentImageIndex + 1}} / {{images.length}}</text>
+          </view>
         </view>
 
         <!-- Name section -->
@@ -85,10 +111,6 @@
           <view class="action-btn" bind:tap="handlePurchase" hover-class="action-hover">
             <text class="action-icon {{isPurchased ? 'action-icon-purchased' : ''}}">{{isPurchased ? '✓' : '＋'}}</text>
             <text class="action-label">{{isPurchased ? '已入手' : '入手'}}</text>
-          </view>
-          <view class="action-btn" bind:tap="handleOpenUrl" hover-class="action-hover">
-            <text class="action-icon">🔗</text>
-            <text class="action-label">复制链接</text>
           </view>
         </view>
       </view>

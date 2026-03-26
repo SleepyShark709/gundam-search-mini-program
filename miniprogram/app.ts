@@ -1,5 +1,6 @@
 import { loadWishlist } from './utils/cloud-favorites';
 import { loadPurchases } from './utils/purchase-service';
+import { refreshSeriesMeta } from './utils/model-service';
 
 const sysInfo = wx.getWindowInfo();
 const safeArea = sysInfo.safeArea;
@@ -16,6 +17,7 @@ App<IAppOption>({
     this.loadExchangeRate();
     loadWishlist();
     loadPurchases();
+    refreshSeriesMeta();
   },
   loadExchangeRate() {
     const STORAGE_KEY = 'gundam-exchange-rate';

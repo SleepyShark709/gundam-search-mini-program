@@ -8,6 +8,15 @@ const router = Router();
 
 const VALID_SERIES = ['hg', 'rg', 'mg', 'pg'];
 
+const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || 'https://express-v0yz-233588-9-1411463139.sh.run.tcloudbase.com';
+
+/** 将 /images/xxx 相对路径转为完整 URL */
+function resolveImageUrl(url: string | null): string | null {
+  if (!url) return url;
+  if (url.startsWith('/images/')) return PUBLIC_BASE_URL + url;
+  return url;
+}
+
 /**
  * GET /api/series-meta
  * 获取所有系列元信息（公开接口，无需认证）
@@ -19,7 +28,11 @@ router.get('/series-meta', async (_req: Request, res: Response) => {
     );
 
     const version = await getDataVersion();
-    res.json({ data: rows.map(toCamelCase), version });
+    const data = rows.map(toCamelCase).map(r => ({
+      ...r,
+      coverImage: resolveImageUrl(r.coverImage),
+    }));
+    res.json({ data, version });
   } catch (err) {
     console.error('[GET /api/series-meta]', err);
     res.status(500).json({ error: '获取系列元信息失败' });
@@ -45,7 +58,11 @@ router.get('/models/:seriesCode', async (req: Request, res: Response) => {
     );
 
     const version = await getDataVersion();
-    res.json({ data: rows.map(toCamelCase), version });
+    const data = rows.map(toCamelCase).map(r => ({
+      ...r,
+      imageUrl: resolveImageUrl(r.imageUrl),
+    }));
+    res.json({ data, version });
   } catch (err) {
     console.error(`[GET /api/models/${seriesCode}]`, err);
     res.status(500).json({ error: '获取模型列表失败' });
@@ -65,7 +82,7 @@ router.get('/models/:seriesCode/:modelId/images', async (req: Request, res: Resp
       [modelId]
     );
 
-    const images = rows.map((r) => r.image_url as string);
+    const images = rows.map((r) => resolveImageUrl(r.image_url as string)).filter(Boolean) as string[];
     res.json({ images });
   } catch (err) {
     console.error(`[GET /api/models/:seriesCode/${modelId}/images]`, err);

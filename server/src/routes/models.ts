@@ -8,14 +8,7 @@ const router = Router();
 
 const VALID_SERIES = ['hg', 'rg', 'mg', 'pg'];
 
-const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || 'https://express-v0yz-233588-9-1411463139.sh.run.tcloudbase.com';
-
-/** 将 /images/xxx 相对路径转为完整 URL */
-function resolveImageUrl(url: string | null): string | null {
-  if (!url) return url;
-  if (url.startsWith('/images/')) return PUBLIC_BASE_URL + url;
-  return url;
-}
+// 图片 URL 保持相对路径 /images/... 返回，由客户端根据环境解析
 
 /**
  * GET /api/series-meta
@@ -28,10 +21,7 @@ router.get('/series-meta', async (_req: Request, res: Response) => {
     );
 
     const version = await getDataVersion();
-    const data = rows.map(toCamelCase).map(r => ({
-      ...r,
-      coverImage: resolveImageUrl(r.coverImage),
-    }));
+    const data = rows.map(toCamelCase);
     res.json({ data, version });
   } catch (err) {
     console.error('[GET /api/series-meta]', err);
@@ -58,10 +48,7 @@ router.get('/models/:seriesCode', async (req: Request, res: Response) => {
     );
 
     const version = await getDataVersion();
-    const data = rows.map(toCamelCase).map(r => ({
-      ...r,
-      imageUrl: resolveImageUrl(r.imageUrl),
-    }));
+    const data = rows.map(toCamelCase);
     res.json({ data, version });
   } catch (err) {
     console.error(`[GET /api/models/${seriesCode}]`, err);
@@ -82,7 +69,7 @@ router.get('/models/:seriesCode/:modelId/images', async (req: Request, res: Resp
       [modelId]
     );
 
-    const images = rows.map((r) => resolveImageUrl(r.image_url as string)).filter(Boolean) as string[];
+    const images = rows.map((r) => r.image_url as string).filter(Boolean);
     res.json({ images });
   } catch (err) {
     console.error(`[GET /api/models/:seriesCode/${modelId}/images]`, err);

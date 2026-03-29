@@ -8,23 +8,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 技术栈
 
-- **微信小程序**（Skyline 渲染器 + glass-easel 组件框架）
-- **TypeScript** + **Less**（通过微信开发者工具内置编译器插件编译，无需 npm build）
-- 无外部 npm 运行时依赖，仅 `miniprogram-api-typings` 作为 devDependency
+- **前端**：微信小程序（Skyline 渲染器 + glass-easel 组件框架），TypeScript + Less
+- **后端**：Express + MySQL，部署在微信云托管
+- 前端无外部 npm 运行时依赖，仅 `miniprogram-api-typings` 作为 devDependency
 
 ## 开发方式
 
 使用**微信开发者工具**打开项目根目录进行开发和预览。TS 和 Less 由开发者工具自动编译，无需手动构建步骤。无 lint、test 配置。
 
+### 本地调试 Server
+
+1. 将 `api.ts` 顶部 `USE_LOCAL` 改为 `true`，`LOCAL_BASE` 改为电脑局域网 IP（真机调试时不能用 localhost）
+2. 启动本地 server：`cd server && MYSQL_ADDRESS=<外网地址> MYSQL_USERNAME=root MYSQL_PASSWORD=<密码> npm run dev`
+3. server 监听端口 80，确保手机和电脑在同一 WiFi
+4. 发布前务必将 `USE_LOCAL` 改回 `false`
+
 ## 架构
 
 ### 数据流
 
-- 模型数据以静态 JSON 文件存储在 `miniprogram/data/` 目录（hg.json、rg.json、mg.json、pg.json），打包时包含在小程序包内
-- `series-meta.json` / `series-meta.js` 存储系列元信息（名称、比例、封面、总数）
-- `model-service.ts` 是数据访问层：通过 `wx.getFileSystemManager().readFileSync` 按需懒加载各系列数据并缓存
-- 图片 URL 通过 `cdn-config.ts` 从 GitHub CDN 重写为微信云托管反代地址（国内可达）
+- 模型数据以静态 JSON 文件存储在 `miniprogram/data/` 目录（hg.json、rg.json、mg.json、pg.json）作为 L3 兜底
+- `model-service.ts` 是数据访问层：L1 内存缓存 → L2 Storage 缓存 → L3 本地 JSON 兜底；页面加载时先用本地 JSON 同步渲染，再异步从 API 刷新
+- **图片 URL 解析规则**（`cdn-config.ts`）：API 返回相对路径 `/images/...`，客户端根据环境拼接域名（本地 → `LOCAL_BASE`，线上 → `CONTAINER_DOMAIN`）；本地 JSON 兜底的 jsdelivr URL 重写为万代官网直链
 - 汇率（JPY→CNY）在 `app.ts` 启动时从 `open.er-api.com` 获取，24 小时缓存于 `wx.Storage`
+
+### 后端（server/）
+
+- Express + MySQL（腾讯云 CynosDB），部署在微信云托管，服务名 `express-v0yz`
+- 云托管环境 ID: `prod-7gn6i50ma7c135ba`，容器域名: `https://express-v0yz-233588-9-1411463139.sh.run.tcloudbase.com`
+- API 通过 `wx.cloud.callContainer` 调用（内网免鉴权），图片通过公网域名加载
+- **API 返回图片路径为相对路径 `/images/...`，不拼接域名**，由客户端 `cdn-config.ts` 负责解析
+- 产品图片存储在 `server/public/images/`，通过 Express 静态文件中间件提供服务
+- `scrape-images.ts` 爬取万代官网多图，下载到 `public/images/{modelId}/` 并写入 `model_images` 表
 
 ### 页面结构（3 个页面）
 
@@ -58,3 +73,5 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `packOptions` 中 `series-meta.json` 和 `id-migration.json` 被排除打包（它们有对应的 .js 文件用于 require）
 - Skyline 渲染器与 WebView 有布局差异，修改样式时需注意兼容性（`defaultDisplayBlock: true`）
 - 小程序 appid: `wx422623fec834054c`
+- **server/.dockerignore 不要排除 `public/images`**，否则 Docker 镜像中不含图片文件
+- 发布前确认 `api.ts` 中 `USE_LOCAL = false`

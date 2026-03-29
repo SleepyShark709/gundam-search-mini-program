@@ -53,6 +53,39 @@
             <text class="pilot-rank">{{pilotRank}}</text>
             <text class="pilot-title">{{pilotTitle}}</text>
           </view>
+          <view class="score-toggle" bind:tap="handleToggleScoreDetail">
+            <text>{{scoreDetailOpen ? '收起 ▲' : '展开 ▼'}}</text>
+          </view>
+        </view>
+
+        <!-- Score detail panel -->
+        <view class="score-detail" wx:if="{{scoreDetailOpen}}">
+          <view class="score-detail-header">
+            <text class="score-detail-rank">{{pilotRank}} · {{pilotScore}}分</text>
+            <text class="score-detail-next" wx:if="{{nextRank}}">→ {{nextRank}}（{{nextRankScore}}分）</text>
+          </view>
+          <view class="score-progress-track">
+            <view class="score-progress-fill" style="width: {{pilotScore}}%;"></view>
+          </view>
+          <text class="score-gap-text" wx:if="{{nextRank}}">还需 {{scoreGap}} 分升级</text>
+          <text class="score-gap-text" wx:else>已达最高等级</text>
+
+          <view class="dim-list">
+            <view class="dim-item" wx:for="{{dimDetails}}" wx:key="label">
+              <view class="dim-item-header">
+                <text class="dim-item-label">{{item.label}}</text>
+                <text class="dim-item-value">{{item.valueText}}</text>
+              </view>
+              <view class="dim-bar-track">
+                <view class="dim-bar-fill" style="width: {{item.percent}}%;"></view>
+              </view>
+            </view>
+          </view>
+
+          <view class="upgrade-tip">
+            <text class="upgrade-tip-tag">升级建议</text>
+            <text class="upgrade-tip-text">{{upgradeTip}}</text>
+          </view>
         </view>
 
         <!-- Power gauge (price comparison) -->

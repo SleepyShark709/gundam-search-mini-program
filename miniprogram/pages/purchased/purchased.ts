@@ -39,10 +39,10 @@ function seriesLabel(code: SeriesCode): string {
 
 /** 趣味文案 */
 function getSavedFunText(savedRate: number): string {
-  if (savedRate < 0) return '情怀无价，高达魂燃烧中';
-  if (savedRate < 10) return '精准花费，量子级节约';
-  if (savedRate < 30) return '不错的操作，驾驶员';
-  if (savedRate < 50) return '精打细算的NewType';
+  if (savedRate < -5) return '情怀无价，高达魂燃烧中';
+  if (savedRate < 5) return '精准花费，量子级节约';
+  if (savedRate < 15) return '不错的操作，驾驶员';
+  if (savedRate < 25) return '精打细算的NewType';
   return '你就是红色彗星！';
 }
 
@@ -91,6 +91,15 @@ Page({
     radarDimensions: [0, 0, 0, 0, 0] as number[],
     pilotRank: 'D级',
     pilotTitle: '刚入坑的联邦士兵',
+
+    // 得分详情
+    scoreDetailOpen: false,
+    pilotScore: 0,
+    nextRank: '',
+    nextRankScore: 0,
+    scoreGap: 0,
+    dimDetails: [] as Array<{ label: string; valueText: string; percent: number }>,
+    upgradeTip: '',
 
     // 左滑
     swipeOpenIndex: -1,
@@ -186,7 +195,9 @@ Page({
     const hasCompare = priceRecordCount > 0;
     const savedAmount = totalOriginal - totalSpent;
     const spentPercent = totalOriginal > 0 ? Math.min(Math.round(totalSpent / totalOriginal * 100), 100) : 0;
-    const savedRate = totalOriginal > 0 ? (savedAmount / totalOriginal * 100) : 0;
+    // 省钱率 = 20%(容忍加价) - 实际溢价率，买到原价即 20%，超出原价 20% 才为 0
+    const premiumRate = totalOriginal > 0 ? ((totalSpent - totalOriginal) / totalOriginal * 100) : 0;
+    const savedRate = 20 - premiumRate;
     const savedFunText = getSavedFunText(savedRate);
     const savedIsNegative = savedAmount < 0;
 
@@ -219,8 +230,8 @@ Page({
     // 2. 总花费 / 10000
     const dimSpent = Math.min(totalSpent / 10000, 1);
 
-    // 3. 省钱率 / 50
-    const dimSaved = Math.min((savedRate > 0 ? savedRate : 0) / 50, 1);
+    // 3. 省钱率 / 25
+    const dimSaved = Math.min((savedRate > 0 ? savedRate : 0) / 25, 1);
 
     // 4. 覆盖度：不同系列数 / 4
     const uniqueSeriesCount = Object.keys(seriesCountMap).length;
@@ -240,9 +251,62 @@ Page({
 
     const radarDimensions = [dimCount, dimSpent, dimSaved, dimCoverage, dimFreq];
 
-    // 驾驶员评级
-    const avgScore = radarDimensions.reduce((sum, v) => sum + v, 0) / 5;
+    // 驾驶员评级（加权：台数1.5 > 花费1.2 > 覆盖1.0 > 频率0.8 > 省钱0.5）
+    const weights = [1.5, 1.2, 0.5, 1.0, 0.8];
+    const weightedSum = radarDimensions.reduce((sum, v, i) => sum + v * weights[i], 0);
+    const avgScore = weightedSum / weights.reduce((sum, w) => sum + w, 0);
     const { pilotRank, pilotTitle } = getPilotRating(avgScore);
+
+    // ---------- 得分详情 ----------
+
+    const pilotScore = Math.round(avgScore * 100);
+
+    // 下一等级
+    const rankThresholds = [
+      { rank: 'S级', score: 90 },
+      { rank: 'A级', score: 70 },
+      { rank: 'B级', score: 50 },
+      { rank: 'C级', score: 30 },
+    ];
+    let nextRank = '';
+    let nextRankScore = 0;
+    let scoreGap = 0;
+    for (const t of rankThresholds) {
+      if (pilotScore < t.score) {
+        nextRank = t.rank;
+        nextRankScore = t.score;
+        scoreGap = t.score - pilotScore;
+      }
+    }
+
+    // 各维度详情
+    const dimLabels = ['台数', '花费', '省钱', '覆盖', '频率'];
+    const dimMaxTexts = ['20台', '¥10,000', '25%', '4系列', '2台·月'];
+    const dimCurrentTexts = [
+      `${totalCount}`,
+      `¥${formatMoney(totalSpent)}`,
+      `${Math.max(savedRate, 0).toFixed(0)}%`,
+      `${uniqueSeriesCount}`,
+      `${(recent3MonthCount / 3).toFixed(1)}`,
+    ];
+    const dimDetails = dimLabels.map((label, i) => ({
+      label,
+      valueText: `${dimCurrentTexts[i]}/${dimMaxTexts[i]}`,
+      percent: Math.round(radarDimensions[i] * 100),
+    }));
+
+    // 升级建议：找加权得分最低的维度
+    const weightedDimScores = radarDimensions.map((v, i) => ({ index: i, weighted: v * weights[i] }));
+    weightedDimScores.sort((a, b) => a.weighted - b.weighted);
+    const weakest = weightedDimScores[0];
+    const tipMap = [
+      '多入手几台心仪的高达吧',
+      '买买买，花费越高评分越高',
+      `多找折扣渠道，省钱率达 25% 即满分`,
+      '尝试不同系列，集齐HG/RG/MG/PG',
+      '保持购买频率，月均2台即满分',
+    ];
+    const upgradeTip = tipMap[weakest.index];
 
     // ---------- setData ----------
 
@@ -262,6 +326,12 @@ Page({
       radarDimensions,
       pilotRank,
       pilotTitle,
+      pilotScore,
+      nextRank,
+      nextRankScore,
+      scoreGap,
+      dimDetails,
+      upgradeTip,
       swipeOpenIndex: -1,
     });
 
@@ -381,6 +451,10 @@ Page({
 
   handleExplore() {
     wx.switchTab({ url: '/pages/home/home' });
+  },
+
+  handleToggleScoreDetail() {
+    this.setData({ scoreDetailOpen: !this.data.scoreDetailOpen });
   },
 
   // ---------- 卡片交互 ----------

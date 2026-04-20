@@ -1,4 +1,4 @@
-<scroll-view class="page" type="list" scroll-y>
+<scroll-view class="page" scroll-y>
   <view style="height: {{statusBarHeight}}px;"></view>
   <view class="title">我的</view>
 

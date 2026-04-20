@@ -14,3 +14,10 @@ page {
 view, text, image {
   box-sizing: border-box;
 }
+
+// 全局隐藏滚动条（scroll-view 及任意可滚动区域），滚动行为本身保留
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}

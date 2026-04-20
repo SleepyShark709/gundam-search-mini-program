@@ -3,8 +3,8 @@
 
   <view class="content">
     <!-- Loading skeleton -->
-    <grid-view type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" style="padding: 24rpx;" wx:if="{{loading}}">
-      <view class="skeleton-card" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+    <view class="model-grid" wx:if="{{loading}}" style="padding: 24rpx;">
+      <view class="skeleton-card skeleton-cell" wx:for="{{[1,2,3,4]}}" wx:key="*this">
         <view class="skeleton-image"></view>
         <view class="skeleton-info">
           <view class="skeleton-text" style="width: 40%;"></view>
@@ -12,7 +12,7 @@
           <view class="skeleton-text" style="width: 55%;"></view>
         </view>
       </view>
-    </grid-view>
+    </view>
 
     <!-- Empty state -->
     <view class="empty-state" wx:elif="{{!loading && wishlistModels.length === 0}}">
@@ -25,8 +25,8 @@
     </view>
 
     <!-- Wishlist grid -->
-    <scroll-view class="scroll-area" type="custom" scroll-y wx:elif="{{!loading}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
-      <grid-view type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" cache-extent="{{600}}" style="padding: 24rpx;">
+    <scroll-view class="scroll-area" scroll-y wx:elif="{{!loading}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
+      <view class="model-grid" style="padding: 24rpx;">
         <model-card
           wx:for="{{wishlistModels}}"
           wx:key="id"
@@ -36,7 +36,7 @@
           bind:select="handleModelSelect"
           bind:togglefavorite="handleToggleWishlist"
         />
-      </grid-view>
+      </view>
     </scroll-view>
   </view>
 

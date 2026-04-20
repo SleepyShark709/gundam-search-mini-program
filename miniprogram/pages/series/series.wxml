@@ -62,7 +62,6 @@
     <!-- Scrollable area -->
     <scroll-view
       class="scroll-area"
-      type="custom"
       scroll-y
       show-scrollbar="{{false}}"
       scroll-top="{{scrollTop}}"
@@ -70,8 +69,8 @@
     >
 
       <!-- Loading skeleton -->
-      <grid-view type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" style="padding: 0 24rpx;" wx:if="{{loading}}">
-        <view class="skeleton-card" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
+      <view class="model-grid" wx:if="{{loading}}" style="padding: 0 24rpx;">
+        <view class="skeleton-card skeleton-cell" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
           <view class="skeleton-image"></view>
           <view class="skeleton-info">
             <view class="skeleton-text" style="width: 40%;"></view>
@@ -79,7 +78,7 @@
             <view class="skeleton-text" style="width: 55%;"></view>
           </view>
         </view>
-      </grid-view>
+      </view>
 
       <!-- Empty state -->
       <view class="empty-state" wx:elif="{{processedModels.length === 0}}">
@@ -87,7 +86,7 @@
       </view>
 
       <!-- Model grid -->
-      <grid-view wx:else type="aligned" cross-axis-count="2" cross-axis-gap="12rpx" main-axis-gap="12rpx" cache-extent="{{600}}" style="padding: 0 24rpx; padding-bottom: calc(48rpx + {{safeAreaBottom}}px);">
+      <view class="model-grid" wx:else style="padding: 0 24rpx; padding-bottom: calc(48rpx + {{safeAreaBottom}}px);">
         <model-card
           wx:for="{{processedModels}}"
           wx:key="id"
@@ -97,7 +96,7 @@
           bind:select="handleModelSelect"
           bind:togglefavorite="handleToggleFavorite"
         />
-      </grid-view>
+      </view>
     </scroll-view>
   </view>
 

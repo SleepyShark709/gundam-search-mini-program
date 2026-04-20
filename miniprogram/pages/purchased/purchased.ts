@@ -62,10 +62,11 @@ Page({
   _allModels: [] as GundamModel[],
   _touchStartX: 0,
   _touchStartY: 0,
-  _touchEndX: 0,
   _touchStartIndex: -1,
   _isHorizontalSwipe: false,
   _directionLocked: false,
+  _baseOffsetPx: 0,
+  _openOffsetPx: 0,
 
   data: {
     // 列表数据
@@ -103,6 +104,9 @@ Page({
 
     // 左滑
     swipeOpenIndex: -1,
+    activeSwipeIndex: -1,
+    activeSwipeStyle: '',
+    canScrollY: true,
 
     // 详情弹窗
     selectedModel: null as GundamModel | null,
@@ -122,6 +126,8 @@ Page({
   onLoad() {
     const app = getApp<IAppOption>();
     this._allModels = getAllModels();
+    // 176rpx（删除按钮宽 148rpx + 右侧间距）对应到当前设备的 px
+    this._openOffsetPx = 176 * app.globalData.windowWidth / 750;
     this.setData({
       statusBarHeight: app.globalData.statusBarHeight,
       exchangeRate: app.globalData.exchangeRate || 0.05,
@@ -556,48 +562,78 @@ Page({
 
   handleTouchStart(e: WechatMiniprogram.TouchEvent) {
     const touch = e.touches[0];
+    const index = e.currentTarget.dataset.index as number;
     this._touchStartX = touch.clientX;
     this._touchStartY = touch.clientY;
-    this._touchEndX = touch.clientX;
+    this._touchStartIndex = index;
     this._isHorizontalSwipe = false;
     this._directionLocked = false;
-    this._touchStartIndex = e.currentTarget.dataset.index as number;
+    // 起始偏移：若当前卡片已展开则从 -openOffsetPx 开始，否则从 0
+    this._baseOffsetPx = this.data.swipeOpenIndex === index ? -this._openOffsetPx : 0;
 
     // 如果当前有其他卡片展开，先关闭
-    if (this.data.swipeOpenIndex !== -1 && this.data.swipeOpenIndex !== this._touchStartIndex) {
+    if (this.data.swipeOpenIndex !== -1 && this.data.swipeOpenIndex !== index) {
       this.setData({ swipeOpenIndex: -1 });
     }
   },
 
   handleTouchMove(e: WechatMiniprogram.TouchEvent) {
     const touch = e.touches[0];
-    this._touchEndX = touch.clientX;
+    const dx = touch.clientX - this._touchStartX;
+    const dy = touch.clientY - this._touchStartY;
 
-    // 方向锁定：位移超过 10px 时判定主方向
+    // 方向锁定：5px 阈值，横向位移占优即锁为横向
     if (!this._directionLocked) {
-      const dx = Math.abs(touch.clientX - this._touchStartX);
-      const dy = Math.abs(touch.clientY - this._touchStartY);
-      if (dx > 10 || dy > 10) {
+      const adx = Math.abs(dx);
+      const ady = Math.abs(dy);
+      if (adx > 5 || ady > 5) {
         this._directionLocked = true;
-        this._isHorizontalSwipe = dx > dy;
+        this._isHorizontalSwipe = adx > ady;
+        if (this._isHorizontalSwipe) {
+          // 禁用父级 scroll-view 的垂直滚动，防止误触
+          this.setData({ canScrollY: false });
+        }
       }
     }
+
+    if (!this._directionLocked || !this._isHorizontalSwipe) return;
+
+    // 跟手：实时计算偏移，允许 20px 橡皮筋过冲
+    let offset = this._baseOffsetPx + dx;
+    if (offset > 0) offset = 0;
+    const maxLeft = -this._openOffsetPx - 20;
+    if (offset < maxLeft) offset = maxLeft;
+
+    this.setData({
+      activeSwipeIndex: this._touchStartIndex,
+      activeSwipeStyle: `transform: translateX(${offset}px); transition: none;`,
+    });
   },
 
-  handleTouchEnd(_e: WechatMiniprogram.TouchEvent) {
-    // 垂直滚动或未移动，不处理左滑
-    if (!this._isHorizontalSwipe) return;
-
-    const dx = this._touchEndX - this._touchStartX;
+  handleTouchEnd(e: WechatMiniprogram.TouchEvent) {
     const index = this._touchStartIndex;
 
-    if (dx < -60) {
-      // 左滑超过阈值，展开删除按钮
-      this.setData({ swipeOpenIndex: index });
+    if (this._directionLocked && this._isHorizontalSwipe) {
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - this._touchStartX;
+      const offset = this._baseOffsetPx + dx;
+      // 吸附：最终偏移超过一半宽度则保持展开，否则回弹
+      const shouldOpen = offset < -this._openOffsetPx / 2;
+      this.setData({
+        swipeOpenIndex: shouldOpen ? index : -1,
+        activeSwipeIndex: -1,
+        activeSwipeStyle: '',
+        canScrollY: true,
+      });
     } else {
-      // 回弹或右滑关闭
-      this.setData({ swipeOpenIndex: -1 });
+      // 垂直滚动或无移动：只需恢复 canScrollY（防御性）
+      if (!this.data.canScrollY) {
+        this.setData({ canScrollY: true });
+      }
     }
+
+    this._directionLocked = false;
+    this._isHorizontalSwipe = false;
   },
 
   // ---------- 分享 ----------

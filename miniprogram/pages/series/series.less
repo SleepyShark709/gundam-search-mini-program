@@ -115,3 +115,22 @@
   color: @color-accent-primary;
 }
 
+// 2-column grid (替代 Skyline <grid-view>)
+// model-card :host 自带 6rpx padding，相邻 cell 两个 6rpx 相接形成 12rpx 间距
+// 负边距抵消最外圈 halo，与 24rpx 页边距对齐
+.model-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -6rpx;
+  margin-right: -6rpx;
+
+  > model-card,
+  > .skeleton-cell {
+    width: 50%;
+    box-sizing: border-box;
+  }
+
+  > .skeleton-cell {
+    padding: 6rpx;
+  }
+}

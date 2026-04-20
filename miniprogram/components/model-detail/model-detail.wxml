@@ -1,4 +1,4 @@
-<view wx:if="{{open && model}}" class="overlay">
+<view wx:if="{{rendered && model}}" class="overlay {{visible ? 'is-open' : ''}}">
   <!-- Backdrop -->
   <view class="backdrop" bind:tap="handleBackdrop"></view>
 
@@ -13,7 +13,7 @@
     </view>
 
     <!-- Content -->
-    <scroll-view class="sheet-content" scroll-y enhanced show-scrollbar="{{false}}">
+    <scroll-view class="sheet-content" scroll-y show-scrollbar="{{false}}">
       <view class="detail-container" style="padding-bottom: {{safeAreaBottom}}px;">
         <!-- Image Swiper -->
         <view class="image-wrapper">

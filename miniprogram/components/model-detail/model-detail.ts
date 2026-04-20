@@ -26,11 +26,20 @@ Component({
     images: [] as string[],
     currentImageIndex: 0,
     imgLoadedMap: {} as Record<string, boolean>,
+    // 入场/出场动画
+    rendered: false,
+    visible: false,
   },
+  _openTimer: 0 as any,
+  _closeTimer: 0 as any,
   lifetimes: {
     attached() {
       const app = getApp<IAppOption>();
       this.setData({ safeAreaBottom: app.globalData.safeAreaBottom });
+    },
+    detached() {
+      if (this._openTimer) clearTimeout(this._openTimer);
+      if (this._closeTimer) clearTimeout(this._closeTimer);
     },
   },
   pageLifetimes: {
@@ -46,6 +55,17 @@ Component({
     },
   },
   observers: {
+    'open': function (open: boolean) {
+      if (this._openTimer) { clearTimeout(this._openTimer); this._openTimer = 0; }
+      if (this._closeTimer) { clearTimeout(this._closeTimer); this._closeTimer = 0; }
+      if (open) {
+        this.setData({ rendered: true });
+        this._openTimer = setTimeout(() => this.setData({ visible: true }), 20);
+      } else {
+        this.setData({ visible: false });
+        this._closeTimer = setTimeout(() => this.setData({ rendered: false }), 280);
+      }
+    },
     'model, exchangeRate': function (model: any, rate: number) {
       if (!model || !model.id) return;
       const cny = model.price * rate;

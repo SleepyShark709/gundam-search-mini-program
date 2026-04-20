@@ -5,29 +5,21 @@
   <!-- Main content -->
   <view class="content">
     <view class="main" wx:if="{{!loading && series.length > 0}}">
-      <!-- Carousel: scroll-view replaces swiper (swiper crashes Skyline on tab switch) -->
-      <scroll-view
+      <swiper
         class="carousel"
-        scroll-x
-        enhanced
-        show-scrollbar="{{false}}"
-        scroll-left="{{scrollLeft}}"
-        scroll-with-animation
-        bindtouchstart="handleTouchStart"
-        bindtouchend="handleTouchEnd"
+        current="{{activeIndex}}"
+        previous-margin="85rpx"
+        next-margin="85rpx"
+        circular="{{false}}"
+        indicator-dots="{{false}}"
+        bindchange="handleSwiperChange"
       >
-        <view class="carousel-track">
-          <view
-            wx:for="{{series}}"
-            wx:key="code"
-            class="carousel-item"
-          >
-            <view class="card-wrapper">
-              <series-card series="{{item}}" />
-            </view>
+        <swiper-item wx:for="{{series}}" wx:key="code">
+          <view class="card-wrapper">
+            <series-card series="{{item}}" />
           </view>
-        </view>
-      </scroll-view>
+        </swiper-item>
+      </swiper>
 
       <!-- Page dots -->
       <view class="dots">

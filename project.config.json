@@ -20,7 +20,7 @@
     "packNpmRelationList": [],
     "ignoreUploadUnusedFiles": true,
     "compileHotReLoad": false,
-    "skylineRenderEnable": true,
+    "skylineRenderEnable": false,
     "es6": true,
     "compileWorklet": false,
     "uglifyFileName": false,
@@ -45,11 +45,20 @@
   "libVersion": "2.32.3",
   "packOptions": {
     "ignore": [
-      { "type": "file", "value": "data/series-meta.json" },
-      { "type": "file", "value": "data/id-migration.json" }
+      {
+        "value": "data/series-meta.json",
+        "type": "file"
+      },
+      {
+        "value": "data/id-migration.json",
+        "type": "file"
+      }
     ],
     "include": [
-      { "type": "folder", "value": "data" }
+      {
+        "value": "data",
+        "type": "folder"
+      }
     ]
   },
   "appid": "wx422623fec834054c"

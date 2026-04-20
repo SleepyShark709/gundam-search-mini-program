@@ -25,7 +25,7 @@
     </view>
 
     <!-- Main content -->
-    <scroll-view class="scroll-area" scroll-y wx:elif="{{!loading}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
+    <scroll-view class="scroll-area" scroll-y="{{canScrollY}}" wx:elif="{{!loading}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
 
       <!-- Stats section -->
       <view class="stats-section" wx:if="{{hasStats}}">
@@ -138,9 +138,11 @@
             bind:touchstart="handleTouchStart"
             bind:touchmove="handleTouchMove"
             bind:touchend="handleTouchEnd"
+            bind:touchcancel="handleTouchEnd"
             data-index="{{index}}"
           >
-            <view class="purchase-card {{swipeOpenIndex === index ? 'swipe-open' : ''}}">
+            <view class="purchase-card {{swipeOpenIndex === index ? 'swipe-open' : ''}}"
+              style="{{activeSwipeIndex === index ? activeSwipeStyle : ''}}">
               <view class="card-thumb" catch:tap="handleThumbTap" data-index="{{index}}">
                 <image
                   src="{{item.model.imageUrl}}"

@@ -21,19 +21,23 @@ async function main() {
 
   const [rows] = await conn.query(`
     SELECT
-      openid,
+      u.openid,
+      usr.nickname,
       (SELECT COUNT(*) FROM wishlists WHERE openid = u.openid) AS wishlist_count,
       (SELECT COUNT(*) FROM purchases WHERE openid = u.openid) AS purchase_count
     FROM (
+      SELECT openid FROM users
+      UNION
       SELECT openid FROM wishlists
       UNION
       SELECT openid FROM purchases
     ) AS u
-    GROUP BY openid
+    LEFT JOIN users usr ON usr.openid = u.openid
+    GROUP BY u.openid, usr.nickname
     ORDER BY (wishlist_count + purchase_count) DESC
   `);
 
-  console.log('\n所有有数据的 openid：');
+  console.log('\n所有有数据的 openid（含昵称）：');
   console.table(rows);
 
   await conn.end();

@@ -1,0 +1,247 @@
+@import '../../styles/variables.less';
+
+.page {
+  position: relative;
+  height: 100%;
+  background: @color-bg-primary;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.title-bar {
+  padding: 16rpx 40rpx 16rpx;
+}
+
+.title {
+  color: @color-text-primary;
+  font-size: 56rpx;
+  font-weight: 700;
+  letter-spacing: -1rpx;
+}
+
+.scroll-area {
+  flex: 1;
+  min-height: 0;
+}
+
+.post-list {
+  padding: 16rpx 24rpx;
+}
+
+// ---- Card ----
+.post-card {
+  background: @color-bg-card;
+  border-radius: @radius-lg;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow:
+    0 4rpx 16rpx rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1rpx rgba(255, 255, 255, 0.04);
+}
+
+.post-hover {
+  background: @color-bg-tertiary;
+  transform: scale(0.99);
+}
+
+.post-head {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: @color-bg-tertiary;
+}
+
+.avatar-fallback {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(0, 212, 255, 0.18), transparent 60%),
+    @color-bg-tertiary;
+}
+
+.head-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.nickname {
+  font-size: 28rpx;
+  color: @color-text-primary;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time {
+  font-size: 22rpx;
+  color: @color-text-muted;
+}
+
+.delete-btn {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: @color-text-muted;
+  font-size: 36rpx;
+  font-weight: 300;
+  flex-shrink: 0;
+}
+
+.delete-hover {
+  background: rgba(255, 51, 102, 0.12);
+  color: @color-accent-danger;
+}
+
+.post-title {
+  display: block;
+  font-size: 32rpx;
+  color: @color-text-primary;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 12rpx;
+}
+
+.post-preview {
+  display: block;
+  font-size: 26rpx;
+  color: @color-text-secondary;
+  line-height: 1.55;
+  margin-bottom: 16rpx;
+  word-break: break-all;
+}
+
+.post-foot {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.reply-count {
+  font-size: 22rpx;
+  color: @color-text-muted;
+}
+
+.footer-tip {
+  text-align: center;
+  font-size: 22rpx;
+  color: @color-text-muted;
+  padding: 32rpx 0;
+}
+
+// ---- Empty state ----
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: @spacing-md;
+  flex: 1;
+  text-align: center;
+  padding: @spacing-2xl;
+}
+
+.empty-icon {
+  font-size: 128rpx;
+  color: @color-text-muted;
+  opacity: 0.4;
+}
+
+.empty-title {
+  font-size: @font-size-lg;
+  font-weight: 600;
+  color: @color-text-secondary;
+}
+
+.empty-subtitle {
+  font-size: @font-size-sm;
+  color: @color-text-muted;
+}
+
+// ---- Skeleton ----
+.skeleton {
+  pointer-events: none;
+}
+
+.skeleton-avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: linear-gradient(90deg, @color-bg-tertiary 25%, @color-bg-secondary 50%, @color-bg-tertiary 75%);
+  background-size: 400% 100%;
+  animation: forum-shimmer 1.6s infinite;
+}
+
+.skeleton-line {
+  height: 24rpx;
+  border-radius: @radius-sm;
+  background: linear-gradient(90deg, @color-bg-tertiary 25%, @color-bg-secondary 50%, @color-bg-tertiary 75%);
+  background-size: 400% 100%;
+  animation: forum-shimmer 1.6s infinite;
+  margin-top: 16rpx;
+}
+
+.skeleton-line-name {
+  width: 30%;
+  height: 24rpx;
+  margin-top: 0;
+  margin-left: 16rpx;
+  flex: 1;
+  max-width: 30%;
+}
+
+.skeleton-line-title {
+  width: 70%;
+  height: 32rpx;
+}
+
+.skeleton-line-body {
+  width: 100%;
+  height: 24rpx;
+}
+
+@keyframes forum-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// ---- FAB ----
+.fab {
+  position: fixed;
+  right: 40rpx;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  color: #04111c;
+  font-size: 56rpx;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 12rpx 32rpx rgba(0, 212, 255, 0.45),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+  z-index: 50;
+  line-height: 1;
+}
+
+.fab-hover {
+  transform: scale(0.94);
+  box-shadow:
+    0 6rpx 16rpx rgba(0, 212, 255, 0.35),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+}

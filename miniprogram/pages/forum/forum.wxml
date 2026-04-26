@@ -1,0 +1,87 @@
+<view class="page">
+  <view style="height: {{statusBarHeight}}px;"></view>
+  <view class="title-bar">
+    <text class="title">论坛</text>
+  </view>
+
+  <!-- Loading skeleton -->
+  <view class="post-list" wx:if="{{loading}}">
+    <view class="post-card skeleton" wx:for="{{[1,2,3]}}" wx:key="*this">
+      <view class="post-head">
+        <view class="skeleton-avatar"></view>
+        <view class="skeleton-line skeleton-line-name"></view>
+      </view>
+      <view class="skeleton-line skeleton-line-title"></view>
+      <view class="skeleton-line skeleton-line-body"></view>
+      <view class="skeleton-line skeleton-line-body"></view>
+    </view>
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:elif="{{posts.length === 0}}">
+    <text class="empty-icon">✎</text>
+    <text class="empty-title">还没有帖子</text>
+    <text class="empty-subtitle">来发布第一篇讨论吧</text>
+  </view>
+
+  <!-- Post list -->
+  <scroll-view
+    wx:else
+    class="scroll-area"
+    scroll-y
+    enable-back-to-top
+    bind:scrolltolower="handleScrollToLower"
+  >
+    <view class="post-list" style="padding-bottom: calc(160rpx + {{safeAreaBottom}}px);">
+      <view
+        class="post-card"
+        wx:for="{{posts}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bind:tap="handlePostTap"
+        hover-class="post-hover"
+      >
+        <view class="post-head">
+          <image
+            class="avatar"
+            src="{{item.authorAvatarUrl}}"
+            wx:if="{{item.authorAvatarUrl}}"
+            mode="aspectFill"
+          />
+          <view class="avatar avatar-fallback" wx:else></view>
+          <view class="head-info">
+            <text class="nickname">{{item.authorNickname || '匿名用户'}}</text>
+            <text class="time">{{item.timeText}}</text>
+          </view>
+          <view
+            wx:if="{{item.canDelete}}"
+            class="delete-btn"
+            catch:tap="handleDeletePost"
+            data-id="{{item.id}}"
+            hover-class="delete-hover"
+          >
+            <text>×</text>
+          </view>
+        </view>
+        <text class="post-title">{{item.title}}</text>
+        <text class="post-preview">{{item.preview}}</text>
+        <view class="post-foot">
+          <text class="reply-count">{{item.replyCount}} 条回复</text>
+        </view>
+      </view>
+
+      <view class="footer-tip" wx:if="{{loadingMore}}">加载中...</view>
+      <view class="footer-tip" wx:elif="{{!hasMore && posts.length > 0}}">没有更多了</view>
+    </view>
+  </scroll-view>
+
+  <!-- FAB -->
+  <view
+    class="fab"
+    style="bottom: calc(48rpx + {{safeAreaBottom}}px);"
+    bind:tap="handleCreate"
+    hover-class="fab-hover"
+  >
+    <text>+</text>
+  </view>
+</view>

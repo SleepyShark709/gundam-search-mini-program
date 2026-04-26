@@ -1,0 +1,114 @@
+<view class="page">
+  <header title="帖子" showBack bind:back="handleBack" />
+
+  <view class="content" wx:if="{{!loading && !notFound}}">
+    <scroll-view
+      class="scroll-area"
+      scroll-y
+      enable-back-to-top
+      style="padding-bottom: calc(160rpx + {{safeAreaBottom}}px);"
+    >
+      <!-- Post -->
+      <view class="post-block">
+        <view class="post-head">
+          <image
+            class="avatar"
+            src="{{post.authorAvatarUrl}}"
+            wx:if="{{post.authorAvatarUrl}}"
+            mode="aspectFill"
+          />
+          <view class="avatar avatar-fallback" wx:else></view>
+          <view class="head-info">
+            <text class="nickname">{{post.authorNickname || '匿名用户'}}</text>
+            <text class="time">{{post.timeText}}</text>
+          </view>
+          <view
+            wx:if="{{post.canDelete}}"
+            class="delete-btn"
+            bind:tap="handleDeletePost"
+            hover-class="delete-hover"
+          >
+            <text>×</text>
+          </view>
+        </view>
+        <text class="post-title">{{post.title}}</text>
+        <text class="post-content">{{post.content}}</text>
+      </view>
+
+      <!-- Reply count divider -->
+      <view class="reply-divider">
+        <text class="reply-count-text">{{replies.length}} 条回复</text>
+      </view>
+
+      <!-- Replies -->
+      <view class="reply-list">
+        <view class="reply-item" wx:for="{{replies}}" wx:key="id">
+          <image
+            class="reply-avatar"
+            src="{{item.authorAvatarUrl}}"
+            wx:if="{{item.authorAvatarUrl}}"
+            mode="aspectFill"
+          />
+          <view class="reply-avatar avatar-fallback" wx:else></view>
+          <view class="reply-body">
+            <view class="reply-meta">
+              <text class="reply-nickname">{{item.authorNickname || '匿名用户'}}</text>
+              <text class="reply-time">{{item.timeText}}</text>
+            </view>
+            <text class="reply-content">{{item.content}}</text>
+          </view>
+          <view
+            wx:if="{{item.canDelete}}"
+            class="delete-btn small"
+            data-id="{{item.id}}"
+            catch:tap="handleDeleteReply"
+            hover-class="delete-hover"
+          >
+            <text>×</text>
+          </view>
+        </view>
+
+        <view class="empty-replies" wx:if="{{replies.length === 0}}">
+          <text>还没有回复，快来抢沙发</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- Loading -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- Not found -->
+  <view class="loading-state" wx:if="{{!loading && notFound}}">
+    <text>帖子不存在或已被删除</text>
+  </view>
+
+  <!-- Reply input bar -->
+  <view
+    wx:if="{{!loading && !notFound}}"
+    class="reply-bar"
+    style="padding-bottom: calc(20rpx + {{safeAreaBottom}}px);"
+  >
+    <textarea
+      class="reply-input"
+      placeholder="写下你的回复"
+      placeholder-class="reply-placeholder"
+      value="{{replyContent}}"
+      bindinput="onReplyInput"
+      maxlength="{{contentMax}}"
+      auto-height
+      cursor-spacing="20"
+      adjust-position="{{true}}"
+      show-confirm-bar="{{false}}"
+    />
+    <view
+      class="send-btn {{replyContent.length > 0 ? 'send-btn-active' : ''}}"
+      bind:tap="submitReply"
+      hover-class="send-btn-hover"
+    >
+      <text>{{submitting ? '发送中' : '发送'}}</text>
+    </view>
+  </view>
+</view>

@@ -6,6 +6,7 @@ import modelsRouter from './routes/models';
 import wishlistRouter from './routes/wishlist';
 import purchasesRouter from './routes/purchases';
 import userRouter from './routes/user';
+import forumRouter from './routes/forum';
 
 const app = express();
 const PORT = 80;
@@ -30,6 +31,7 @@ app.use('/api', authMiddleware);
 app.use('/api/wishlist', wishlistRouter);
 app.use('/api/purchases', purchasesRouter);
 app.use('/api/user', userRouter);
+app.use('/api/forum', forumRouter);
 
 // ---- 全局错误处理 ----
 app.use(errorHandler);

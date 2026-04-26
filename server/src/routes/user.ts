@@ -1,12 +1,13 @@
 import { Router, Request, Response } from 'express';
 import pool from '../db/pool';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { isAdmin } from '../utils/admin';
 
 const router = Router();
 
 /**
  * GET /api/user/profile
- * 获取当前用户的个人信息（昵称、头像）
+ * 获取当前用户的个人信息（openid、昵称、头像、是否管理员）
  */
 router.get('/profile', async (req: Request, res: Response) => {
   try {
@@ -15,15 +16,12 @@ router.get('/profile', async (req: Request, res: Response) => {
       [req.openid]
     );
 
-    if (rows.length === 0) {
-      res.json({ nickname: null, avatarUrl: null });
-      return;
-    }
-
     const row = rows[0];
     res.json({
-      nickname: row.nickname || null,
-      avatarUrl: row.avatar_url || null,
+      openid: req.openid,
+      nickname: row?.nickname || null,
+      avatarUrl: row?.avatar_url || null,
+      isAdmin: isAdmin(req.openid),
     });
   } catch (err) {
     console.error('[GET /api/user/profile]', err);
@@ -61,8 +59,10 @@ router.post('/profile', async (req: Request, res: Response) => {
 
     const row = rows[0];
     res.json({
+      openid: req.openid,
       nickname: row.nickname || null,
       avatarUrl: row.avatar_url || null,
+      isAdmin: isAdmin(req.openid),
     });
   } catch (err) {
     console.error('[POST /api/user/profile]', err);

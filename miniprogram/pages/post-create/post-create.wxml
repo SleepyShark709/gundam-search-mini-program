@@ -1,0 +1,50 @@
+<view class="page">
+  <header title="发布帖子" showBack bind:back="handleBack" />
+
+  <scroll-view class="scroll-area" scroll-y>
+    <view class="form" style="padding-bottom: calc(160rpx + {{safeAreaBottom}}px);">
+      <view class="field">
+        <input
+          class="title-input"
+          placeholder="标题"
+          placeholder-class="placeholder"
+          value="{{title}}"
+          bindinput="onTitleInput"
+          maxlength="{{titleMax}}"
+          confirm-type="next"
+        />
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="field">
+        <textarea
+          class="content-input"
+          placeholder="说点什么……"
+          placeholder-class="placeholder"
+          value="{{content}}"
+          bindinput="onContentInput"
+          maxlength="{{contentMax}}"
+          auto-height
+          show-confirm-bar="{{false}}"
+          cursor-spacing="20"
+          adjust-position="{{true}}"
+        />
+      </view>
+
+      <view class="char-count">
+        <text>{{content.length}} / {{contentMax}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="footer" style="padding-bottom: calc(20rpx + {{safeAreaBottom}}px);">
+    <view
+      class="submit-btn {{title.length > 0 && content.length > 0 ? 'submit-btn-active' : ''}}"
+      bind:tap="submitPost"
+      hover-class="submit-btn-hover"
+    >
+      <text>{{submitting ? '发布中' : '发布'}}</text>
+    </view>
+  </view>
+</view>

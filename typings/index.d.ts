@@ -7,6 +7,9 @@ interface IAppOption {
     statusBarHeight: number;
     safeAreaBottom: number;
     windowWidth: number;
+    userInfo: { nickname: string; avatarUrl: string } | null;
+    userInfoLoaded: boolean;
   };
   loadExchangeRate: () => void;
+  loadUserInfo: () => Promise<void>;
 }

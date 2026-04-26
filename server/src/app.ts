@@ -5,6 +5,7 @@ import { errorHandler } from './middleware/error-handler';
 import modelsRouter from './routes/models';
 import wishlistRouter from './routes/wishlist';
 import purchasesRouter from './routes/purchases';
+import userRouter from './routes/user';
 
 const app = express();
 const PORT = 80;
@@ -28,6 +29,7 @@ app.use('/api', modelsRouter);
 app.use('/api', authMiddleware);
 app.use('/api/wishlist', wishlistRouter);
 app.use('/api/purchases', purchasesRouter);
+app.use('/api/user', userRouter);
 
 // ---- 全局错误处理 ----
 app.use(errorHandler);

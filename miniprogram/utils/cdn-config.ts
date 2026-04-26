@@ -1,14 +1,18 @@
-import { USE_LOCAL, LOCAL_BASE } from './api';
-
 // 原始 CDN base（本地 JSON 中硬编码的）
 const ORIGINAL_CDN_BASE = 'https://cdn.jsdelivr.net/gh/SleepyShark709/gundam-menu@68f259b/public/images/bandai/';
 
 // 云托管容器域名
 const CONTAINER_DOMAIN = 'https://express-v0yz-233588-9-1411463139.sh.run.tcloudbase.com';
 
-/** 根据环境获取图片基础域名 */
+/** 根据环境获取图片基础域名
+ *
+ * 注意：图片始终从云端容器加载（即使在本地调试模式下），
+ * 因为本地 server 的 public/images 目录是空的，没有产品图。
+ * 只有 API 请求会根据 USE_LOCAL 切换到本地/云端。
+ */
 function getImageBase(): string {
-  return USE_LOCAL ? LOCAL_BASE : CONTAINER_DOMAIN;
+  // 始终走云端图片域名，无论 API 是否本地
+  return CONTAINER_DOMAIN;
 }
 
 /**

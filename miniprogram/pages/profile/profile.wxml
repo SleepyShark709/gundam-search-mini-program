@@ -2,19 +2,51 @@
   <view style="height: {{statusBarHeight}}px;"></view>
   <view class="title">我的</view>
 
-  <!-- User avatar -->
-  <view class="user-section">
+  <!-- User section: logged in -->
+  <view class="user-section" wx:if="{{isLoggedIn}}">
+    <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+      <image class="avatar" src="{{avatarUrl}}" mode="aspectFill" />
+    </button>
+    <text class="nickname">{{nickname}}</text>
+  </view>
+
+  <!-- User section: setup -->
+  <view class="user-section setup" wx:else>
     <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
       <image
         class="avatar"
-        src="{{avatarUrl}}"
-        wx:if="{{avatarUrl}}"
+        src="{{tempAvatarUrl}}"
+        wx:if="{{tempAvatarUrl}}"
         mode="aspectFill"
       />
       <view class="avatar-placeholder" wx:else>
-        <text class="avatar-placeholder-text">+</text>
+        <view class="avatar-placeholder-icon"></view>
       </view>
     </button>
+
+    <text class="setup-hint">{{tempAvatarUrl ? '点击更换头像' : '点击设置头像'}}</text>
+
+    <view class="nickname-field">
+      <input
+        type="nickname"
+        class="nickname-input"
+        placeholder="设置昵称"
+        placeholder-class="nickname-placeholder"
+        value="{{tempNickname}}"
+        bindchange="onNicknameChange"
+      />
+    </view>
+
+    <view class="save-btn-wrapper" wx:if="{{tempAvatarUrl && tempNickname}}">
+      <button
+        class="save-btn"
+        bind:tap="saveProfile"
+        disabled="{{saving}}"
+        hover-class="save-btn-hover"
+      >
+        完成
+      </button>
+    </view>
   </view>
 
   <!-- Menu -->

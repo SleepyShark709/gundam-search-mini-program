@@ -7,27 +7,31 @@
 
 .title {
   color: @color-text-primary;
-  font-size: @font-size-xl;
+  font-size: 56rpx;
   font-weight: 700;
-  padding: 32rpx 40rpx;
+  letter-spacing: -1rpx;
+  padding: 24rpx 40rpx 8rpx;
 }
 
-// User avatar
+// ---- User section ----
 .user-section {
+  width: 100%;
+  padding: 56rpx 48rpx 64rpx;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: @spacing-lg 0 @spacing-xl;
 }
 
+// ---- Avatar ----
 .avatar-btn {
   padding: 0;
   margin: 0;
   background: none;
   border: none;
   line-height: 1;
-  width: 144rpx;
-  height: 144rpx;
+  width: 192rpx;
+  height: 192rpx;
 
   &::after {
     display: none;
@@ -35,100 +39,230 @@
 }
 
 .avatar {
-  width: 144rpx;
-  height: 144rpx;
-  border-radius: @radius-full;
-  border: 4rpx solid @color-border-active;
-  box-shadow: @glow-primary;
+  width: 192rpx;
+  height: 192rpx;
+  border-radius: 50%;
+  box-shadow:
+    0 12rpx 40rpx rgba(0, 0, 0, 0.5),
+    0 0 0 1rpx rgba(255, 255, 255, 0.06),
+    inset 0 0 0 2rpx rgba(0, 212, 255, 0.25);
 }
 
 .avatar-placeholder {
-  width: 144rpx;
-  height: 144rpx;
-  border-radius: @radius-full;
-  background: @color-bg-secondary;
-  border: 4rpx dashed @color-text-muted;
+  width: 192rpx;
+  height: 192rpx;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(0, 212, 255, 0.08), transparent 60%),
+    linear-gradient(160deg, rgba(26, 35, 64, 0.9), rgba(20, 27, 45, 0.6));
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow:
+    0 12rpx 40rpx rgba(0, 0, 0, 0.5),
+    0 0 0 1rpx rgba(255, 255, 255, 0.06),
+    inset 0 0 0 2rpx rgba(0, 212, 255, 0.18);
 }
 
-.avatar-placeholder-text {
-  font-size: 56rpx;
+.avatar-placeholder-icon {
+  width: 56rpx;
+  height: 56rpx;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28rpx;
+    height: 28rpx;
+    border-radius: 50%;
+    background: rgba(232, 234, 246, 0.35);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56rpx;
+    height: 28rpx;
+    border-radius: 28rpx 28rpx 0 0;
+    background: rgba(232, 234, 246, 0.35);
+  }
+}
+
+// ---- Nickname (logged in) ----
+.nickname {
+  margin-top: 32rpx;
+  font-size: 38rpx;
+  font-weight: 600;
+  color: @color-text-primary;
+  letter-spacing: 0.5rpx;
+}
+
+// ---- Setup hint ----
+.setup-hint {
+  margin-top: 24rpx;
+  font-size: 24rpx;
   color: @color-text-muted;
-  line-height: 1;
+  letter-spacing: 1rpx;
 }
 
-// Menu
+// ---- Nickname input ----
+.nickname-field {
+  width: 520rpx;
+  margin-top: 56rpx;
+}
+
+.nickname-input {
+  width: 100%;
+  height: 96rpx;
+  padding: 0 32rpx;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 28rpx;
+  color: @color-text-primary;
+  font-size: 30rpx;
+  text-align: center;
+  letter-spacing: 0.5rpx;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.08);
+}
+
+.nickname-placeholder {
+  color: @color-text-muted;
+  font-weight: 400;
+  letter-spacing: 1rpx;
+}
+
+// ---- Save button (contextual entrance) ----
+.save-btn-wrapper {
+  width: 520rpx;
+  margin-top: 32rpx;
+  animation: fadeInUp 0.32s cubic-bezier(0.32, 0.72, 0.24, 1) both;
+}
+
+.save-btn {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  color: #04111c;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  border-radius: 28rpx;
+  border: none;
+  line-height: 96rpx;
+  padding: 0;
+  box-shadow:
+    0 8rpx 28rpx rgba(0, 212, 255, 0.3),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+
+  &::after {
+    display: none;
+  }
+
+  &[disabled] {
+    opacity: 0.45;
+    box-shadow: none;
+  }
+}
+
+.save-btn-hover {
+  transform: scale(0.98);
+  box-shadow:
+    0 4rpx 16rpx rgba(0, 212, 255, 0.25),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ---- Menu ----
 .menu-section {
-  margin: @spacing-md @spacing-lg;
-  background: @color-bg-secondary;
-  border-radius: @radius-lg;
-  border: 2rpx solid @color-border;
+  margin: 24rpx 32rpx 0;
+  background: rgba(20, 27, 45, 0.7);
+  border-radius: 32rpx;
   overflow: hidden;
+  box-shadow:
+    0 4rpx 24rpx rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1rpx rgba(255, 255, 255, 0.04);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: @spacing-lg @spacing-lg;
+  padding: 32rpx 32rpx;
 }
 
 .menu-item-hover {
-  background: @color-bg-tertiary;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .menu-left {
   display: flex;
   align-items: center;
-  gap: @spacing-md;
+  gap: 24rpx;
 }
 
 .menu-icon {
   width: 64rpx;
   height: 64rpx;
-  border-radius: @radius-md;
+  border-radius: 18rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: @font-size-lg;
+  font-size: 32rpx;
 }
 
 .wishlist-icon {
-  background: rgba(255, 51, 102, 0.15);
+  background: rgba(255, 51, 102, 0.12);
   color: @color-accent-danger;
 }
 
 .purchased-icon {
-  background: rgba(0, 255, 136, 0.15);
+  background: rgba(0, 255, 136, 0.12);
   color: @color-accent-success;
 }
 
 .menu-label {
-  font-size: @font-size-md;
+  font-size: 30rpx;
   color: @color-text-primary;
   font-weight: 500;
+  letter-spacing: 0.5rpx;
 }
 
 .menu-right {
   display: flex;
   align-items: center;
-  gap: @spacing-sm;
+  gap: 12rpx;
 }
 
 .menu-count {
-  font-size: @font-size-sm;
+  font-size: 28rpx;
   color: @color-text-secondary;
+  font-variant-numeric: tabular-nums;
 }
 
 .menu-arrow {
-  font-size: @font-size-lg;
+  font-size: 36rpx;
   color: @color-text-muted;
+  font-weight: 300;
 }
 
 .menu-divider {
-  height: 2rpx;
-  background: @color-border;
-  margin-left: 104rpx;
+  height: 1rpx;
+  background: rgba(255, 255, 255, 0.05);
+  margin-left: 120rpx;
 }

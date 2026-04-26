@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import mysql from 'mysql2/promise';
 
 const addressRaw = process.env.MYSQL_ADDRESS || 'localhost:3306';

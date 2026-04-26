@@ -22,9 +22,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 启动本地 server：
 
-1. 把 `LOCAL_BASE` 改为电脑当前局域网 IP（真机调试时不能用 localhost；获取：`ipconfig getifaddr en0`）
-2. `cd server && sudo MYSQL_ADDRESS=<外网地址> MYSQL_USERNAME=root MYSQL_PASSWORD=<密码> npm run dev`（监听 80 端口需 root）
-3. 确保手机和电脑在同一 WiFi
+1. 首次：`cd server && cp .env.example .env`，把 `MYSQL_ADDRESS`/`MYSQL_PASSWORD` 填进去（`.env` 已 gitignore，不会被提交）
+2. 把 `LOCAL_BASE` 改为电脑当前局域网 IP（真机调试时不能用 localhost；获取：`ipconfig getifaddr en0`）
+3. `cd server && sudo npm run dev`（pool.ts 顶部 `import 'dotenv/config'` 自动加载 .env；sudo 是因为监听 80 端口需 root）
+4. 确保手机和电脑在同一 WiFi
 
 #### 本地调试的关键差异（不直观）
 

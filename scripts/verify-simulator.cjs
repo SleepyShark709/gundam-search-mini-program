@@ -640,8 +640,12 @@ async function layoutAndFeatureControls() {
     page = await open('/pages/profile/profile');
     assert.equal((await bounded('个人页玩法入口', page.$$('[data-page]'))).length, 0);
     page = await open('/pages/purchased/purchased');
-    await dataReady(page, (data) => !data.loading && !data.loadError);
-    assert.equal((await bounded('已购玩法入口', page.$$('collection-share, .build-entry, .radar-section'))).length, 0);
+    await dataReady(page, (data) => !data.loading && !data.loadError && data.ratingMode === 'collection');
+    assert.equal((await bounded('已购新增玩法入口', page.$$('collection-share, .build-entry'))).length, 0);
+    assert.equal((await bounded('原收藏雷达', page.$$('.radar-section'))).length, 1);
+    await interact(page, '.score-toggle');
+    await dataReady(page, (data) => data.ratingMode === 'collection' && data.scoreDetailOpen);
+    assert.equal((await bounded('原收藏展开面板', page.$$('.score-detail'))).length, 1);
     for (const url of [`/pages/share/share?id=${shared.path.split('/').at(-1)}`, '/pages/builds/builds']) await assertUnavailable(await open(url));
     for (const route of [shared.path, '/api/builds']) {
       const response = await fetch(`${fixture.baseUrl}${route}`, { headers: { 'X-WX-OPENID': testOpenid }, signal: AbortSignal.timeout(8000) });
@@ -656,6 +660,10 @@ async function layoutAndFeatureControls() {
     const record = restored.items.find((item) => item.modelId === 'rg-001');
     assert.deepEqual([record.quantity, record.completedCount, record.buildingCount, record.goal], [3, 1, 1, `${privateMarker}_GOAL`]);
     await checkpoint('builds-only-reenabled-progress-preserved', page, '.briefing');
+    page = await open('/pages/purchased/purchased');
+    await dataReady(page, (data) => !data.loading && !data.loadError && data.ratingMode === 'collection');
+    assert.equal((await bounded('只开进度仍保留原收藏雷达', page.$$('.radar-section'))).length, 1);
+    assert.equal((await bounded('只开进度仍保留原展开入口', page.$$('.score-toggle'))).length, 1);
     page = await open('/pages/home/home');
     assert.equal((await bounded('仅开启进度入口', page.$$('[data-entry="builds"]'))).length, 1);
     assert.equal((await bounded('其余玩法仍关闭', page.$$('.search-section, .recent-list, [data-entry="squad"], [data-entry="quiz"], [data-entry="lineage"], [data-entry="compare"]'))).length, 0);

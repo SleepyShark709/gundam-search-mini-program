@@ -387,7 +387,7 @@ test('真实清单组件在sharing关闭后隐藏并丢弃迟到快照，不导�
   definition.lifetimes.detached.call(component);
 });
 
-test('购买页在前台重新确认开关后保留已知进度，恢复时同步失败继续使用旧记录', async () => {
+test('购买页在前台重新确认开关后保留进度缓存，同步失败回退收藏评级', async () => {
   const current = environment();
   await current.enable({ builds: true, pilotRating: true });
   current.handlers({ '/api/builds': () => ({ builds: [record] }) });
@@ -396,7 +396,7 @@ test('购买页在前台重新确认开关后保留已知进度，恢复时同�
   await page.onShow();
   await flush();
   assert.equal(page.data.buildProgressKnown, true);
-  const score = page.data.pilotScore;
+  assert.equal(page.data.ratingMode, 'builds');
   const previous = plain(page._buildProgress);
   current.handlers({ '/api/builds': () => { throw new Error('offline'); } });
   await current.enable({ builds: true, pilotRating: true });
@@ -405,7 +405,8 @@ test('购买页在前台重新确认开关后保留已知进度，恢复时同�
   assert.equal(page.data.buildSyncError, true);
   assert.equal(page.data.buildProgressKnown, true);
   assert.deepEqual(plain(page._buildProgress), previous);
-  assert.equal(page.data.pilotScore, score);
+  assert.equal(page.data.ratingMode, 'collection');
+  assert.equal(page.data.pilotScore, page._collectionRating.score);
   assert.equal(page.data.loadError, false);
 });
 
@@ -538,3 +539,101 @@ test('接收者切换快照ID初始化新答案，同一ID题目改变时不复�
   assert.equal(page.data.result, null);
   assert.ok(page.data.snapshot.questions.every((question) => !question.selectedId && !question.correctId && !question.correctName));
 });
+
+test('配置全关或读取失败时保留收藏评级和展开面板，且不请求拼装进度', async () => {
+  const current = environment();
+  const page = current.page('purchased');
+  page.onLoad();
+  await page.onShow();
+  assert.equal(page.data.hasStats, true);
+  assert.equal(page.data.ratingMode, 'collection');
+  assert.deepEqual(plain(page.data.dimDetails.map((detail) => detail.label)), ['台数', '花费', '省钱', '覆盖', '频率']);
+  assert.ok(page.data.radarDimensions[0] > 0);
+  assert.ok(page.data.pilotScore > 0);
+  page.handleToggleScoreDetail();
+  assert.equal(page.data.scoreDetailOpen, true);
+  const purchases = plain(page.data.purchaseItems);
+  current.respond(() => Promise.reject(new Error('404 features unavailable')));
+  await current.flags.refreshFeatures();
+  await page.onShow();
+  assert.equal(page.data.ratingMode, 'collection');
+  assert.equal(page.data.scoreDetailOpen, true);
+  assert.deepEqual(plain(page.data.purchaseItems), purchases);
+  assert.equal(page.data.totalSpentText, '99.00');
+  assert.equal(current.calls.some((call) => call.path === '/api/builds'), false);
+});
+
+test('真实配置切换只改变新增评级，拼装成功才切换，关闭立即重画收藏雷达并保持展开和购买记录', async () => {
+  const current = environment();
+  const labels = [];
+  const context = new Proxy({}, { get(_target, key) { return key === 'fillText' ? (label) => labels.push(label) : () => {}; } });
+  const canvas = { getContext: () => context };
+  current.wx.nextTick = (callback) => callback();
+  current.wx.getWindowInfo = () => ({ pixelRatio: 1 });
+  current.wx.createSelectorQuery = () => ({
+    select() { return this; }, fields() { return this; }, exec(callback) { callback([{ node: canvas, width: 200, height: 200 }]); },
+  });
+  const pending = deferred();
+  current.handlers({ '/api/builds': () => pending.promise });
+  const page = current.page('purchased');
+  page.onLoad();
+  await page.onShow();
+  page.handleToggleScoreDetail();
+  const purchases = page.data.purchaseItems;
+  const collectionDimensions = plain(page.data.radarDimensions);
+  await current.enable({ builds: true, pilotRating: true });
+  assert.equal(page.data.buildLoading, true);
+  assert.equal(page.data.buildProgressKnown, false);
+  assert.equal(page.data.ratingMode, 'collection');
+  assert.equal(page.data.scoreDetailOpen, true);
+  pending.resolve({ builds: [record] });
+  await flush();
+  assert.equal(page.data.buildProgressKnown, true);
+  assert.equal(page.data.buildLoading, false);
+  assert.equal(page.data.ratingMode, 'builds');
+  assert.deepEqual(labels.slice(-5), ['完工', '整备', '档案', '探索', '目标']);
+  assert.equal(page.data.scoreDetailOpen, true);
+  assert.equal(page.data.purchaseItems, purchases);
+  const confirmation = deferred();
+  current.respond(() => confirmation.promise);
+  const refreshing = current.flags.refreshFeatures();
+  assert.equal(page.data.ratingMode, 'collection');
+  assert.deepEqual(plain(page.data.radarDimensions), collectionDimensions);
+  assert.deepEqual(labels.slice(-5), ['台数', '花费', '省钱', '覆盖', '频率']);
+  assert.equal(page.data.scoreDetailOpen, true);
+  assert.equal(page.data.purchaseItems, purchases);
+  confirmation.resolve({ version: 1, features: closed });
+  await refreshing;
+  assert.equal(page.data.ratingMode, 'collection');
+  assert.equal(page.data.totalSpentText, '99.00');
+  current.handlers({ '/api/builds': () => ({ builds: [record] }) });
+  await current.enable({ builds: true });
+  assert.equal(page.data.buildProgressKnown, true);
+  assert.equal(page.data.ratingMode, 'collection');
+  assert.equal(page.data.scoreDetailOpen, true);
+});
+
+for (const failure of ['unmigrated', 'network']) {
+  test(`新增评级启用但${failure}时仍展示可展开的收藏评级，基础购买不受影响`, async () => {
+    const current = environment();
+    current.handlers({ '/api/builds': () => {
+      if (failure === 'network') throw new Error('offline');
+      return { error: '旧后端未迁移' };
+    } });
+    await current.enable({ builds: true, pilotRating: true });
+    const page = current.page('purchased');
+    page.onLoad();
+    await page.onShow();
+    await flush();
+    assert.equal(page.data.buildSyncError, true);
+    assert.equal(page.data.buildProgressKnown, false);
+    assert.equal(page.data.ratingMode, 'collection');
+    assert.equal(page.data.hasStats, true);
+    assert.equal(page.data.loadError, false);
+    assert.equal(page.data.totalCount, 1);
+    assert.equal(page.data.totalSpentText, '99.00');
+    assert.deepEqual(plain(page.data.dimDetails.map((detail) => detail.label)), ['台数', '花费', '省钱', '覆盖', '频率']);
+    page.handleToggleScoreDetail();
+    assert.equal(page.data.scoreDetailOpen, true);
+  });
+}

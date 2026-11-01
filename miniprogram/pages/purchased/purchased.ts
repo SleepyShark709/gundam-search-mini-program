@@ -1,7 +1,7 @@
 import { canShareKind, getFeatures, isFeatureEnabled } from '../../utils/feature-flags';
 import { bindPageFeatures, unbindPageFeatures } from '../../utils/feature-page';
 import { loadBuildProgress, BuildProgress } from '../../utils/hangar-service';
-import { pilotProgress } from '../../utils/pilot-progress';
+import { collectionRating, pilotProgress } from '../../utils/pilot-progress';
 import { getAllModels, refreshMissingModels } from '../../utils/model-service';
 import { getPurchases, getPurchaseRecord, updatePurchase, removePurchase, loadPurchases } from '../../utils/purchase-service';
 import { isInWishlist, toggleWishlist, loadWishlist } from '../../utils/cloud-favorites';
@@ -74,6 +74,7 @@ Page({
   _buildProgress: [] as BuildProgress[],
   _buildRevision: 0,
   _buildLoading: null as Promise<void> | null,
+  _collectionRating: null as ReturnType<typeof collectionRating> | null,
   _baseOffsetPx: 0,
   _openOffsetPx: 0,
 
@@ -86,6 +87,8 @@ Page({
     publicShareId: '',
     loadError: false,
     buildSyncError: false,
+    buildLoading: false,
+    ratingMode: 'collection' as 'collection' | 'builds',
     buildProgressKnown: false,
     statusBarHeight: 20,
     safeAreaBottom: 0,
@@ -153,10 +156,13 @@ Page({
 
   onShow() {
     bindPageFeatures(this, 'builds', (enabled) => {
-      if (enabled) { void this.refreshBuildProgress(); return; }
-      this._buildRevision++;
-      this._buildLoading = null;
-      this.setData({ buildSyncError: false, publicShareId: '', scoreDetailOpen: false });
+      if (!enabled) {
+        this._buildRevision++;
+        this._buildLoading = null;
+        this.setData({ buildSyncError: false, buildLoading: false, publicShareId: '' });
+      }
+      this.refreshRating();
+      if (enabled) void this.refreshBuildProgress();
     });
     if (isFeatureEnabled('builds')) void this.refreshBuildProgress();
     return this.loadData();
@@ -176,14 +182,23 @@ Page({
     if (this._unloaded || !isFeatureEnabled('builds')) return Promise.resolve();
     if (this._buildLoading) return this._buildLoading;
     const revision = ++this._buildRevision;
+    this.setData({ buildLoading: true });
     this._buildLoading = loadBuildProgress().then((records) => {
       if (this._unloaded || revision !== this._buildRevision || !isFeatureEnabled('builds')) return;
       this._buildProgress = records;
       this.setData({ buildSyncError: false, buildProgressKnown: true });
-      if (!this.data.loading && !this.data.loadError) this.refreshList();
+      this.refreshRating();
     }).catch(() => {
-      if (!this._unloaded && revision === this._buildRevision && isFeatureEnabled('builds')) this.setData({ buildSyncError: true });
-    }).finally(() => { if (revision === this._buildRevision) this._buildLoading = null; });
+      if (!this._unloaded && revision === this._buildRevision && isFeatureEnabled('builds')) {
+        this.setData({ buildSyncError: true });
+        this.refreshRating();
+      }
+    }).finally(() => {
+      if (revision === this._buildRevision) {
+        this._buildLoading = null;
+        if (!this._unloaded) this.setData({ buildLoading: false });
+      }
+    });
     return this._buildLoading;
   },
 
@@ -301,18 +316,7 @@ Page({
       }
     }
 
-    // 拼装进度与收藏探索；不将花费或购买频率计入评级。
-    const rating = pilotProgress(purchases, this._allModels, this._buildProgress);
-    const radarDimensions = rating.dimensions;
-    const pilotScore = rating.score;
-    const { pilotRank, pilotTitle } = getPilotRating(pilotScore / 100);
-    const dimDetails = rating.details;
-    const upgradeTip = rating.tip;
-    const next = [{ rank: 'C级', score: 30 }, { rank: 'B级', score: 50 }, { rank: 'A级', score: 70 }, { rank: 'S级', score: 90 }]
-      .find((threshold) => pilotScore < threshold.score);
-    const nextRank = next?.rank || '';
-    const nextRankScore = next?.score || 0;
-    const scoreGap = next ? next.score - pilotScore : 0;
+    this._collectionRating = collectionRating(purchases, { totalSpent, savedRate, seriesCount: Object.keys(seriesCountMap).length });
 
     // ---------- setData ----------
 
@@ -330,31 +334,32 @@ Page({
       savedIsNegative,
       savedFunText,
       seriesBreakdown,
-      radarDimensions,
-      pilotRank,
-      pilotTitle,
-      pilotScore,
-      nextRank,
-      nextRankScore,
-      scoreGap,
-      dimDetails,
-      upgradeTip,
       swipeOpenIndex: -1,
     });
 
-    // 绘制雷达图（需等待 wx:if 条件渲染完成后 canvas 才存在于 DOM）
-    if (hasStats && this.data.buildProgressKnown && isFeatureEnabled('pilotRating') && isFeatureEnabled('builds')) {
-      wx.nextTick(() => {
-        if (!this._unloaded && this.data.buildProgressKnown && isFeatureEnabled('pilotRating') && isFeatureEnabled('builds')) this.drawRadar();
-      });
-    }
+    this.refreshRating();
+  },
+
+  refreshRating() {
+    if (this._unloaded || !this._collectionRating) return;
+    const ratingMode = isFeatureEnabled('pilotRating') && isFeatureEnabled('builds') && this.data.buildProgressKnown && !this.data.buildSyncError ? 'builds' : 'collection';
+    const rating = ratingMode === 'builds' ? pilotProgress(getPurchases(), this._allModels, this._buildProgress) : this._collectionRating;
+    const pilotScore = rating.score;
+    const next = [{ rank: 'C级', score: 30 }, { rank: 'B级', score: 50 }, { rank: 'A级', score: 70 }, { rank: 'S级', score: 90 }]
+      .find((threshold) => pilotScore < threshold.score);
+    this.setData({
+      ratingMode, radarDimensions: rating.dimensions, pilotScore, ...getPilotRating(pilotScore / 100),
+      dimDetails: rating.details, upgradeTip: rating.tip,
+      nextRank: next?.rank || '', nextRankScore: next?.score || 0, scoreGap: next ? next.score - pilotScore : 0,
+    });
+    if (this.data.hasStats) wx.nextTick(() => { if (!this._unloaded && this.data.hasStats) this.drawRadar(); });
   },
 
   drawRadar() {
-    if (!this.data.buildProgressKnown || !isFeatureEnabled('pilotRating') || !isFeatureEnabled('builds')) return;
+    if (this._unloaded || !this.data.hasStats) return;
     const query = wx.createSelectorQuery();
     query.select('#radarCanvas').fields({ node: true, size: true }).exec((res) => {
-      if (this._unloaded || !this.data.buildProgressKnown || !isFeatureEnabled('pilotRating') || !isFeatureEnabled('builds') || !res || !res[0] || !res[0].node) return;
+      if (this._unloaded || !this.data.hasStats || !res || !res[0] || !res[0].node) return;
 
       const canvas = res[0].node;
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -372,7 +377,7 @@ Page({
       const radius = Math.min(width, height) / 2 - fontSize - 10; // 留出标签空间
 
       const dimensions = this.data.radarDimensions;
-      const labels = ['完工', '整备', '档案', '探索', '目标'];
+      const labels = this.data.dimDetails.map((detail) => detail.label);
       const angleStep = (Math.PI * 2) / 5;
       const startAngle = -Math.PI / 2; // 从顶部开始
 

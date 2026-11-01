@@ -77,3 +77,28 @@ test('重复购买次数不增加纯消费分：相同整备比例与同系列�
   assert.equal(several.score, one.score);
   assert.deepEqual(plain(several.dimensions), plain(one.dimensions));
 });
+
+const { collectionRating } = loadModule('miniprogram/utils/pilot-progress.ts').exports;
+
+test('原收藏评级保留五维阈值、权重、金额明细和最近三个月频率', () => {
+  const purchases = [purchase('hg-001', { purchaseDate: '2026-09-01' }), purchase('rg-002', { purchaseDate: '2026-08-01' })];
+  const result = collectionRating(purchases, { totalSpent: 5000, savedRate: 10, seriesCount: 2 }, new Date('2026-10-01T12:00:00Z'));
+  assert.deepEqual(plain(result.dimensions), [0.1, 0.5, 0.4, 0.5, 1 / 3]);
+  assert.equal(result.score, 34);
+  assert.deepEqual(plain(result.details.map((detail) => detail.label)), ['台数', '花费', '省钱', '覆盖', '频率']);
+  assert.equal(result.details[1].valueText, '¥5,000.00/¥10,000');
+  assert.equal(result.details[4].valueText, '0.7/2台·月');
+});
+
+test('原收藏评级各维度封顶，负省钱率归零，旧日期不计入近期频率', () => {
+  const now = new Date('2026-10-01T12:00:00Z');
+  const full = collectionRating(Array.from({ length: 25 }, (_, index) => purchase(`hg-${index}`, { purchaseDate: '2026-09-01' })),
+    { totalSpent: 20000, savedRate: 40, seriesCount: 4 }, now);
+  assert.deepEqual(plain(full.dimensions), [1, 1, 1, 1, 1]);
+  assert.equal(full.score, 100);
+  const old = collectionRating([purchase('hg-001', { purchaseDate: '2026-01-01' }), purchase('rg-002', { purchaseDate: null })],
+    { totalSpent: 100, savedRate: -20, seriesCount: 1 }, now);
+  assert.equal(old.dimensions[2], 0);
+  assert.equal(old.dimensions[4], 0);
+  assert.equal(old.details[2].valueText, '0%/25%');
+});

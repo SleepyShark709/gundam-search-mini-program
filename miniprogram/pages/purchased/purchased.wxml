@@ -64,10 +64,11 @@
         </view>
 
         <view wx:if="{{features.builds}}" class="build-entry" bind:tap="handleBuilds"><text>机库整备 · 记录拼装成果</text><text>›</text></view>
-        <text wx:if="{{features.pilotRating && features.builds && buildProgressKnown}}" class="rating-note">趣味评级按完工、整备、档案、等级探索和目标记录计算，与花费无关。</text>
-        <text class="rating-note" wx:if="{{features.pilotRating && features.builds && buildSyncError}}" bind:tap="handleRetry">{{buildProgressKnown ? '拼装进度同步失败，评级暂用上次记录。点击此处重新同步。' : '拼装进度同步失败，暂无法计算评级。点击此处重新同步。'}}</text>
+        <text class="rating-note">{{ratingMode === 'builds' ? '拼装评级 · 按完工、整备、档案、等级探索和目标记录计算，与花费无关。' : '收藏评级 · 沿用台数、花费、省钱、等级覆盖与入手频率五项记录。'}}</text>
+        <text class="rating-note" wx:if="{{features.pilotRating && features.builds && buildLoading}}">{{ratingMode === 'builds' ? '正在同步拼装进度，暂用上次拼装记录。' : '正在同步拼装进度，当前显示收藏评级。'}}</text>
+        <text class="rating-note" wx:if="{{features.pilotRating && features.builds && buildSyncError}}" bind:tap="handleRetry">拼装进度同步失败，已回到收藏评级。点击此处重新同步。</text>
         <!-- Radar chart section -->
-        <view class="radar-section" wx:if="{{features.pilotRating && features.builds && buildProgressKnown}}">
+        <view class="radar-section">
           <view class="radar-canvas-wrapper">
             <canvas id="radarCanvas" type="2d" class="radar-canvas"></canvas>
           </view>
@@ -81,7 +82,7 @@
         </view>
 
         <!-- Score detail panel -->
-        <view class="score-detail" wx:if="{{features.pilotRating && features.builds && buildProgressKnown && scoreDetailOpen}}">
+        <view class="score-detail" wx:if="{{scoreDetailOpen}}">
           <view class="score-detail-header">
             <text class="score-detail-rank">{{pilotRank}} · {{pilotScore}}分</text>
             <text class="score-detail-next" wx:if="{{nextRank}}">→ {{nextRank}}（{{nextRankScore}}分）</text>

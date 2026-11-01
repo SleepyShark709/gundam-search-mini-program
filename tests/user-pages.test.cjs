@@ -475,6 +475,7 @@ test('已购缓存已有记录时刷新失败保留卡片和统计并反馈错�
   requests[0].success({ statusCode: 200, data: { purchases: [purchase(item.id, { priceCny: 120 })] } });
   await seeding;
   const { instance } = page('purchased', { models: [item], purchases });
+  await instance.refreshBuildProgress();
   const cachedItems = instance.data.purchaseItems;
   const cachedDimensions = instance.data.radarDimensions;
   const cachedBreakdown = instance.data.seriesBreakdown;
@@ -485,7 +486,7 @@ test('已购缓存已有记录时刷新失败保留卡片和统计并反馈错�
   requests[1].fail({ errMsg: '断网' });
   await showing;
   assert.equal(instance.data.purchaseItems, cachedItems);
-  assert.equal(instance.data.radarDimensions, cachedDimensions);
+  assert.deepEqual(instance.data.radarDimensions, cachedDimensions);
   assert.equal(instance.data.seriesBreakdown, cachedBreakdown);
   assert.equal(instance.data.totalCount, 1);
   assert.equal(instance.data.totalSpentText, '120.00');

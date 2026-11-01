@@ -195,15 +195,15 @@ npx ts-node src/scripts/scrape-images.ts --skip-existing
 | MG | 565 | 6 | 571 | 67 |
 | PG | 52 | 2 | 54 | 2 |
 
-已准备本地后端上传包：`/Users/shark/WeChatProjects/gundam-menu-release-2026-11-01/gundam-server-2026-11-01.zip`（约 165 MiB）。包内根目录直接是 `Dockerfile`，包含完整产品图片，不含 `.env`、`node_modules` 或旧 `dist`。这是本次代码快照；后续再改 server 或图片，需要重新打包。变更详情、价格前后值和图片 SHA-256 见 [`manifest.json`](server/data-updates/2026-11-01/manifest.json)。**本地更新和打包已完成，尚未执行线上数据库导入或云端发布。**
+本轮机库后端使用 `npm run release:package` 生成最新上传包，输出到项目同级的 `gundam-menu-release`，以 `LATEST.json` 指向的 ZIP、文件清单和 SHA-256 为准。包内根目录直接是 `Dockerfile`，包含完整产品图片，不含 `.env`、`node_modules` 或旧 `dist`。旧的 `gundam-menu-release-2026-11-01/gundam-server-2026-11-01.zip` 不含本轮最终机库后端，不能作为本次发布包。目录变更详情、价格前后值和图片 SHA-256 见 [`manifest.json`](server/data-updates/2026-11-01/manifest.json)。**尚未执行线上数据库导入或云端发布。**
 
 本地目录、云上 MySQL、后端图片、小程序前端是四份不同的内容。只点开发者工具“上传”，不会把 JSON 导入 MySQL，也不会上传后端图片。
 
-建议顺序：**先发布后端图片 → 导入目录 SQL → 验证云端 → 上传并发布小程序**。不要重新运行 `init.sql` 或用 `seed.ts` 替代本次增量文件，它们不适合保留线上已有图片路径和人工修改。
+建议顺序：**备份并迁移机库表 → 发布后端图片 → 导入目录 SQL → 验证云端身份与业务 → 上传并发布小程序**。机库迁移及身份验收按 [UPGRADE_NOTES.md](UPGRADE_NOTES.md) 执行；不能只完成目录更新就认为全部玩法可发布。不要重新运行 `init.sql` 或用 `seed.ts` 替代本次增量文件，它们不适合保留线上已有图片路径和人工修改。
 
 1. **准备并检查。** 使用 Node 22，在项目根目录执行 `npm run typecheck`、`npm run lint`、`npm test`。本项目路径为 `/Users/shark/WeChatProjects/gundam-menu`。先在数据库控制台备份 `models`、`series_meta` 两张目录表；这次无需导出或改动用户资料、心愿单、已购表。
 2. **发布后端及图片。** 手动登录[微信云托管控制台](https://cloud.weixin.qq.com/)，进入当前生产环境，选择已有服务 **`express-v0yz`**，进入“版本列表／新建版本”，使用本地代码上传。上传根目录应是 **`/Users/shark/WeChatProjects/gundam-menu/server`**，根下直接有 `Dockerfile`、`package.json`、`src`、`public/images`；端口为 **80**，沿用现有数据库环境变量、域名和服务名。代码包不要包含本机 `.env`、`node_modules`、旧 `dist`；**必须包含完整 `public/images`**，不能只传本次新增图片，否则旧图片可能消失。构建与健康检查成功后按控制台流程发布到现有服务。若线上设置了 `IMAGE_STORAGE_PATH` 挂载目录，应将新增图片复制到那个目录；镜像内的 `public/images` 不会自动出现在挂载目录。
-3. **导入本次目录增量。** 在对应生产 MySQL 的 SQL 管理工具中，选中现有业务数据库，执行 [`server/data-updates/2026-11-01/apply.sql`](server/data-updates/2026-11-01/apply.sql)。先看文件内的冲突预检，再执行事务部分。此文件只新增目录、更新匹配旧值的官方价格并按数据库实际条数刷新系列统计，不修改 `users`、`wishlists`、`purchases`、`model_images`，也不删除旧模型。已有名称、日期、图片路径保持不变。预检有冲突或执行有错误时先停下，不强制覆盖。
+3. **导入本次目录增量。** 在对应生产 MySQL 的 SQL 管理工具中，选中现有业务数据库，执行 [`server/data-updates/2026-11-01/apply.sql`](server/data-updates/2026-11-01/apply.sql)。先单独运行文件内的冲突预检并确认无冲突，再执行事务部分；预检 SELECT 本身不会自动阻止后续 SQL。此文件只新增目录、更新匹配旧值的官方价格并按数据库实际条数刷新系列统计，不修改 `users`、`wishlists`、`purchases`、`model_images`，也不删除旧模型。已有名称、日期、图片路径保持不变。预检有冲突或执行有错误时先停下，不强制覆盖。
 4. **验证云端。** SQL 末尾会返回各系列实际数量和本批条目检查结果。开发者工具重新编译，分别打开 HG／RG／MG／PG，确认新品和图片可见；用真机体验版复核心愿单、已购买和资料同步。页面进入时会异步刷新目录；若显示旧缓存，返回后重新进入并等待接口完成，**无需清除用户收藏**。新图 404 时先检查服务版本、完整图片包及 `IMAGE_STORAGE_PATH`，不要删用户数据。
 5. **发布前端。** 微信开发者工具打开项目**根目录**（不是 `server`），确认底部为“浏览／我的”，并保留 `api.ts` 中 `FORCE_USE_CLOUD = true`。点击右上角“上传”，填写递增版本号及“更新模型目录、加载重试和样式修复”等说明。登录[微信公众平台](https://mp.weixin.qq.com/)，进入“小程序 → 管理 → 版本管理”，将开发版本设为体验版，真机检查后“提交审核”；审核通过后再点击“发布”。**上传成功不等于正式版已发布。** 小程序前端发布还会带上本地目录兜底和此前 UI 修复。
 

@@ -27,6 +27,6 @@ setInterval(async () => {
   } catch (e) {
     console.error('[DB keepalive] failed:', e);
   }
-}, 30000);
+}, 30000).unref();
 
 export default pool;

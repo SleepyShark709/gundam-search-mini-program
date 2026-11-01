@@ -11,7 +11,7 @@ import sharesRouter, { publicSharesRouter } from './routes/shares';
 import buildsRouter from './routes/builds';
 
 const app = express();
-const PORT = 80;
+const PORT = Number(process.env.PORT || 80);
 
 // ---- 基础中间件 ----
 app.use(express.json());
@@ -42,8 +42,10 @@ app.use('/api/builds', buildsRouter);
 app.use(errorHandler);
 
 // ---- 启动服务 ----
-app.listen(PORT, () => {
-  console.log(`[gundam-menu-server] 服务已启动，监听端口 ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`[gundam-menu-server] 服务已启动，监听端口 ${PORT}`);
+  });
+}
 
 export default app;

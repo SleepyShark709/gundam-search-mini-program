@@ -33,15 +33,14 @@ npm test          # 隔离微信接口的回归测试，不访问真实账户数
 启动本地 server：
 
 1. 首次：`cd server && cp .env.example .env`，把 `MYSQL_ADDRESS`/`MYSQL_PASSWORD` 填进去（`.env` 已 gitignore，不会被提交）
-2. 把 `LOCAL_BASE` 改为电脑当前局域网 IP（真机调试时不能用 localhost；获取：`ipconfig getifaddr en0`）
-3. `cd server && sudo npm run dev`（pool.ts 顶部 `import 'dotenv/config'` 自动加载 .env；sudo 是因为监听 80 端口需 root）
-4. 确保手机和电脑在同一 WiFi
+2. 本机模拟器使用回环地址，将 `LOCAL_BASE` 指向 `http://127.0.0.1:3000`；在 `.env` 设置 `PORT=3000`、`NODE_ENV=development`、`ALLOW_LOCAL_MOCK_AUTH=true`
+3. `cd server && npm run dev`（自动加载 .env）；真机联调使用云托管，不使用本地 mock 身份
 
 #### 本地调试的关键差异（不直观）
 
-- **mock openid**：本地模式下 `callLocal` 在请求头注入 `X-WX-OPENID: local-dev-user`，所有用户数据都挂在这个 mock 用户名下，**与云上真实 openid 数据隔离**。本地看到心愿单/已购为空是正常的。
+- **mock openid**：本地模式下 `callLocal` 在请求头注入 `X-WX-OPENID: local-dev-user`。服务端仅在显式 development、本地 mock 开关开启且实际连接来自回环地址时接受它；不信任 `X-Forwarded-For`。生产误开开关会阻止启动。所有本地数据挂在这个 mock 用户名下；测试使用隔离数据库，不连接生产库。
 - **图片始终走云端**：`cdn-config.ts` 中的 `getImageBase()` 始终返回 `CONTAINER_DOMAIN`，因为本地 server 的 `public/images/` 通常是空的。启用本地模式后，API 走本地、图片仍走云端。
-- **数据库连接**：本地 server 直连云上 CynosDB（外网地址），即可使用线上完整模型数据。
+- **数据库连接**：优先使用本机隔离 MySQL；通过 `MYSQL_*` 指定实际数据库，本地模式本身不会阻止访问生产库，不能因使用 mock 用户就认为数据库也已隔离。
 
 #### 数据库迁移脚本
 

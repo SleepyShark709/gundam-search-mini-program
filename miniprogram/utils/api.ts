@@ -1,7 +1,7 @@
 // ---- API 环境选择 ----
 // 默认所有版本（含开发者工具/真机调试）均走微信云托管。
-// 本地联调时手动将 FORCE_USE_CLOUD 改为 false，并确认 LOCAL_BASE 可达：
-//   develop → 本地 server；trial / release → 微信云托管。
+// 本机模拟器联调时手动将 FORCE_USE_CLOUD 改为 false，并开启服务端 development mock：
+//   develop → 回环地址本地 server；trial / release → 微信云托管。
 const FORCE_USE_CLOUD = true;
 
 function detectUseLocal(): boolean {
@@ -16,7 +16,7 @@ function detectUseLocal(): boolean {
 }
 
 export const USE_LOCAL = detectUseLocal();
-export const LOCAL_BASE = 'http://192.168.31.212';
+export const LOCAL_BASE = 'http://127.0.0.1:3000';
 // 本地调试用的 mock openid（云托管会自动注入真实的 openid，本地需要手动模拟）
 const LOCAL_MOCK_OPENID = 'local-dev-user';
 

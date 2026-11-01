@@ -48,7 +48,7 @@ router.get('/models/:seriesCode', async (req: Request, res: Response) => {
     );
 
     const version = await getDataVersion();
-    const data = rows.map(toCamelCase);
+    const data = rows.map((row) => ({ ...toCamelCase(row), isLimited: Boolean(row.is_limited) }));
     res.json({ data, version });
   } catch (err) {
     console.error(`[GET /api/models/${seriesCode}]`, err);

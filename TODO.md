@@ -21,7 +21,7 @@
 - 新玩法沿用现有深色机库视觉；暂不引入付费 AI、实时行情或泛社区。
 - 提交代码和推送 Git 不等于发布微信小程序或迁移生产数据库；部署按文档执行。
 
-## 验证记录
+## 首次交付验证记录（`7dc7202` 之前）
 
 - 2026-11-01：`npm test` 210/210 通过（原有回归与新增玩法/服务端/缓存测试）。
 - `npm run typecheck`：小程序、server、admin 三端通过。
@@ -32,3 +32,27 @@
 - 未执行真实 MySQL 迁移、云托管部署或微信发布。未完成真机/模拟器视觉与分享验收：IDE 自动化服务端口关闭，且本机处于锁屏状态。
 
 - 功能提交 `275d63b` 已推送至 `origin/codex/hangar-upgrades`；本条验收记录随后作为独立文档提交同步。
+
+## Goal：发布前最终验收（进行中）
+
+用户要求：完成修改与验证，必须在微信小程序模拟器验收，达到可直接发布水准。下面各项以当前状态证据为准，未勾选项不能视为通过。
+
+- [x] 核对当前 Git：`codex/hangar-upgrades`，原功能提交 `275d63b`，验收文档提交 `7dc7202`。
+- [x] 统一生产镜像与验证运行时（Node 22），后端构建通过。生产依赖 audit 从 5 项降至 0；仅指 `server --omit=dev`，不代表开发依赖审计为 0。本机没有 Docker，尚未执行 Linux 镜像构建；上传包另做干净 Node 22 安装、构建和启动验证。
+- [x] 在隔离本地 MySQL 8.4.13 + 真实 HTTP 中通过 10/10 集成验收：迁移执行两次、账号隔离、六类分享、服务端答题、数量/日期与删除级联；测试结束删除随机库。目录 SQL 基于旧版 2197 款执行两次，确认新增 50、改价 220、总计 2247；价格回退及用户/图片/旧快照哨兵均通过。
+- [ ] 用微信官方自动化 SDK 在原生模拟器走完八项升级，保存步骤、截图和运行错误；不得以 mock 页面替代。
+- [x] 最终代码通过 225/225 测试、三端类型检查、全仓 lint、后端构建；29 个 WXML 和 30 个 Less/WXSS 入口原生编译通过。独立审查未发现新增发布阻断问题；编译通过不代表模拟器操作通过。
+- [ ] 生成包含当前后端与完整图片的最新上传包及 SHA-256、文件清单，校验不混入 `.env` 或旧构建。
+- [ ] 对齐云端后端与数据库部署状态；2026-11-01 只读检查显示线上 HG 1404、RG 176，仍是旧目录，公开分享读取返回身份错误，尚未更新机库后端。
+- [ ] 完成云端身份边界验收：本地已收紧 source/AppID/OPENID 和重复头校验，生产禁止 mock 开关；但当前线上随机身份伪造请求仍返回 200。部署后必须 `npm run test:cloud-auth` 全部拒绝，并验证真实 `callContainer` 成功；来源头检查单独通过不能视为公网安全已解决。图片同公网域名，不能直接关闭全部公网。
+- [ ] 提交并推送本轮验收加固及证据；Git 推送不以 Goal 完成为前提，只有全部发布要求被当前证据证明，Goal 才能完成。
+
+环境记录：Mac 当前仍锁屏；微信开发者工具的自动化服务端口关闭。已向用户请求解锁及开启端口，其间继续其他独立验收。未通过读取私有端口/修改安全配置绕过该限制。
+
+本机验收证据（2026-11-01）：
+
+- 最终测试、类型、lint：`/tmp/gundam-final-unit.log`、`/tmp/gundam-final-types.log`、`/tmp/gundam-final-lint.log`。
+- 真实 MySQL 与身份 HTTP 验收：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-validation-evidence-5c1zqxir/mysql-integration.log`。
+- 模板/样式原生编译：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-final-native-h3vb2_eq/result.json`。
+- 官方 SDK 模拟器实际启动失败，0/8，通过项为 0：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-simulator-evidence-AiIidq/result.json`。
+- 线上身份验收失败：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-cloud-auth-evidence-0wWaVF/result.json`。

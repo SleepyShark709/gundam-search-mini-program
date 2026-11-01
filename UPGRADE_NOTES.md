@@ -13,18 +13,26 @@
 
 ## 部署顺序
 
-1. 使用受支持的 Node.js，分别在根目录、`server`、`admin` 执行 `npm ci`。
-2. 在目标数据库已有 `purchases`、`models` 表的前提下，用该环境的 `MYSQL_*` 配置运行：
+1. 使用 Node.js 22，分别在根目录、`server`、`admin` 执行 `npm ci`，运行根目录的测试、类型检查和 lint。后端 Dockerfile 使用 Node 22 两阶段构建，运行镜像仅保留生产依赖。
+2. 在目标数据库已有 `purchases`、`models` 表的前提下，先备份数据库，再用目标环境的 `MYSQL_*` 配置运行机库迁移。源码环境可执行：
 
    ```sh
    cd server
    npx ts-node src/scripts/migrate-hangar.ts
    ```
 
-   迁移幂等创建 `build_progress` 和 `share_snapshots`，不改写已有购买数据。`build_progress` 引用购买记录，删除购买后自动删除对应进度。旧购买记录未设置进度时按 1 盒、完成 0、在拼 0 展示。
+   生产镜像已移除开发依赖，应在容器内使用 `node dist/scripts/migrate-hangar.js`。迁移幂等创建 `build_progress` 和 `share_snapshots`，不改写已有购买数据。`build_progress` 引用购买记录，删除购买后自动删除对应进度。旧购买记录未设置进度时按 1 盒、完成 0、在拼 0 展示。目录的 50 款新增和 220 款改价另按 README 执行增量 SQL，不运行 `init.sql` 或 `seed.ts`。
 
-3. 构建并部署后端容器：`npm --prefix server run build`。使用现有云托管环境和服务配置，确认健康检查、公开分享接口和私人接口正常。
-4. 在微信开发者工具中预览并验证下列操作，再上传体验版、完成微信发布流程。代码推送本身不会执行数据库迁移或发布小程序。
+3. 在根目录执行 `npm run release:package`。新包、逐文件清单和 SHA-256 默认保存在项目同级的 `gundam-menu-release`，`LATEST.json` 指向本次包；上传 ZIP 根目录直接包含 Dockerfile 和完整图片，不含 `.env`、`node_modules` 或旧 `dist`。旧的 `gundam-menu-release-2026-11-01` 包不含本轮最终后端，不能用于本次发布。沿用现有云托管环境、服务和数据库配置；生产必须使用 `NODE_ENV=production`，不得设置 `ALLOW_LOCAL_MOCK_AUTH=true`。
+4. 部署后确认健康检查、公开分享接口和私人接口正常，并完成下述身份边界验收。在微信开发者工具中完成原生验收，再上传体验版、完成双账号真机检查及微信发布流程。代码推送本身不会执行生产数据库迁移或发布小程序。
+
+## 身份边界与本地联调
+
+正常私人接口要求云托管提供非空、单值的 `X-WX-SOURCE`、`X-WX-OPENID`，以及与服务端 `WX_APPID` 匹配的 `X-WX-APPID`（默认本工程 AppID）。来源头校验属于纵深防护，不能单独证明公网调用方不能伪造身份。
+
+部署后运行 `npm run test:cloud-auth`，验证无身份、伪造 OPENID、伪造完整三头的公网请求全部返回 401/403；还须从本小程序实际调用 `wx.cloud.callContainer`，确认合法用户可访问私人接口。任一公网伪造请求仍成功，身份边界验收即不通过，必须修复网关或采用服务端验证的认证方案后再发布。当前图片也使用同一公网域名，不能直接关闭全部公网而不处理图片访问。脚本只用随机身份进行只读探测，不会验证真实微信调用成功。
+
+本机模拟器联调仅在 `NODE_ENV=development`、`ALLOW_LOCAL_MOCK_AUTH=true` 且实际 socket 为回环地址时允许 mock OPENID，不信任 `X-Forwarded-For`。不能用局域网真机请求触发此例外；真机使用云托管身份。生产或未设置 `NODE_ENV` 时误开该开关会阻止服务启动。
 
 ## 数据与公开范围
 
@@ -46,4 +54,6 @@
 - Canvas：远程图片可加载、失败占位、长中文标题、导出、系统分享及相册权限拒绝后的恢复。
 - 不同屏幕与安全区：新入口可滚动，键盘不遮挡保存按钮，空态与错误态有返回或重试。
 
-自动化测试使用隔离的微信接口与数据库 mock，不能替代真机、实际 MySQL 和云托管集成验收。实际执行结果记录在 TODO 的验证记录中。
+`npm test` 运行隔离的微信接口与数据库 mock 回归。`npm run test:integration` 在显式配置的本机 MySQL 上创建随机测试库，通过真实 HTTP 验证业务、迁移和目录 SQL，结束后删除测试库；它不访问生产库。运行前需提供 `MYSQL_TEST_HOST=127.0.0.1`、`MYSQL_TEST_PORT`、`MYSQL_TEST_USERNAME`、`MYSQL_TEST_PASSWORD`，测试账号需有 `gundam_test_%` 库的建库与清理权限。
+
+`npm run test:simulator` 使用相同 MySQL 配置和微信官方自动化 SDK，在临时项目副本中执行八组原生操作，保存截图、步骤、源码哈希和运行错误。需先解锁 Mac，并在开发者工具“设置 → 安全设置”开启服务端口；runner 不修改正式项目的云托管开关，也不清空全部本地存储。上述本地检查不能替代双账号真机分享、云端身份及内容审核验收。实际结果记录在 TODO 中。

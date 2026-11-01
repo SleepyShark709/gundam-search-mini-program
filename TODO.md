@@ -42,6 +42,7 @@
 - [x] 在隔离本地 MySQL 8.4.13 + 真实 HTTP 中通过 10/10 集成验收：迁移执行两次、账号隔离、六类分享、服务端答题、数量/日期与删除级联；测试结束删除随机库。目录 SQL 基于旧版 2197 款执行两次，确认新增 50、改价 220、总计 2247；价格回退及用户/图片/旧快照哨兵均通过。
 - [x] 用微信官方自动化 SDK 在原生模拟器走完八项升级：独立提交 `1daf5ce` 的干净副本 8/8 通过，运行异常及未处理拒绝均为 0，进程退出 0。保存 98 张真实截图及 900×1360 Canvas，清单和哈希核验通过；真实点击、输入与隔离 MySQL 持久化核对完成，随机库已删除。
 - [x] 独立提交 `1daf5ce` 的干净副本通过 231/231 测试、三端类型检查、全仓 lint、后端构建；此前 29 个 WXML 和 30 个 Less/WXSS 入口原生编译通过。独立审查未发现新增发布阻断问题。
+- [x] 同一干净提交保留 `FORCE_USE_CLOUD=true`，微信官方 CLI `preview` 上传及编译通过，退出 0；总包 1,753,255 字节（工具显示 1.7 MB），已生成开发预览二维码。开发预览不代表线上新后端、真机权限或正式发布已通过。
 - [x] 生成包含当前后端与完整 2811 张图片的最新上传包及 SHA-256、文件清单，确认不含 `.env` 或旧构建。按清单逐文件核验，全新目录 Node 22 `npm ci`、构建、生产依赖裁剪、健康/鉴权/图片启动检查通过；发布包源码提交为 `1693e4e`。
 - [ ] 对齐云端后端与数据库部署状态；2026-11-01 只读检查显示线上 HG 1404、RG 176，仍是旧目录，公开分享读取返回身份错误，尚未更新机库后端。用户已确认尚未部署，将稍后手动操作。
 - [ ] 完成云端身份边界验收：本地已收紧 source/AppID/OPENID 和重复头校验，生产禁止 mock 开关；但当前线上随机身份伪造请求仍返回 200。部署后必须 `npm run test:cloud-auth` 全部拒绝，并验证真实 `callContainer` 成功；来源头检查单独通过不能视为公网安全已解决。图片同公网域名，不能直接关闭全部公网。
@@ -56,13 +57,15 @@
 - 最终测试、类型、lint：`/tmp/gundam-final-unit.log`、`/tmp/gundam-final-types.log`、`/tmp/gundam-final-lint.log`。
 - 最终独立提交的 231 项回归、类型检查与 lint：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-release-snapshot-5KKQbS/logs/`。覆盖 SDK 未处理拒绝时的报告/清理、滚动稳定后才能点击，以及按真实渲染区域处理可见性。
 - 最终原生 8/8 报告：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-simulator-evidence-hAwgDo/result.json`；同目录保留 98 张真实截图及 `squad-canvas-export.png`。源码清单 SHA-256 为 `540d160ffeae279380ecd7a7abb4d8fd5034ca68f0db62b3773660022d75f864`，提交与哈希核验保存在 `/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-release-snapshot-5KKQbS/verification.json`。
+- 正式配置开发预览：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-release-snapshot-5KKQbS/preview-info.json` 为官方 CLI 包大小输出，`preview-validation.json` 记录提交、云托管开关与文件哈希；同目录保留实际 JPEG 格式的 `preview-qr.jpg`。预览结束已正式关闭本次测试项目。
 - 独立提交复核首轮启动超时，未进入业务，保留失败报告：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-simulator-evidence-Kplh3P/result.json`。完成清库和正式关闭测试副本后，第一次重试通过全部八组。
 - 真实 MySQL 与身份 HTTP 验收：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-validation-evidence-5c1zqxir/mysql-integration.log`。
 - 模板/样式原生编译：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-final-native-h3vb2_eq/result.json`。
 - 官方 SDK 模拟器实际启动失败，0/8，通过项为 0：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-simulator-evidence-AiIidq/result.json`。
-- 线上身份验收失败：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-cloud-auth-evidence-0wWaVF/result.json`。
+- 最新线上身份验收仍失败：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-cloud-auth-evidence-Lh9END/result.json`；无身份 401，随机伪造 OPENID 及微信头均 200，尚不能勾选云端身份边界。
 - 发布包干净安装与启动：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-release-build-6ztlq6iw/result.json`。健康检查 200、未带身份及只带 OPENID 的私人请求均 401、图片 200、编译后的迁移脚本存在。
 - 当前上传包：`/Users/shark/WeChatProjects/gundam-menu-release/gundam-server-20261101T065622Z-5d383fa5b713.zip`（172555215 字节），对应清单同名 `.manifest.json`，最新指针为该目录的 `LATEST.json`。
 - ZIP SHA-256：`d0bb73c651f65fcc236b1cca839b3ec7a560383b4cdfb749955b660d05a9c8d3`。本轮旧中间包已清理；用户原有日期目录保留，但不用于本次发布。
+- 收尾再次读取完整 ZIP 核对上述 SHA-256，结果一致；`git diff 1693e4e 1daf5ce -- server` 为空，确认该包仍对应已验收提交的后端源码。
 - 原生首轮已实际生成截图，但完整结果为 0/8，保留失败证据：`/var/folders/fp/rjn9tn6x6fxfq78fsvkvysxw0000gn/T/gundam-simulator-evidence-ehZiko/result.json`。后续按真实渲染类修正虚拟组件定位，并修复六机编队卡片按钮文字裁切；最终结果以上述独立提交完整复核为准。
 - 云托管控制台访问被浏览器安全策略阻止，不能代为操作或换途径绕过；用户已确认稍后按 `UPGRADE_NOTES.md`、`README.md` 手动部署，之后继续公网拒绝与真实微信调用验收。

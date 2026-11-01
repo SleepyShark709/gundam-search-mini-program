@@ -260,11 +260,11 @@ test('切换发现模式清空对比快照，并使旧生成请求失效', async
 });
 
 // 使用真实目录 service，仅替换网络和微信存储边界，覆盖其吞错降级路径。
-function realCatalog({ local = [], cached = [], callAPI }) {
+function realCatalog({ local = [], cached = [], cachedAt = Date.now(), callAPI }) {
   const storage = new Map();
   for (const code of ['hg', 'rg', 'mg', 'pg']) {
     const data = cached.filter((item) => item.series === code);
-    if (data.length) storage.set(`gundam-cache-models-${code}`, { data, version: 'cached', timestamp: Date.now() });
+    if (data.length) storage.set(`gundam-cache-models-${code}`, { data, version: 'cached', timestamp: cachedAt });
   }
   const { exports: service } = loadModule('miniprogram/utils/model-service.ts', {
     mocks: {
@@ -285,6 +285,23 @@ function realCatalog({ local = [], cached = [], callAPI }) {
   return { service, storage };
 }
 
+test('发现页命中新鲜云端目录缓存时不请求，也不误报刷新失败', async () => {
+  const requests = [];
+  const cached = ['hg', 'rg', 'mg', 'pg'].map((code) => model(`${code}-001`));
+  const { service } = realCatalog({ cached, async callAPI({ path }) {
+    requests.push(path);
+    throw new Error('不应请求');
+  } });
+  const { instance } = page({ modelService: service });
+  await flush();
+  assert.equal(instance.data.refreshing, false);
+  assert.equal(instance.data.refreshError, false);
+  assert.deepEqual(ids(instance.data.models).sort(), ids(cached).sort());
+  await instance.refreshCatalog();
+  assert.equal(instance.data.refreshError, false);
+  assert.deepEqual(requests, []);
+});
+
 for (const source of ['cached', 'local', 'empty']) {
   test(`真实目录service断网时${source}降级仍报告刷新失败，保留结果且支持重试`, async () => {
     let offline = true;
@@ -292,6 +309,7 @@ for (const source of ['cached', 'local', 'empty']) {
     const old = model('rg-001');
     const { service } = realCatalog({
       cached: source === 'cached' ? [old] : [],
+      cachedAt: Date.now() - 4 * 60 * 60 * 1000,
       local: source === 'local' ? [old] : [],
       async callAPI({ path }) {
         requests.push(path);

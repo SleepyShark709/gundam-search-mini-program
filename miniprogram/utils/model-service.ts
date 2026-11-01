@@ -14,30 +14,41 @@ interface CacheEntry<T> {
 }
 
 // ---- Storage 缓存辅助 ----
-function readCache<T>(key: string): T | null {
+function readCache<T>(key: string): CacheEntry<T> | null {
   try {
     const entry: CacheEntry<T> = wx.getStorageSync(key);
-    if (!entry || !entry.data) return null;
-    if (Date.now() - entry.timestamp > CACHE_TTL) return null;
-    return entry.data;
+    if (!entry || !Array.isArray(entry.data) || entry.data.length === 0) return null;
+    return entry;
   } catch {
     return null;
   }
 }
 
-function writeCache<T>(key: string, data: T, version: string): void {
+function writeCache<T>(key: string, data: T, version: string, timestamp: number): void {
   try {
-    wx.setStorageSync(key, { data, version, timestamp: Date.now() } as CacheEntry<T>);
+    wx.setStorageSync(key, { data, version, timestamp } as CacheEntry<T>);
   } catch {}
+}
+
+function isFresh(timestamp: number | null | undefined): boolean {
+  return timestamp != null && Date.now() - timestamp < CACHE_TTL;
 }
 
 // ---- L1 内存缓存 ----
 
 // 系列元信息：优先从内存 → Storage → 本地 JSON
 let metaCache: SeriesMeta[] | null = null;
+let metaCachedAt: number | null = null;
+let metaRequest: Promise<SeriesMeta[]> | null = null;
 
 // 模型数据：按系列缓存
 const modelsCache: Partial<Record<SeriesCode, GundamModel[]>> = {};
+const modelsCachedAt: Partial<Record<SeriesCode, number>> = {};
+interface ModelsRefreshResult {
+  models: GundamModel[];
+  refreshed: boolean;
+}
+const modelRequests: Partial<Record<SeriesCode, Promise<ModelsRefreshResult>>> = {};
 
 // ---- 本地 JSON 加载（L3 兜底） ----
 
@@ -69,8 +80,9 @@ export function getSeriesMeta(): SeriesMeta[] {
   // L2
   const cached = readCache<SeriesMeta[]>(CACHE_KEY_META);
   if (cached) {
-    metaCache = cached;
-    return cached;
+    metaCache = cached.data;
+    metaCachedAt = cached.timestamp;
+    return metaCache;
   }
   // L3
   metaCache = loadLocalMeta();
@@ -83,8 +95,9 @@ export function getModels(seriesCode: SeriesCode): GundamModel[] {
   // L2
   const cached = readCache<GundamModel[]>(CACHE_KEY_MODELS_PREFIX + seriesCode);
   if (cached) {
-    modelsCache[seriesCode] = cached;
-    return cached;
+    modelsCache[seriesCode] = cached.data;
+    modelsCachedAt[seriesCode] = cached.timestamp;
+    return cached.data;
   }
   // L3
   modelsCache[seriesCode] = loadLocalModels(seriesCode);
@@ -103,20 +116,31 @@ export function getAllModels(): GundamModel[] {
  * 失败则静默降级返回当前缓存
  */
 export async function refreshSeriesMeta(): Promise<SeriesMeta[]> {
-  try {
-    const res = await callAPI<{ data: SeriesMeta[]; version: string }>({
-      path: '/api/series-meta',
-      method: 'GET',
-    });
-    if (res.data && res.data.length > 0) {
-      metaCache = res.data;
-      writeCache(CACHE_KEY_META, res.data, res.version);
-      return res.data;
+  if (metaRequest) return metaRequest;
+  const current = getSeriesMeta();
+  if (isFresh(metaCachedAt)) return current;
+  metaRequest = (async () => {
+    try {
+      const res = await callAPI<{ data: SeriesMeta[]; version: string }>({
+        path: '/api/series-meta',
+        method: 'GET',
+      });
+      if (res.data && res.data.length > 0) {
+        metaCache = res.data;
+        metaCachedAt = Date.now();
+        writeCache(CACHE_KEY_META, res.data, res.version, metaCachedAt);
+        return res.data;
+      }
+    } catch (e) {
+      console.error('[refreshSeriesMeta] failed, using fallback', e);
     }
-  } catch (e) {
-    console.error('[refreshSeriesMeta] failed, using fallback', e);
+    return getSeriesMeta();
+  })();
+  try {
+    return await metaRequest;
+  } finally {
+    metaRequest = null;
   }
-  return getSeriesMeta();
 }
 
 /**
@@ -128,27 +152,41 @@ export async function refreshModels(code: SeriesCode): Promise<GundamModel[]> {
   return (await refreshModelsWithStatus(code)).models;
 }
 
-/** 返回是否取得有效的服务端目录；失败或空响应仍保留现有缓存。 */
-export async function refreshModelsWithStatus(code: SeriesCode): Promise<{ models: GundamModel[]; refreshed: boolean }> {
-  try {
-    const res = await callAPI<{ data: GundamModel[]; version: string }>({
-      path: `/api/models/${code}`,
-      method: 'GET',
-    });
-    if (res.data && res.data.length > 0) {
-      // API 返回的图片 URL 可能需要 CDN 重写
-      const models = res.data.map(m => ({
-        ...m,
-        imageUrl: m.imageUrl ? resolveImageUrl(m.imageUrl) : m.imageUrl,
-      }));
-      modelsCache[code] = models;
-      writeCache(CACHE_KEY_MODELS_PREFIX + code, models, res.version);
-      return { models, refreshed: true };
+/** 命中新鲜云端缓存也视为成功；失败或空响应仍保留现有缓存。 */
+export async function refreshModelsWithStatus(code: SeriesCode, force = false): Promise<ModelsRefreshResult> {
+  const pending = modelRequests[code];
+  if (pending) return pending;
+  const current = getModels(code);
+  if (!force && isFresh(modelsCachedAt[code])) return { models: current, refreshed: true };
+  const request = (async () => {
+    try {
+      const res = await callAPI<{ data: GundamModel[]; version: string }>({
+        path: `/api/models/${code}`,
+        method: 'GET',
+      });
+      if (res.data && res.data.length > 0) {
+        // API 返回的图片 URL 可能需要 CDN 重写
+        const models = res.data.map(m => ({
+          ...m,
+          imageUrl: m.imageUrl ? resolveImageUrl(m.imageUrl) : m.imageUrl,
+        }));
+        const timestamp = Date.now();
+        modelsCache[code] = models;
+        modelsCachedAt[code] = timestamp;
+        writeCache(CACHE_KEY_MODELS_PREFIX + code, models, res.version, timestamp);
+        return { models, refreshed: true };
+      }
+    } catch (e) {
+      console.error(`[refreshModels:${code}] failed, using fallback`, e);
     }
-  } catch (e) {
-    console.error(`[refreshModels:${code}] failed, using fallback`, e);
+    return { models: getModels(code), refreshed: false };
+  })();
+  modelRequests[code] = request;
+  try {
+    return await request;
+  } finally {
+    delete modelRequests[code];
   }
-  return { models: getModels(code), refreshed: false };
 }
 
 /** 只刷新用户记录中尚未关联到模型的系列。 */
@@ -162,7 +200,7 @@ export async function refreshMissingModels(modelIds: string[]): Promise<GundamMo
       missingSeries.add(code);
     }
   }
-  await Promise.all([...missingSeries].map((code) => refreshModels(code)));
+  await Promise.all([...missingSeries].map((code) => refreshModelsWithStatus(code, true)));
   return getAllModels();
 }
 

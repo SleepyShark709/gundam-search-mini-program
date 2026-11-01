@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { loadModule } = require('./helpers/load-typescript.cjs');
+const { enabledFeatures } = require('./helpers/enabled-features.cjs');
 
 const model = (index, extra = {}) => ({ id: `hg-${index}`, series: 'hg', number: index, name: `机体 ${index}`, nameJa: `ガンダム ${index}`, nameEn: `Gundam ${index}`, imageUrl: '', releaseDate: '2026-01', price: 3000, priceTaxFree: 2700, isLimited: false, productUrl: '', ...extra });
 const catalog = Array.from({ length: 40 }, (_, index) => model(index + 1));
@@ -25,6 +26,7 @@ function setup(page, { services = {}, storageValue, failStorage = false, poster 
   const drafts = loadModule('miniprogram/utils/squad-draft.ts', { globals: { wx } }).exports;
   const { definition } = loadModule(`miniprogram/pages/${page}/${page}.ts`, {
     mocks: {
+      ...enabledFeatures().mocks,
       '../../utils/model-service': { getAllModels: () => catalog, refreshMissingModels: async () => catalog },
       '../../utils/squad-draft': drafts,
       '../../utils/hangar-service': { createShare: async () => ({ id: 'share-123' }), getShare: async () => ({ id: 'share-123', kind: 'squad', title: '好友编队', models: catalog.slice(0, 3), captainId: 'hg-2' }), submitQuiz: async () => ({ score: 2, total: 3, correctAnswers: ['hg-1', 'hg-1', 'hg-1'] }), ...services },

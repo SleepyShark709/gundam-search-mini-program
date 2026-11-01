@@ -1,6 +1,7 @@
 {
   "usingComponents": {
     "header": "../../components/header/header",
-    "model-picker": "../../components/model-picker/model-picker"
+    "model-picker": "../../components/model-picker/model-picker",
+    "feature-unavailable": "../../components/feature-unavailable/feature-unavailable"
   }
 }

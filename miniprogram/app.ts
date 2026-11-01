@@ -1,3 +1,4 @@
+import { refreshFeatures } from './utils/feature-flags';
 import { loadWishlist } from './utils/cloud-favorites';
 import { loadPurchases } from './utils/purchase-service';
 import { refreshSeriesMeta } from './utils/model-service';
@@ -17,12 +18,14 @@ App<IAppOption>({
     userInfoLoaded: false,
   },
   onLaunch() {
+    void refreshFeatures();
     this.loadExchangeRate();
     loadWishlist();
     loadPurchases();
     refreshSeriesMeta();
     this.loadUserInfo();
   },
+  onShow() { void refreshFeatures(); },
   async loadUserInfo() {
     const success = await loadUserInfo();
     this.globalData.userInfo = getUserInfo();

@@ -1,0 +1,1 @@
+<view class="state"><text class="code">HANGAR / STANDBY</text><text class="title">功能暂未开放</text><text class="note">先去模型目录看看，更多玩法敬请期待。</text><button bind:tap="handleExplore">浏览模型目录</button></view>

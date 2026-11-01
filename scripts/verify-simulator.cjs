@@ -1,4 +1,4 @@
-/* global wx */
+/* global wx, getApp */
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
@@ -12,6 +12,11 @@ const root = path.resolve(__dirname, '..');
 const tabPagePaths = new Set(require('../miniprogram/app.json').tabBar.list.map((tab) => tab.pagePath));
 const testOpenid = 'gundam-simulator-test-user';
 const privateMarker = 'SIMULATOR_PRIVATE_DO_NOT_SHARE';
+const featureEnvironment = {
+  discovery: 'FEATURE_DISCOVERY', sharing: 'FEATURE_SHARING', squad: 'FEATURE_SQUAD', quiz: 'FEATURE_QUIZ',
+  builds: 'FEATURE_BUILDS', lineage: 'FEATURE_LINEAGE', compare: 'FEATURE_COMPARE', pilotRating: 'FEATURE_PILOT_RATING',
+};
+const enabledFeatures = Object.fromEntries(Object.keys(featureEnvironment).map((key) => [key, true]));
 const cliPath = process.env.WECHAT_CLI_PATH || '/Applications/wechatwebdevtools.app/Contents/MacOS/cli';
 const runDeadline = Date.now() + 15 * 60 * 1000;
 const report = {
@@ -24,6 +29,7 @@ const report = {
     '公开链接在同一模拟器打开；无认证 HTTP 另行验证访客读取和服务端判分，未切换真实微信账号。',
     '测试副本仅将业务 API 指向隔离本机数据库；图片仍采用产品的真实图片来源。',
     '隔离后端按 fixture 关闭微信内容安全检查，线上内容安全接口需发布环境另验。',
+    '个人页加载、错误与缓存态使用 Page.setData 做纯渲染布局探针，不代表真实网络故障或用户资料写入验收。',
   ],
   steps: [], actions: [], exceptions: [], console: [], screenshots: [],
 };
@@ -531,12 +537,143 @@ async function compare() {
   await checkpoint('compare-public-snapshot', shared, '.compare-fields');
 }
 
+function setFixtureFeatures(keys) {
+  assert.ok(fixture && /^gundam_test_[a-f0-9]+$/.test(fixture.database) && /^http:\/\/127\.0\.0\.1:\d+$/.test(fixture.baseUrl), '开关探针仅允许隔离本机 fixture');
+  const features = Object.fromEntries(Object.entries(featureEnvironment).map(([key, variable]) => {
+    const enabled = keys.includes(key);
+    process.env[variable] = String(enabled);
+    return [key, enabled];
+  }));
+  report.actions.push({ step: activeStep, type: 'fixture-feature-flags', features });
+  return features;
+}
+
+async function refreshForegroundFeatures(page, expected) {
+  report.actions.push({ step: activeStep, type: 'app-lifecycle', api: 'MiniProgram.evaluate', method: 'App.onShow', reason: '触发真实前台功能配置刷新' });
+  await bounded('触发真实 App.onShow', miniProgram.evaluate(() => { getApp().onShow(); }));
+  await poll('前台开关刷新', () => page.data('features'), (actual) => Object.keys(expected).every((key) => actual?.[key] === expected[key]));
+  assert.deepEqual(await request(`${fixture.baseUrl}/api/features`), { version: 1, features: expected });
+}
+
+function assertSameMenuLayout(before, after) {
+  assert.equal(after.length, before.length, '加载态不能改变菜单组数量');
+  for (let index = 0; index < before.length; index++) {
+    for (const key of ['left', 'top', 'width', 'height']) assert.ok(Math.abs(Number(before[index][key]) - Number(after[index][key])) <= 1, `资料状态不能挤动菜单：${index}.${key}`);
+  }
+}
+
+async function profileLayoutProbe() {
+  const page = await open('/pages/profile/profile');
+  const original = await poll('个人页资料请求结束', () => page.data(), (data) => !data.userLoading && Object.keys(enabledFeatures).every((key) => data.features?.[key] === true));
+  const measureMenus = async () => {
+    const menus = await bounded('个人页菜单组', page.$$('.menu-section'));
+    assert.ok(menus.length > 0);
+    const rectangles = [];
+    for (const menu of menus.slice(0, 1)) rectangles.push({ ...await bounded('基础菜单位置', menu.offset()), ...await bounded('基础菜单尺寸', menu.size()) });
+    return rectangles;
+  };
+  try {
+    for (const cached of [false, true]) {
+      await bounded('布局探针正常态', page.setData({ hasUserInfo: cached, userLoading: false, userLoadError: false }));
+      await poll('布局探针无提示层', () => page.$$('.profile-loading-overlay, .user-panel .refresh-banner'), (nodes) => nodes.length === 0);
+      const baseline = await measureMenus();
+      for (const state of ['loading', 'error']) {
+        const data = { hasUserInfo: cached, userLoading: state === 'loading', userLoadError: state === 'error' };
+        await bounded('布局探针 Page.setData', page.setData(data));
+        const overlay = await element(page, cached ? '.user-panel .refresh-banner' : '.profile-loading-overlay');
+        assert.equal(await bounded('提示层定位方式', overlay.style('position')), 'absolute');
+        const panel = await element(page, '.user-panel');
+        assert.equal(await bounded('资料容器定位方式', panel.style('position')), 'relative');
+        const menus = await measureMenus();
+        assertSameMenuLayout(baseline, menus);
+        const panelSize = await bounded('资料容器尺寸', panel.size());
+        const overlaySize = await bounded('提示层尺寸', overlay.size());
+        const panelOffset = await bounded('资料容器位置', panel.offset());
+        const overlayOffset = await bounded('提示层位置', overlay.offset());
+        if (!cached) {
+          for (const key of ['width', 'height']) assert.ok(Math.abs(Number(panelSize[key]) - Number(overlaySize[key])) <= 1, '初载提示层必须覆盖资料容器');
+          for (const key of ['left', 'top']) assert.ok(Math.abs(Number(panelOffset[key]) - Number(overlayOffset[key])) <= 1, '初载提示层必须位于资料容器内');
+        }
+        report.actions.push({ step: activeStep, type: 'render-state-probe', api: 'Page.setData', cached, state, baseline, menus, panelSize, overlaySize, panelOffset, overlayOffset });
+        if ((!cached && state === 'loading') || (cached && state === 'error')) await capture(`profile-${cached ? 'cached-error' : 'initial-loading'}-render-probe`);
+      }
+    }
+  } finally { await bounded('恢复个人页渲染状态', page.setData(original), 10000, true); }
+}
+
+async function layoutAndFeatureControls() {
+  let page = await open('/pages/discover/discover?mode=search');
+  await dataReady(page, (data) => data.featureEnabled && !data.refreshing && data.models.length === 40 && data.total > 80);
+  await interact(page, '.load-more');
+  const loaded = await dataReady(page, (data) => data.models.length === 80);
+  const button = await visible(page, '.load-more');
+  const text = await bounded('载入更多真实文字', button.text());
+  const size = await bounded('载入更多真实尺寸', button.size());
+  const lineHeight = Number.parseFloat(await bounded('载入更多行高', button.style('line-height')));
+  assert.match(text, new RegExp(`载入更多.*已显示 80 / ${loaded.total}`));
+  assert.ok(!text.includes('\n'), '载入更多文字不能换行');
+  assert.equal(await bounded('载入更多换行规则', button.style('white-space')), 'nowrap');
+  assert.ok(Number(size.height) <= lineHeight + 2, '载入更多必须保持单行高度');
+  report.actions.push({ step: activeStep, type: 'single-line-layout', selector: '.load-more', text, size, lineHeight });
+  await capture('discovery-load-more-80-single-line');
+  await profileLayoutProbe();
+
+  const shared = report.actions.find((action) => action.type === 'unauthenticated-http' && action.kind === 'squad');
+  assert.ok(shared, '需先创建可验证关闭行为的公开编队快照');
+  const previous = Object.fromEntries(Object.values(featureEnvironment).map((variable) => [variable, process.env[variable]]));
+  try {
+    page = await open(`/pages/share/share?id=${shared.path.split('/').at(-1)}`);
+    await dataReady(page, (data) => data.featureEnabled && !data.loading && !!data.snapshot);
+    const disabled = setFixtureFeatures([]);
+    await refreshForegroundFeatures(page, disabled);
+    const assertUnavailable = async (target) => {
+      await poll('页面功能关闭', () => target.data('featureEnabled'), (enabled) => enabled === false);
+      const component = await element(target, 'feature-unavailable');
+      const title = await element(component, '.title');
+      assert.match(await bounded('关闭态提示', title.text()), /功能暂未开放/);
+    };
+    await assertUnavailable(page);
+    await capture('features-live-share-disabled');
+    page = await open('/pages/home/home');
+    await poll('首页关闭入口', () => page.data('features'), (features) => Object.values(features).every((enabled) => enabled === false));
+    assert.equal((await bounded('首页玩法入口', page.$$('.search-section, .play-grid, .recent-list'))).length, 0);
+    page = await open('/pages/profile/profile');
+    assert.equal((await bounded('个人页玩法入口', page.$$('[data-page]'))).length, 0);
+    page = await open('/pages/purchased/purchased');
+    await dataReady(page, (data) => !data.loading && !data.loadError);
+    assert.equal((await bounded('已购玩法入口', page.$$('collection-share, .build-entry, .radar-section'))).length, 0);
+    for (const url of [`/pages/share/share?id=${shared.path.split('/').at(-1)}`, '/pages/builds/builds']) await assertUnavailable(await open(url));
+    for (const route of [shared.path, '/api/builds']) {
+      const response = await fetch(`${fixture.baseUrl}${route}`, { headers: { 'X-WX-OPENID': testOpenid }, signal: AbortSignal.timeout(8000) });
+      assert.equal(response.status, 403, '服务端全关必须拒绝旧链接和进度读取');
+      assert.equal((await response.json()).code, 'FEATURE_DISABLED');
+      report.actions.push({ step: activeStep, type: 'feature-disabled-http', path: route, status: 403 });
+    }
+    page = await bounded('当前关闭的进度页', miniProgram.currentPage());
+    const buildsOnly = setFixtureFeatures(['builds']);
+    await refreshForegroundFeatures(page, buildsOnly);
+    const restored = await dataReady(page, (data) => data.featureEnabled && !data.loading && data.items.some((item) => item.modelId === 'rg-001'));
+    const record = restored.items.find((item) => item.modelId === 'rg-001');
+    assert.deepEqual([record.quantity, record.completedCount, record.buildingCount, record.goal], [3, 1, 1, `${privateMarker}_GOAL`]);
+    await checkpoint('builds-only-reenabled-progress-preserved', page, '.briefing');
+    page = await open('/pages/home/home');
+    assert.equal((await bounded('仅开启进度入口', page.$$('[data-entry="builds"]'))).length, 1);
+    assert.equal((await bounded('其余玩法仍关闭', page.$$('.search-section, .recent-list, [data-entry="squad"], [data-entry="quiz"], [data-entry="lineage"], [data-entry="compare"]'))).length, 0);
+  } finally {
+    for (const [variable, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[variable];
+      else process.env[variable] = value;
+    }
+  }
+}
+
 async function runVerification() {
   const suites = [
     ['01-home-search-recent-series', homeAndSeries], ['02-model-favorite-purchase', modelCollection],
     ['03-wishlist-purchased-public-shares', collectionShares], ['04-squad-draft-share-canvas', squad],
     ['05-quiz-create-visitor-server-score', quiz], ['06-builds-progress-goal-report', builds],
     ['07-lineage-progress', lineage], ['08-compare-two-models-share', compare],
+    ['09-layout-loading-server-feature-controls', layoutAndFeatureControls],
   ];
   evidenceDir = await fs.mkdtemp(path.join(os.tmpdir(), 'gundam-simulator-evidence-'));
   projectPath = path.join(evidenceDir, 'test-project');
@@ -556,6 +693,9 @@ async function runVerification() {
     originalDraft = await bounded('备份本地编队草稿', miniProgram.callWxMethod('getStorageSync', 'gundam-squad-draft-v1'));
     draftRead = true;
     await bounded('移除测试副本的旧草稿', miniProgram.callWxMethod('removeStorageSync', 'gundam-squad-draft-v1'));
+    assert.deepEqual(await request(`${fixture.baseUrl}/api/features`), { version: 1, features: enabledFeatures });
+    const home = await open('/pages/home/home');
+    await poll('原八组玩法全部启用', () => home.data('features'), (features) => Object.keys(enabledFeatures).every((key) => features?.[key] === true));
     for (const [name, operation] of suites) {
       remaining();
       await step(name, operation);
@@ -586,7 +726,7 @@ async function runVerification() {
     }
     report.finishedAt = new Date().toISOString();
     await fs.writeFile(path.join(evidenceDir, 'result.json'), JSON.stringify(report, null, 2));
-    console.log(`[simulator] ${report.status}；${report.steps.filter((result) => result.status === 'pass').length}/8 组通过；证据：${path.join(evidenceDir, 'result.json')}`);
+    console.log(`[simulator] ${report.status}；${report.steps.filter((result) => result.status === 'pass').length}/${suites.length} 组通过；证据：${path.join(evidenceDir, 'result.json')}`);
     if (report.status !== 'simulator-validated-with-device-boundaries') process.exitCode = 1;
     if (report.backend.cleanupError || report.disconnectError) process.exit(1);
   }
@@ -613,7 +753,7 @@ async function main() {
   }
 }
 
-module.exports = { findScrollContainer, waitForStableOffset, main };
+module.exports = { findScrollContainer, waitForStableOffset, assertSameMenuLayout, main };
 
 if (require.main === module) {
   process.once('SIGINT', () => { interrupted = true; });

@@ -1,3 +1,5 @@
+import { canShareKind, featureRevision, FeatureUnavailableError, getFeatures, isFeatureEnabled } from '../../utils/feature-flags';
+import { bindPageFeatures, isCurrentPage, unbindPageFeatures } from '../../utils/feature-page';
 import { getShare, submitQuiz } from '../../utils/hangar-service';
 import type { ShareKind, ShareSnapshot } from '../../utils/hangar-service';
 import type { GundamModel } from '../../utils/types';
@@ -51,7 +53,10 @@ Page({
   _id: '',
   _unloaded: false,
   _loadRequest: 0,
+  _loadingSnapshot: null as Promise<void> | null,
   data: {
+    features: getFeatures(),
+    featureEnabled: false,
     snapshot: null as PublicSnapshot | null,
     kindLabel: '',
     loading: true,
@@ -66,33 +71,65 @@ Page({
   onLoad(options: Record<string, string | undefined>) {
     this._id = options.id || '';
     this.setData({ safeAreaBottom: getApp<IAppOption>().globalData.safeAreaBottom });
-    wx.hideShareMenu();
-    return this.loadSnapshot();
+    if (isCurrentPage(this)) wx.hideShareMenu();
+    unbindPageFeatures(this);
+    bindPageFeatures(this, 'sharing', (enabled) => {
+      this._loadRequest++;
+      if (enabled) { this._loadingSnapshot = this.loadSnapshot(); return; }
+      if (isCurrentPage(this)) wx.hideShareMenu();
+      this.setData({ featureEnabled: false, loading: false, loadError: '', submitting: false });
+    });
+    return this._loadingSnapshot || Promise.resolve();
   },
-  onUnload() { this._unloaded = true; },
+  onShow() {
+    if (!isCurrentPage(this)) return;
+    if (!!this.data.snapshot && canShareKind(this.data.snapshot.kind) && this.data.featureEnabled) wx.showShareMenu({ menus: ['shareAppMessage'] });
+    else wx.hideShareMenu();
+  },
+  onUnload() { this._unloaded = true; unbindPageFeatures(this); },
 
   async loadSnapshot() {
+    if (!isFeatureEnabled('sharing')) return;
+    const epoch = featureRevision();
     if (!this._id || this._id.length > 100 || !/^[A-Za-z0-9_-]+$/.test(this._id)) {
       this.setData({ loading: false, loadError: '分享链接无效，请从好友发送的小程序卡片重新打开' });
       return;
     }
     const request = ++this._loadRequest;
+    const id = this._id;
     this.setData({ loading: true, loadError: '' });
     try {
-      const response = await getShare(this._id);
-      const snapshot = publicSnapshot(response, this._id);
-      if (this._unloaded || request !== this._loadRequest) return;
-      this.setData({ snapshot, kindLabel: KIND_LABELS[snapshot.kind], answers: ['', '', ''], result: null, submitError: '' });
-      wx.showShareMenu({ menus: ['shareAppMessage'] });
-    } catch {
-      if (!this._unloaded && request === this._loadRequest) this.setData({ loadError: '分享暂时无法打开，可能已失效或网络异常，请重试' });
+      const response = await getShare(id);
+      if (this._unloaded || request !== this._loadRequest || id !== this._id || epoch !== featureRevision()) return;
+      if (!canShareKind(response.kind)) { this.setData({ featureEnabled: false }); return; }
+      const snapshot = publicSnapshot(response, id);
+      const previous = this.data.snapshot;
+      const sameQuiz = previous?.id === snapshot.id && previous.kind === 'quiz' && snapshot.kind === 'quiz'
+        && snapshot.questions.every((question, index) => question.prompt === previous.questions[index]?.prompt
+          && JSON.stringify(question.optionIds) === JSON.stringify(previous.questions[index].optionIds));
+      const answers = sameQuiz ? snapshot.questions.map((question, index) => question.optionIds.includes(this.data.answers[index]) ? this.data.answers[index] : '') : ['', '', ''];
+      const result = sameQuiz && this.data.result && answers.every(Boolean)
+        && snapshot.questions.every((question, index) => question.optionIds.includes(previous!.questions[index].correctId)) ? this.data.result : null;
+      snapshot.questions = snapshot.questions.map((question, index) => ({
+        ...question, selectedId: answers[index],
+        correctId: result ? previous!.questions[index].correctId : '',
+        correctName: result ? question.options.find((model) => model.id === previous!.questions[index].correctId)!.name : '',
+      }));
+      this.setData({ snapshot, kindLabel: KIND_LABELS[snapshot.kind], answers, result, submitError: '' });
+      if (isCurrentPage(this)) wx.showShareMenu({ menus: ['shareAppMessage'] });
+    } catch (error) {
+      if (error instanceof FeatureUnavailableError) {
+        if (!this._unloaded && request === this._loadRequest) this.setData({ featureEnabled: false });
+        return;
+      }
+      if (!this._unloaded && request === this._loadRequest && epoch === featureRevision()) this.setData({ loadError: '分享暂时无法打开，可能已失效或网络异常，请重试' });
     } finally {
       if (!this._unloaded && request === this._loadRequest) this.setData({ loading: false });
     }
   },
 
   handleAnswer(e: WechatMiniprogram.TouchEvent) {
-    if (this.data.result || this.data.submitting || !this.data.snapshot) return;
+    if (this.data.result || this.data.submitting || !this.data.snapshot || !canShareKind(this.data.snapshot.kind)) return;
     const index = Number(e.currentTarget.dataset.index);
     const id = e.currentTarget.dataset.id as string;
     const question = this.data.snapshot.questions[index];
@@ -105,6 +142,9 @@ Page({
 
   async handleSubmitQuiz() {
     const snapshot = this.data.snapshot;
+    if (!canShareKind('quiz')) return;
+    const request = this._loadRequest;
+    const epoch = featureRevision();
     if (!snapshot || snapshot.kind !== 'quiz' || this.data.submitting || this.data.result) return;
     if (snapshot.questions.some((question, index) => !question.optionIds.includes(this.data.answers[index]))) {
       wx.showToast({ title: '请完成全部 3 道题', icon: 'none' });
@@ -114,31 +154,33 @@ Page({
     this.setData({ submitting: true, submitError: '' });
     try {
       const result = await submitQuiz(this._id, answers);
-      if (this._unloaded) return;
+      if (this._unloaded || request !== this._loadRequest || epoch !== featureRevision() || !canShareKind('quiz')) return;
       if (!Number.isInteger(result.score) || result.total !== 3 || result.score < 0 || result.score > 3 || !Array.isArray(result.correctAnswers) || result.correctAnswers.length !== 3
         || snapshot.questions.some((question, index) => !question.optionIds.includes(result.correctAnswers[index]))) throw new Error('判分结果无效');
       const questions = snapshot.questions.map((question, index) => ({ ...question, correctId: result.correctAnswers[index], correctName: question.options.find((model) => model.id === result.correctAnswers[index])!.name }));
       this.setData({ result: { score: result.score, total: result.total }, snapshot: { ...snapshot, questions } });
     } catch {
-      if (!this._unloaded) this.setData({ submitError: '判分失败，已保留答案，请重试' });
+      if (!this._unloaded && request === this._loadRequest && epoch === featureRevision() && canShareKind('quiz')) this.setData({ submitError: '判分失败，已保留答案，请重试' });
     } finally {
-      if (!this._unloaded) this.setData({ submitting: false });
+      if (!this._unloaded && request === this._loadRequest) this.setData({ submitting: false });
     }
   },
 
   handleModel(e: WechatMiniprogram.TouchEvent) {
     const id = e.currentTarget.dataset.id as string;
-    if (this.data.snapshot && this.data.snapshot.models.some((model) => model.id === id)) wx.navigateTo({ url: `/pages/model/model?id=${encodeURIComponent(id)}` });
+    if (this.data.snapshot && canShareKind(this.data.snapshot.kind) && this.data.snapshot.models.some((model) => model.id === id)) wx.navigateTo({ url: `/pages/model/model?id=${encodeURIComponent(id)}` });
   },
   handleCopySquad() {
-    if (this.data.snapshot && this.data.snapshot.kind === 'squad') wx.navigateTo({ url: `/pages/squad/squad?shareId=${encodeURIComponent(this._id)}` });
+    if (canShareKind('squad') && this.data.snapshot && this.data.snapshot.kind === 'squad') wx.navigateTo({ url: `/pages/squad/squad?shareId=${encodeURIComponent(this._id)}` });
   },
   handleCreate() {
+    if (!this.data.snapshot || !canShareKind(this.data.snapshot.kind) || !isFeatureEnabled(this.data.snapshot.kind === 'quiz' ? 'quiz' : 'squad')) return;
     wx.navigateTo({ url: this.data.snapshot && this.data.snapshot.kind === 'quiz' ? '/pages/quiz/quiz' : '/pages/squad/squad' });
   },
   handleExplore() { wx.switchTab({ url: '/pages/home/home' }); },
   handleBack() { wx.navigateBack({ fail: () => wx.switchTab({ url: '/pages/home/home' }) }); },
   onShareAppMessage() {
+    if (!this.data.snapshot || !canShareKind(this.data.snapshot.kind)) return { title: '高达模型目录', path: '/pages/home/home' };
     return { title: this.data.snapshot ? this.data.snapshot.title : '高达模型机库', path: this.data.snapshot ? `/pages/share/share?id=${encodeURIComponent(this._id)}` : '/pages/home/home' };
   },
 });

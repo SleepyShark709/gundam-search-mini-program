@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { loadModule } = require('./helpers/load-typescript.cjs');
+const { enabledFeatures } = require('./helpers/enabled-features.cjs');
 
 const lineages = loadModule('miniprogram/data/lineages.ts').exports;
 const discovery = loadModule('miniprogram/utils/discovery.ts', { mocks: { '../data/lineages': lineages } }).exports;
@@ -21,6 +22,7 @@ function page({ models = [model('rg-001'), model('mg-002'), model('pg-003')], qu
   const calls = { navigation: [], toasts: [], shares: [], updates: [], copied: [] };
   const { definition } = loadModule('miniprogram/pages/discover/discover.ts', {
     mocks: {
+      ...enabledFeatures().mocks,
       '../../utils/model-service': modelService || {
         getAllModels: () => models,
         refreshModelsWithStatus: async (code) => ({ models: refresh ? await refresh(code) : models.filter((item) => item.series === code), refreshed: true }),
@@ -209,6 +211,7 @@ test('首页保留等级轮播并将搜索、近期、玩法导航到对应页�
   const navigation = [];
   const { definition } = loadModule('miniprogram/pages/home/home.ts', {
     mocks: {
+      ...enabledFeatures().mocks,
       '../../utils/model-service': {
         getSeriesMeta: () => ['hg', 'rg', 'mg', 'pg'].map((code) => ({ code })), refreshSeriesMeta: async () => [],
         getAllModels: () => [model('rg-001')], refreshModels: async () => [],

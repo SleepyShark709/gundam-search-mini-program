@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { loadModule } = require('./helpers/load-typescript.cjs');
+const { enabledFeatures } = require('./helpers/enabled-features.cjs');
 
 function deferred() {
   let resolve;
@@ -67,6 +68,7 @@ function session({ storage = new Map(), appId = 'test-mini', envVersion = 'relea
   let app;
   loadModule('miniprogram/app.ts', {
     mocks: {
+      './utils/feature-flags': enabledFeatures().flags,
       './utils/cloud-favorites': wishlist,
       './utils/purchase-service': purchases,
       './utils/model-service': { refreshSeriesMeta() {} },
@@ -76,6 +78,7 @@ function session({ storage = new Map(), appId = 'test-mini', envVersion = 'relea
   });
   const { definition } = loadModule('miniprogram/pages/profile/profile.ts', {
     mocks: {
+      ...enabledFeatures().mocks,
       '../../utils/cloud-favorites': wishlist,
       '../../utils/purchase-service': purchases,
       '../../utils/user-service': users,

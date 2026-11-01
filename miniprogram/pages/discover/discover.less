@@ -68,5 +68,5 @@ button::after { border: 0; }
 .error-text { display: block; font-size: 23rpx; color: @color-accent-warning; margin-top: 16rpx; }
 .empty-state { display: flex; flex-direction: column; align-items: center; gap: 16rpx; padding: 64rpx 16rpx; color: @color-text-secondary; }
 .empty-symbol { font: 72rpx monospace; color: @color-text-muted; }
-.load-more { background: transparent; color: @color-accent-primary; border: 1rpx solid @color-border; line-height: 80rpx; margin-top: 24rpx; border-radius: 8rpx; font-size: 24rpx; }
+.load-more { width: 100%; min-width: 0; height: 80rpx; padding: 0 16rpx; box-sizing: border-box; white-space: nowrap; background: transparent; color: @color-accent-primary; border: 1rpx solid @color-border; line-height: 78rpx; margin-top: 24rpx; border-radius: 8rpx; font-size: 24rpx; }
 .bottom-space { height: calc(64rpx + env(safe-area-inset-bottom)); }

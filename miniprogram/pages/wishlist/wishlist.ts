@@ -1,3 +1,4 @@
+import { canShareKind } from '../../utils/feature-flags';
 import { getAllModels, refreshMissingModels } from '../../utils/model-service';
 import { loadWishlist, getWishlist, isInWishlist, toggleWishlist } from '../../utils/cloud-favorites';
 import { isPurchased, addPurchase, updatePurchase, getPurchaseRecord, loadPurchases } from '../../utils/purchase-service';
@@ -122,13 +123,13 @@ Page({
   },
 
   handleSharePrepared(e: WechatMiniprogram.CustomEvent<{ id: string }>) {
-    this.setData({ publicShareId: e.detail.id });
+    if (canShareKind('wishlist')) this.setData({ publicShareId: e.detail.id });
   },
 
   onShareAppMessage() {
     return {
-      title: this.data.publicShareId ? '我的高达心愿单' : '高达模型目录',
-      path: this.data.publicShareId ? `/pages/share/share?id=${this.data.publicShareId}` : '/pages/home/home',
+      title: canShareKind('wishlist') && this.data.publicShareId ? '我的高达心愿单' : '高达模型目录',
+      path: canShareKind('wishlist') && this.data.publicShareId ? `/pages/share/share?id=${this.data.publicShareId}` : '/pages/home/home',
     };
   },
 

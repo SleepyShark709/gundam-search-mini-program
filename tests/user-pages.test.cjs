@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { loadModule } = require('./helpers/load-typescript.cjs');
+const { enabledFeatures } = require('./helpers/enabled-features.cjs');
 
 function deferred() {
   let resolve;
@@ -67,6 +68,7 @@ function page(name, { models = [], modelService, state = {}, wishlist = {}, purc
   };
   const { definition } = loadModule(`miniprogram/pages/${name}/${name}.ts`, {
     mocks: {
+      ...enabledFeatures().mocks,
       '../../utils/model-service': modelService || { getAllModels: () => models, refreshMissingModels: async () => models },
       '../../utils/cloud-favorites': {
         getWishlist: () => state.ids,

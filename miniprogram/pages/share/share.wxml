@@ -1,5 +1,7 @@
 <view class="page">
   <header title="好友的机库" showBack bind:back="handleBack" />
+  <feature-unavailable wx:if="{{!featureEnabled}}" />
+  <block wx:else>
   <scroll-view class="scroll-area" scroll-y>
     <view class="body" style="padding-bottom: calc(60rpx + {{safeAreaBottom}}px)">
       <view class="state" wx:if="{{loading}}"><text class="state-code">CONNECTING // HANGAR</text><text class="state-title">正在接收机库信号…</text></view>
@@ -31,8 +33,9 @@
           <button wx:if="{{snapshot.kind === 'squad'}}" class="secondary-button" bind:tap="handleCopySquad">以此编队为起点，组建我的阵容</button>
         </block>
 
-        <view class="footer-actions"><button class="primary-button" bind:tap="handleCreate">{{snapshot.kind === 'quiz' ? '我也来出一套测试' : '创建我的六机阵容'}}</button><button class="secondary-button" open-type="share">把这份机库分享给好友</button><text class="helper">{{snapshot.kind === 'quiz' ? '题目答案由出题者亲自选择。' : '公开快照仅供查看，自己的机库由自己编辑。'}}</text></view>
+        <view class="footer-actions"><button wx:if="{{snapshot.kind === 'quiz' ? features.quiz : features.squad}}" class="primary-button" bind:tap="handleCreate">{{snapshot.kind === 'quiz' ? '我也来出一套测试' : '创建我的六机阵容'}}</button><button class="secondary-button" open-type="share">把这份机库分享给好友</button><text class="helper">{{snapshot.kind === 'quiz' ? '题目答案由出题者亲自选择。' : '公开快照仅供查看，自己的机库由自己编辑。'}}</text></view>
       </block>
     </view>
   </scroll-view>
+  </block>
 </view>

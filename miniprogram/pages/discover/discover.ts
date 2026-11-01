@@ -1,3 +1,5 @@
+import { canShareKind, getFeatures, isFeatureEnabled, FeatureKey } from '../../utils/feature-flags';
+import { bindPageFeatures, unbindPageFeatures } from '../../utils/feature-page';
 import { getAllModels, refreshModelsWithStatus } from '../../utils/model-service';
 import { getPurchases, loadPurchases } from '../../utils/purchase-service';
 import { createShare } from '../../utils/hangar-service';
@@ -9,6 +11,8 @@ const PAGE_SIZE = 40;
 
 Page({
   data: {
+    features: getFeatures(),
+    featureEnabled: false,
     mode: 'search',
     title: '全局搜索',
     modeNotice: '',
@@ -45,22 +49,35 @@ Page({
     let keyword = query.keyword || '';
     try { keyword = decodeURIComponent(keyword); } catch {}
     const titles = { search: '全局搜索', new: '近期发售目录', lineage: '机体谱系', compare: '两台 PK' };
-    this.catalog = getAllModels();
+
     this.setData({
       mode, title: titles[mode], keyword: keyword.slice(0, 100),
       visibleCount: PAGE_SIZE, selectedIds: [], selectedModels: [], comparisonRows: [],
       shareId: '', generatingShare: false, shareError: '', purchasesLoading: false, purchasesError: false,
       modeNotice: query.mode && !['search', 'new', 'lineage', 'compare'].includes(query.mode) ? '入口已更新，已为你打开全局搜索' : '',
-      purchasesKnown: getPurchases().length > 0,
+      purchasesKnown: false,
     });
-    this.updateResults();
-    this.refreshCatalog();
+    unbindPageFeatures(this);
+    const key: FeatureKey = mode === 'lineage' || mode === 'compare' ? mode : 'discovery';
+    bindPageFeatures(this, key, (enabled) => {
+      this.refreshRevision++;
+      this.purchaseRevision++;
+      this.shareRevision++;
+      this.setData({ refreshing: false, purchasesLoading: false, shareId: '', generatingShare: false, shareError: '' });
+      if (!enabled) return;
+      this.catalog = getAllModels();
+      this.setData({ purchasesKnown: getPurchases().length > 0 });
+      this.updateResults();
+      void this.refreshCatalog();
+      if (mode === 'lineage') void this.refreshPurchases();
+    });
   },
   onShow() {
-    if (this.data.mode === 'lineage') this.refreshPurchases();
+    if (this.data.featureEnabled && this.data.mode === 'lineage') this.refreshPurchases();
   },
   onUnload() {
     this.active = false;
+    unbindPageFeatures(this);
     this.refreshRevision++;
     this.purchaseRevision++;
     this.shareRevision++;
@@ -69,6 +86,7 @@ Page({
     wx.navigateBack({ fail: () => wx.switchTab({ url: '/pages/home/home' }) });
   },
   async refreshCatalog() {
+    if (!this.isAvailable()) return;
     const revision = ++this.refreshRevision;
     this.setData({ refreshing: true, refreshError: false });
     const results = await Promise.allSettled((['hg', 'rg', 'mg', 'pg'] as SeriesCode[]).map(async (code) => {
@@ -84,6 +102,7 @@ Page({
     this.setData({ refreshing: false, refreshError: results.some((result) => result.status === 'rejected' || !result.value) });
   },
   async refreshPurchases() {
+    if (!this.isAvailable()) return;
     const revision = ++this.purchaseRevision;
     this.setData({ purchasesLoading: true, purchasesError: false });
     let success = false;
@@ -92,10 +111,16 @@ Page({
     this.setData({ purchasesLoading: false, purchasesError: !success, purchasesKnown: success || this.data.purchasesKnown });
     this.updateLineage();
   },
+  isAvailable() {
+    const mode = this.data.mode;
+    return this.active && isFeatureEnabled(mode === 'lineage' || mode === 'compare' ? mode : 'discovery');
+  },
   updateLineage() {
+    if (!this.isAvailable()) return;
     this.setData({ lineage: lineageProgress(lineageById(this.data.lineageId), this.catalog, getPurchases(), this.data.purchasesKnown) });
   },
   updateResults() {
+    if (!this.isAvailable()) return;
     const found = this.data.mode === 'new' ? recentModels(this.catalog) : searchCatalog(this.catalog, this.data.keyword);
     const selectedModels = this.data.selectedIds.map((id) => this.catalog.find((model: GundamModel) => model.id === id))
       .filter((model): model is GundamModel => !!model).map(modelFacts);
@@ -115,31 +140,38 @@ Page({
     if (this.data.mode === 'lineage') this.updateLineage();
   },
   handleKeywordInput(e: WechatMiniprogram.Input) {
+    if (!this.isAvailable()) return;
     this.setData({ keyword: e.detail.value, visibleCount: PAGE_SIZE });
     this.updateResults();
   },
   handleSearch() {
+    if (!this.isAvailable()) return;
     this.setData({ visibleCount: PAGE_SIZE });
     this.updateResults();
   },
   handleLoadMore() {
+    if (!this.isAvailable()) return;
     this.setData({ visibleCount: this.data.visibleCount + PAGE_SIZE });
     this.updateResults();
   },
   handleLineage(e: WechatMiniprogram.TouchEvent) {
+    if (!this.isAvailable()) return;
     this.setData({ lineageId: lineageById(e.currentTarget.dataset.id).id });
     this.updateLineage();
   },
   handleModel(e: WechatMiniprogram.TouchEvent) {
+    if (!this.isAvailable()) return;
     const id = e.currentTarget.dataset.id;
     if (!this.catalog.some((model: GundamModel) => model.id === id)) return;
     wx.navigateTo({ url: `/pages/model/model?id=${encodeURIComponent(id)}` });
   },
   handleSource(e: WechatMiniprogram.TouchEvent) {
+    if (!this.isAvailable()) return;
     const url = e.currentTarget.dataset.url;
     if (url) wx.setClipboardData({ data: url });
   },
   handleSelectModel(e: WechatMiniprogram.TouchEvent) {
+    if (!this.isAvailable()) return;
     const id = e.currentTarget.dataset.id;
     if (!this.catalog.some((model: GundamModel) => model.id === id)) return;
     const selection = toggleCompareSelection(this.data.selectedIds, id);
@@ -152,6 +184,7 @@ Page({
     this.updateResults();
   },
   async handlePrepareShare() {
+    if (!this.isAvailable() || !canShareKind('compare')) return;
     if (this.data.selectedIds.length !== 2 || this.data.generatingShare) return;
     const revision = ++this.shareRevision;
     const modelIds = [...this.data.selectedIds];
@@ -167,7 +200,7 @@ Page({
     }
   },
   onShareAppMessage() {
-    return this.data.mode === 'compare' && this.data.shareId
+    return this.isAvailable() && canShareKind('compare') && this.data.mode === 'compare' && this.data.shareId
       ? { title: '我的下一台出击', path: `/pages/share/share?id=${encodeURIComponent(this.data.shareId)}` }
       : { title: '高达模型目录 · 发现你的下一台', path: '/pages/home/home' };
   },

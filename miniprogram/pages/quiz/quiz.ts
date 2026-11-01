@@ -1,3 +1,5 @@
+import { canShareKind, featureRevision, getFeatures, isFeatureEnabled } from '../../utils/feature-flags';
+import { bindPageFeatures, isCurrentPage, unbindPageFeatures } from '../../utils/feature-page';
 import { getAllModels, refreshMissingModels } from '../../utils/model-service';
 import { loadSquadDraft } from '../../utils/squad-draft';
 import { createShare } from '../../utils/hangar-service';
@@ -16,7 +18,11 @@ interface QuestionDraft {
 Page({
   _revision: 0,
   _unloaded: false,
+  _initialized: false,
+  _initializing: null as Promise<void> | null,
   data: {
+    features: getFeatures(),
+    featureEnabled: false,
     title: '谁更懂我的机库？',
     templates: PROMPTS,
     questions: PROMPTS.map((prompt, templateIndex): QuestionDraft => ({ id: `question-${templateIndex}`, prompt, templateIndex, models: [], optionIds: [], answerId: '' })),
@@ -30,28 +36,55 @@ Page({
     safeAreaBottom: 0,
   },
 
-  async onLoad() {
+  onLoad() {
+    bindPageFeatures(this, 'quiz', (enabled) => {
+      if (enabled) { void this.initialize(); return; }
+      this._revision++;
+      if (isCurrentPage(this)) wx.hideShareMenu();
+      this._initializing = null;
+      this.setData({ preparedId: '', preparing: false, shareError: '' });
+    });
+    return this._initializing || Promise.resolve();
+  },
+  initialize(): Promise<void> {
+    if (this._initialized || this._initializing || !isFeatureEnabled('quiz')) return this._initializing || Promise.resolve();
+    const revision = this._revision;
+    this._initializing = this.restoreDraft().then(() => {
+      if (!this._unloaded && revision === this._revision && isFeatureEnabled('quiz')) this._initialized = true;
+    }).finally(() => { if (revision === this._revision) this._initializing = null; });
+    return this._initializing;
+  },
+  async restoreDraft() {
     this.setData({ safeAreaBottom: getApp<IAppOption>().globalData.safeAreaBottom });
-    wx.hideShareMenu();
+    if (isCurrentPage(this)) wx.hideShareMenu();
+    if (!isFeatureEnabled('squad')) return;
+    const revision = this._revision;
     const { draft } = loadSquadDraft();
     if (!draft || !draft.modelIds.length) return;
     let catalog = getAllModels();
     try { catalog = await refreshMissingModels(draft.modelIds); } catch { /* 使用本地目录 */ }
-    if (this._unloaded) return;
+    if (this._unloaded || revision !== this._revision || !isFeatureEnabled('quiz') || !isFeatureEnabled('squad')) return;
     this.setData({ squadModels: draft.modelIds.map((id) => catalog.find((model) => model.id === id)).filter((model): model is GundamModel => !!model) });
   },
-  onUnload() { this._unloaded = true; },
+  onShow() {
+    if (!isCurrentPage(this)) return;
+    if (canShareKind('quiz') && !!this.data.preparedId) wx.showShareMenu({ menus: ['shareAppMessage'] });
+    else wx.hideShareMenu();
+  },
+  onUnload() { this._unloaded = true; unbindPageFeatures(this); },
 
   invalidateShare() {
     this._revision += 1;
     this.setData({ preparedId: '', shareError: '' });
-    wx.hideShareMenu();
+    if (isCurrentPage(this)) wx.hideShareMenu();
   },
   handleTitle(e: WechatMiniprogram.Input) {
+    if (!isFeatureEnabled('quiz')) return;
     this.invalidateShare();
     this.setData({ title: e.detail.value.slice(0, 30) });
   },
   handleTemplate(e: WechatMiniprogram.PickerChange) {
+    if (!isFeatureEnabled('quiz')) return;
     const index = Number(e.currentTarget.dataset.index);
     const templateIndex = Number(e.detail.value);
     if (!this.data.questions[index] || !PROMPTS[templateIndex]) return;
@@ -60,11 +93,13 @@ Page({
     this.setData({ questions });
   },
   handleOpenPicker(e: WechatMiniprogram.TouchEvent) {
+    if (!isFeatureEnabled('quiz')) return;
     const index = Number(e.currentTarget.dataset.index);
     if (!this.data.questions[index]) return;
     this.setData({ pickerOpen: true, activeQuestion: index, activeOptionIds: this.data.questions[index].optionIds });
   },
   handleClosePicker() {
+    if (!isFeatureEnabled('quiz')) return;
     const question = this.data.questions[this.data.activeQuestion];
     if (question.optionIds.length !== 3) {
       wx.showToast({ title: '每题需要恰好 3 台候选机体', icon: 'none' });
@@ -72,8 +107,12 @@ Page({
     }
     this.setData({ pickerOpen: false });
   },
-  handleCancelPicker() { this.setData({ pickerOpen: false }); },
+  handleCancelPicker() {
+    if (!isFeatureEnabled('quiz')) return;
+    this.setData({ pickerOpen: false });
+  },
   handleSelection(e: WechatMiniprogram.CustomEvent<{ ids: string[]; models: GundamModel[] }>) {
+    if (!isFeatureEnabled('quiz')) return;
     const { ids, models } = e.detail;
     if (ids.length > 3 || new Set(ids).size !== ids.length || ids.length !== models.length) return;
     this.invalidateShare();
@@ -83,12 +122,15 @@ Page({
     this.setData({ questions, activeOptionIds: ids });
   },
   handleUseSquad() {
+    if (!isFeatureEnabled('quiz')) return;
+    if (!isFeatureEnabled('squad')) return;
     const models = this.data.squadModels.slice(0, 3);
     if (models.length < 3) { wx.showToast({ title: '编队至少需要 3 台才能复用选项', icon: 'none' }); return; }
     this.handleSelection({ detail: { ids: models.map((model) => model.id), models } } as WechatMiniprogram.CustomEvent<{ ids: string[]; models: GundamModel[] }>);
     wx.showToast({ title: '已使用编队前 3 台', icon: 'success' });
   },
   handleAnswer(e: WechatMiniprogram.TouchEvent) {
+    if (!isFeatureEnabled('quiz')) return;
     const index = Number(e.currentTarget.dataset.index);
     const id = e.currentTarget.dataset.id as string;
     if (!this.data.questions[index] || !this.data.questions[index].optionIds.includes(id)) return;
@@ -97,6 +139,8 @@ Page({
     this.setData({ questions });
   },
   async handlePrepareShare() {
+    if (!canShareKind('quiz')) return;
+    const epoch = featureRevision();
     if (this.data.preparing) return;
     if (!this.data.title.trim() || this.data.questions.some((question) => question.optionIds.length !== 3 || !question.optionIds.includes(question.answerId))) {
       wx.showToast({ title: '请为 3 道题各选 3 台机体并指定答案', icon: 'none' });
@@ -108,17 +152,18 @@ Page({
       const questions = this.data.questions.map(({ prompt, optionIds, answerId }) => ({ prompt, optionIds: optionIds.slice(), answerId }));
       const modelIds = [...new Set(questions.flatMap((question) => question.optionIds))];
       const result = await createShare({ kind: 'quiz', title: this.data.title.trim(), modelIds, questions });
-      if (this._unloaded || revision !== this._revision) return;
+      if (this._unloaded || revision !== this._revision || epoch !== featureRevision() || !canShareKind('quiz')) return;
       this.setData({ preparedId: result.id });
-      wx.showShareMenu({ menus: ['shareAppMessage'] });
+      if (isCurrentPage(this)) wx.showShareMenu({ menus: ['shareAppMessage'] });
     } catch {
-      if (!this._unloaded && revision === this._revision) this.setData({ shareError: '测试保存失败，请检查网络后重试' });
+      if (!this._unloaded && revision === this._revision && epoch === featureRevision() && canShareKind('quiz')) this.setData({ shareError: '测试保存失败，请检查网络后重试' });
     } finally {
-      if (!this._unloaded) this.setData({ preparing: false });
+      if (!this._unloaded && epoch === featureRevision()) this.setData({ preparing: false });
     }
   },
   onShareAppMessage() {
-    return { title: this.data.title.trim() || '谁更懂我的机库？', path: this.data.preparedId ? `/pages/share/share?id=${encodeURIComponent(this.data.preparedId)}` : '/pages/quiz/quiz' };
+    if (!isFeatureEnabled('quiz')) return { title: '高达模型目录', path: '/pages/home/home' };
+    return { title: this.data.title.trim() || '谁更懂我的机库？', path: canShareKind('quiz') && this.data.preparedId ? `/pages/share/share?id=${encodeURIComponent(this.data.preparedId)}` : '/pages/quiz/quiz' };
   },
   handleBack() { wx.navigateBack({ fail: () => wx.switchTab({ url: '/pages/home/home' }) }); },
 });

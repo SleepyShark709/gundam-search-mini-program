@@ -1,5 +1,6 @@
 {
   "usingComponents": {
-    "header": "../../components/header/header"
+    "header": "../../components/header/header",
+    "feature-unavailable": "../../components/feature-unavailable/feature-unavailable"
   }
 }

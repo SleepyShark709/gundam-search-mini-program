@@ -9,6 +9,7 @@ import userRouter from './routes/user';
 import forumRouter from './routes/forum';
 import sharesRouter, { publicSharesRouter } from './routes/shares';
 import buildsRouter from './routes/builds';
+import { getFeatures } from './utils/features';
 
 const app = express();
 const PORT = Number(process.env.PORT || 80);
@@ -26,6 +27,10 @@ app.get('/', (_req, res) => {
 });
 
 // ---- 公开 API 路由（不需要认证） ----
+app.get('/api/features', (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ version: 1, features: getFeatures() });
+});
 app.use('/api', modelsRouter);
 app.use('/api/shares', publicSharesRouter);
 

@@ -7,19 +7,22 @@ const enabled = process.env.MYSQL_INTEGRATION === '1';
 const modelIds = ['hg-001', 'hg-002', 'hg-003'];
 const owner = 'integration-owner';
 const other = 'integration-other';
+const featureEnvNames = ['FEATURE_DISCOVERY', 'FEATURE_SHARING', 'FEATURE_SQUAD', 'FEATURE_QUIZ',
+  'FEATURE_BUILDS', 'FEATURE_LINEAGE', 'FEATURE_COMPARE', 'FEATURE_PILOT_RATING'];
 
 test('真实 MySQL 与 HTTP 机库集成验收', {
   skip: enabled ? false : '请显式设置 MYSQL_INTEGRATION=1，并使用 MYSQL_TEST_* 指向本机测试实例',
   timeout: 60000,
 }, async (t) => {
-  const authEnvNames = ['DOTENV_CONFIG_PATH', 'NODE_ENV', 'ALLOW_LOCAL_MOCK_AUTH', 'WX_APPID'];
+  const authEnvNames = ['DOTENV_CONFIG_PATH', 'NODE_ENV', 'ALLOW_LOCAL_MOCK_AUTH', 'WX_APPID', ...featureEnvNames];
   const environmentBefore = authEnvNames.map((name) => process.env[name]);
   const { connection, baseUrl, database, close } = await createMysqlFixture();
   assert.equal(process.env.NODE_ENV, 'production');
   assert.equal(process.env.ALLOW_LOCAL_MOCK_AUTH, 'false');
+  for (const name of featureEnvNames) assert.equal(process.env[name], 'true', `${name} 旧验收须显式开启`);
   t.after(async () => {
     await close();
-    assert.deepEqual(authEnvNames.map((name) => process.env[name]), environmentBefore, 'fixture必须恢复dotenv及认证环境变量');
+    assert.deepEqual(authEnvNames.map((name) => process.env[name]), environmentBefore, 'fixture必须恢复dotenv、认证及功能开关环境变量');
     t.diagnostic(`已验证随机测试库 ${database} 完整清理`);
   });
   await t.test('迁移在旧表结构上创建机库表，重复执行保留既有用户数据', async () => {
@@ -45,6 +48,7 @@ test('真实 MySQL 与 HTTP 机库集成验收', {
   }
   const progress = { quantity: 3, completedCount: 1, buildingCount: 1, goal: '完成主体', goalDoneDate: null };
   let snapshot;
+  let quizSnapshotId;
 
   await t.test('健康检查、鉴权、公开错误与目录字段类型符合实际 HTTP 合同', async () => {
     assert.equal((await request('GET', '/')).status, 'ok');
@@ -174,6 +178,7 @@ test('真实 MySQL 与 HTTP 机库集成验收', {
   await t.test('quiz GET 隐藏答案，公开 POST 使用快照核分并拒绝无效选项', async () => {
     const questions = modelIds.map((answerId, index) => ({ prompt: `第 ${index + 1} 题`, optionIds: modelIds, answerId }));
     const { id } = await request('POST', '/api/shares', { as: owner, body: { kind: 'quiz', title: '认机挑战', modelIds, questions } });
+    quizSnapshotId = id;
     const value = await request('GET', `/api/shares/${id}`);
     assert.equal(value.questions.length, 3);
     assert.doesNotMatch(JSON.stringify(value), /answerId|correctAnswers|quiz_answers|openid/);
@@ -201,5 +206,53 @@ test('真实 MySQL 与 HTTP 机库集成验收', {
     await request('PUT', `/api/builds/${modelIds[0]}`, { as: owner, body: progress, status: 404 });
     await request('DELETE', `/api/purchases/${modelIds[0]}`, { as: owner, status: 404 });
     await request('DELETE', `/api/purchases/${modelIds[1]}`, { as: other });
+  });
+
+  await t.test('八项功能全关时公开配置不缓存，基础目录、收藏、购买和用户仍可用', async () => {
+    const previous = featureEnvNames.map((name) => process.env[name]);
+    for (const name of featureEnvNames) process.env[name] = 'false';
+    try {
+      const response = await fetch(`${baseUrl}/api/features`, { signal: AbortSignal.timeout(5000) });
+      assert.equal(response.status, 200, '公开配置无需微信身份');
+      assert.equal(response.headers.get('cache-control'), 'no-store');
+      assert.deepEqual(await response.json(), { version: 1, features: {
+        discovery: false, sharing: false, squad: false, quiz: false,
+        builds: false, lineage: false, compare: false, pilotRating: false,
+      } });
+      assert.equal((await request('GET', '/api/models/hg')).data.length, 3);
+      assert.equal((await request('GET', '/api/series-meta')).data.length, 1);
+      const as = 'all-features-disabled';
+      await request('POST', '/api/wishlist', { as, body: { modelId: modelIds[0] } });
+      assert.deepEqual((await request('GET', '/api/wishlist', { as })).modelIds, [modelIds[0]]);
+      await request('DELETE', `/api/wishlist/${modelIds[0]}`, { as });
+      await request('POST', '/api/purchases', { as, body: { modelId: modelIds[0], priceCny: 88 } });
+      await request('PUT', `/api/purchases/${modelIds[0]}`, { as, body: { priceCny: 99 } });
+      assert.equal((await request('GET', '/api/purchases', { as })).purchases[0].priceCny, 99);
+      await request('DELETE', `/api/purchases/${modelIds[0]}`, { as });
+      await request('POST', '/api/user/profile', { as, body: { nickname: '基础用户' } });
+      assert.equal((await request('GET', '/api/user/profile', { as })).nickname, '基础用户');
+      for (const [method, route, body] of [
+        ['GET', '/api/builds'], ['PUT', `/api/builds/${modelIds[0]}`, progress],
+        ['POST', '/api/shares', { kind: 'wishlist', title: '清单', modelIds }],
+        ['GET', `/api/shares/${snapshot.id}`],
+        ['POST', `/api/shares/${quizSnapshotId}/answers`, { answers: modelIds }],
+      ]) {
+        assert.deepEqual(await request(method, route, { as, body, status: 403 }), {
+          code: 'FEATURE_DISABLED', error: '该功能暂未开放',
+        });
+      }
+    } finally {
+      featureEnvNames.forEach((name, index) => { process.env[name] = previous[index]; });
+    }
+  });
+
+  await t.test('开启堆积但尚未迁移时 HTTP 明确返回不可用，基础购买仍正常', async () => {
+    await connection.query('DROP TABLE build_progress');
+    for (const [method, route, body] of [['GET', '/api/builds'], ['PUT', `/api/builds/${modelIds[0]}`, progress]]) {
+      assert.deepEqual(await request(method, route, { as: owner, body, status: 503 }), {
+        code: 'FEATURE_UNAVAILABLE', error: '该功能暂不可用，请稍后重试',
+      });
+    }
+    assert.deepEqual((await request('GET', '/api/purchases', { as: owner })).purchases, []);
   });
 });

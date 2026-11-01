@@ -1,3 +1,5 @@
+import { canShareKind, getFeatures, isFeatureEnabled } from '../../utils/feature-flags';
+import { bindPageFeatures, unbindPageFeatures } from '../../utils/feature-page';
 import { loadBuildProgress, BuildProgress } from '../../utils/hangar-service';
 import { pilotProgress } from '../../utils/pilot-progress';
 import { getAllModels, refreshMissingModels } from '../../utils/model-service';
@@ -70,10 +72,13 @@ Page({
   _isHorizontalSwipe: false,
   _directionLocked: false,
   _buildProgress: [] as BuildProgress[],
+  _buildRevision: 0,
+  _buildLoading: null as Promise<void> | null,
   _baseOffsetPx: 0,
   _openOffsetPx: 0,
 
   data: {
+    features: getFeatures(),
     // 列表数据
     purchaseItems: [] as PurchaseItem[],
     loading: true,
@@ -81,6 +86,7 @@ Page({
     publicShareId: '',
     loadError: false,
     buildSyncError: false,
+    buildProgressKnown: false,
     statusBarHeight: 20,
     safeAreaBottom: 0,
     exchangeRate: 0.05,
@@ -146,29 +152,51 @@ Page({
   },
 
   onShow() {
+    bindPageFeatures(this, 'builds', (enabled) => {
+      if (enabled) { void this.refreshBuildProgress(); return; }
+      this._buildRevision++;
+      this._buildLoading = null;
+      this.setData({ buildSyncError: false, publicShareId: '', scoreDetailOpen: false });
+    });
+    if (isFeatureEnabled('builds')) void this.refreshBuildProgress();
     return this.loadData();
   },
 
   onUnload() {
     this._unloaded = true;
+    unbindPageFeatures(this);
   },
 
   handleRetry() {
+    if (isFeatureEnabled('builds')) void this.refreshBuildProgress();
     return this.loadData();
+  },
+
+  refreshBuildProgress(): Promise<void> {
+    if (this._unloaded || !isFeatureEnabled('builds')) return Promise.resolve();
+    if (this._buildLoading) return this._buildLoading;
+    const revision = ++this._buildRevision;
+    this._buildLoading = loadBuildProgress().then((records) => {
+      if (this._unloaded || revision !== this._buildRevision || !isFeatureEnabled('builds')) return;
+      this._buildProgress = records;
+      this.setData({ buildSyncError: false, buildProgressKnown: true });
+      if (!this.data.loading && !this.data.loadError) this.refreshList();
+    }).catch(() => {
+      if (!this._unloaded && revision === this._buildRevision && isFeatureEnabled('builds')) this.setData({ buildSyncError: true });
+    }).finally(() => { if (revision === this._buildRevision) this._buildLoading = null; });
+    return this._buildLoading;
   },
 
   loadData(): Promise<void> {
     if (this._loading) return this._loading;
     if (this._unloaded) return Promise.resolve();
     this.setData({ loading: true, loadError: false });
-    this._loading = Promise.allSettled([loadPurchases(), loadWishlist(), loadBuildProgress()]).then(async ([purchaseResult, _wishlistResult, buildResult]) => {
+    this._loading = Promise.allSettled([loadPurchases(), loadWishlist()]).then(async ([purchaseResult]) => {
       if (this._unloaded) return;
       if (purchaseResult.status !== 'fulfilled' || !purchaseResult.value) {
         this.setData({ loadError: true });
         return;
       }
-      if (buildResult.status === 'fulfilled') this._buildProgress = buildResult.value;
-      this.setData({ buildSyncError: buildResult.status !== 'fulfilled' });
       try {
         this._allModels = await refreshMissingModels(getPurchases().map((record) => record.modelId));
       } catch {
@@ -315,17 +343,18 @@ Page({
     });
 
     // 绘制雷达图（需等待 wx:if 条件渲染完成后 canvas 才存在于 DOM）
-    if (hasStats) {
+    if (hasStats && this.data.buildProgressKnown && isFeatureEnabled('pilotRating') && isFeatureEnabled('builds')) {
       wx.nextTick(() => {
-        if (!this._unloaded) this.drawRadar();
+        if (!this._unloaded && this.data.buildProgressKnown && isFeatureEnabled('pilotRating') && isFeatureEnabled('builds')) this.drawRadar();
       });
     }
   },
 
   drawRadar() {
+    if (!this.data.buildProgressKnown || !isFeatureEnabled('pilotRating') || !isFeatureEnabled('builds')) return;
     const query = wx.createSelectorQuery();
     query.select('#radarCanvas').fields({ node: true, size: true }).exec((res) => {
-      if (this._unloaded || !res || !res[0] || !res[0].node) return;
+      if (this._unloaded || !this.data.buildProgressKnown || !isFeatureEnabled('pilotRating') || !isFeatureEnabled('builds') || !res || !res[0] || !res[0].node) return;
 
       const canvas = res[0].node;
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -610,18 +639,18 @@ Page({
     this._isHorizontalSwipe = false;
   },
 
-  handleBuilds() { wx.navigateTo({ url: '/pages/builds/builds' }); },
+  handleBuilds() { if (isFeatureEnabled('builds')) wx.navigateTo({ url: '/pages/builds/builds' }); },
 
   // ---------- 分享 ----------
 
   handleSharePrepared(e: WechatMiniprogram.CustomEvent<{ id: string }>) {
-    this.setData({ publicShareId: e.detail.id });
+    if (canShareKind('purchased')) this.setData({ publicShareId: e.detail.id });
   },
 
   onShareAppMessage() {
     return {
-      title: this.data.publicShareId ? '我的高达收藏' : '高达模型目录',
-      path: this.data.publicShareId ? `/pages/share/share?id=${this.data.publicShareId}` : '/pages/home/home',
+      title: canShareKind('purchased') && this.data.publicShareId ? '我的高达收藏' : '高达模型目录',
+      path: canShareKind('purchased') && this.data.publicShareId ? `/pages/share/share?id=${this.data.publicShareId}` : '/pages/home/home',
     };
   },
 

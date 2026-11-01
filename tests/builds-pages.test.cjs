@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { loadModule } = require('./helpers/load-typescript.cjs');
+const { enabledFeatures } = require('./helpers/enabled-features.cjs');
 
 const plain = (value) => JSON.parse(JSON.stringify(value));
 const summary = loadModule('miniprogram/utils/build-summary.ts').exports;
@@ -26,6 +27,7 @@ function session({ records = [record()], load, refresh, save, share } = {}) {
   const catalog = records.map(({ modelId }) => ({ id: modelId, name: `模型 ${modelId}`, imageUrl: '/image.jpg', series: 'hg' }));
   const { definition } = loadModule('miniprogram/pages/builds/builds.ts', {
     mocks: {
+      ...enabledFeatures().mocks,
       '../../utils/model-service': { getAllModels: () => catalog, refreshMissingModels: refresh || (async () => catalog) },
       '../../utils/build-summary': summary,
       '../../utils/hangar-service': {

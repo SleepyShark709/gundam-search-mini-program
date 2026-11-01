@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 const vm = require('node:vm');
-const { findScrollContainer, waitForStableOffset } = require('../scripts/verify-simulator.cjs');
+const { findScrollContainer, waitForStableOffset, assertSameMenuLayout } = require('../scripts/verify-simulator.cjs');
 
 // 单测只验证 runner 的作用域和失败清理，不代表真实模拟器验收通过。
 test('虚拟购买组件的实际弹层优先滚动自身内容，不查询背景页面', async () => {
@@ -76,6 +76,13 @@ test('连续稳定后再次移动的元素不能用于点击', async () => {
   const target = { async offset() { return { left: 16, top: tops[reads++] }; } };
   await assert.rejects(waitForStableOffset('卡片滚动', target, () => true), /仍须稳定且在视口内/);
   assert.equal(reads, tops.length);
+});
+
+test('个人页提示层允许像素舍入，但不能推挤基础菜单或改变其高度', () => {
+  const normal = [{ left: 16, top: 400, width: 358, height: 120 }];
+  assertSameMenuLayout(normal, [{ left: 16, top: 400.5, width: 358, height: 120 }]);
+  assert.throws(() => assertSameMenuLayout(normal, [{ ...normal[0], top: 420 }]), /不能挤动菜单/);
+  assert.throws(() => assertSameMenuLayout(normal, [{ ...normal[0], height: 150 }]), /不能挤动菜单/);
 });
 
 test('同样762px逻辑窗口下按模型页844px渲染根判断，同时保留首页原生tabbar遮挡', async () => {
@@ -195,7 +202,7 @@ function runStartupFailure(t, mode) {
   const calls = JSON.parse(fs.readFileSync(path.join(evidenceDir, 'cleanup.json'), 'utf8'));
   assert.equal(report.status, 'failed');
   assert.equal(report.backend.cleanedUp, true);
-  assert.equal(report.steps.length, 8);
+  assert.equal(report.steps.length, 9);
   assert.ok(report.steps.every((step) => step.status === 'not-run'));
   return { report, calls };
 }

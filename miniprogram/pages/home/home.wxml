@@ -1,7 +1,7 @@
 <view class="page">
   <header title="GUNDAM SEARCH" showBack="{{false}}" />
   <scroll-view class="content" scroll-y>
-    <view class="search-section">
+    <view class="search-section" wx:if="{{features.discovery}}">
       <text class="eyebrow">HANGAR / 机库发现</text>
       <view class="search-bar">
         <input class="search-input" value="{{keyword}}" placeholder="名称 / 型号 / 编号" placeholder-class="input-placeholder" maxlength="100" confirm-type="search" bindinput="handleKeywordInput" bindconfirm="handleSearch" />
@@ -18,15 +18,16 @@
     </view>
     <view class="loading" wx:if="{{loading}}">加载中…</view>
 
-    <view class="section-heading"><text class="section-title">玩法实验室</text><text class="section-code">02 / PLAY</text></view>
-    <view class="play-grid">
-      <view class="play-card play-wide" data-entry="squad" bindtap="handleEntry" hover-class="card-hover"><text class="play-index">06</text><view><text class="play-title">六机出击</text><text class="play-subtitle">组建你的专属小队</text></view><text class="play-arrow">↗</text></view>
-      <view class="play-card" data-entry="quiz" bindtap="handleEntry" hover-class="card-hover"><text class="play-code">SYNC</text><text class="play-title">默契局</text><text class="play-subtitle">朋友能猜中你的选择吗</text></view>
-      <view class="play-card" data-entry="builds" bindtap="handleEntry" hover-class="card-hover"><text class="play-code">BUILD</text><text class="play-title">堆积管理</text><text class="play-subtitle">从盒子到完成品</text></view>
-      <view class="play-card" data-entry="lineage" bindtap="handleEntry" hover-class="card-hover"><text class="play-code">LINEAGE</text><text class="play-title">机体谱系</text><text class="play-subtitle">沿着精选机体关系探索</text></view>
-      <view class="play-card" data-entry="compare" bindtap="handleEntry" hover-class="card-hover"><text class="play-code">VERSUS</text><text class="play-title">两台 PK</text><text class="play-subtitle">下一台，选谁出击</text></view>
+    <view class="section-heading" wx:if="{{features.squad || features.quiz || features.builds || features.lineage || features.compare}}"><text class="section-title">玩法实验室</text><text class="section-code">02 / PLAY</text></view>
+    <view class="play-grid" wx:if="{{features.squad || features.quiz || features.builds || features.lineage || features.compare}}">
+      <view class="play-card play-wide" wx:if="{{features.squad}}" data-entry="squad" bindtap="handleEntry" hover-class="card-hover"><text class="play-index">06</text><view><text class="play-title">六机出击</text><text class="play-subtitle">组建你的专属小队</text></view><text class="play-arrow">↗</text></view>
+      <view class="play-card" wx:if="{{features.quiz}}" data-entry="quiz" bindtap="handleEntry" hover-class="card-hover"><text class="play-code">SYNC</text><text class="play-title">默契局</text><text class="play-subtitle">朋友能猜中你的选择吗</text></view>
+      <view class="play-card" wx:if="{{features.builds}}" data-entry="builds" bindtap="handleEntry" hover-class="card-hover"><text class="play-code">BUILD</text><text class="play-title">堆积管理</text><text class="play-subtitle">从盒子到完成品</text></view>
+      <view class="play-card" wx:if="{{features.lineage}}" data-entry="lineage" bindtap="handleEntry" hover-class="card-hover"><text class="play-code">LINEAGE</text><text class="play-title">机体谱系</text><text class="play-subtitle">沿着精选机体关系探索</text></view>
+      <view class="play-card" wx:if="{{features.compare}}" data-entry="compare" bindtap="handleEntry" hover-class="card-hover"><text class="play-code">VERSUS</text><text class="play-title">两台 PK</text><text class="play-subtitle">下一台，选谁出击</text></view>
     </view>
 
+    <block wx:if="{{features.discovery}}">
     <view class="section-heading"><text class="section-title">近期发售目录</text><button class="text-button" data-entry="new" bindtap="handleEntry">查看全部 →</button></view>
     <text class="date-note">按目录发售日期排序 · 非市场到货或再版时间</text>
     <view class="recent-list">
@@ -36,6 +37,7 @@
       </view>
       <text class="date-note" wx:if="{{!recent.length}}">暂无已收录的发售日期</text>
     </view>
+    </block>
     <view class="bottom-space"></view>
   </scroll-view>
 </view>

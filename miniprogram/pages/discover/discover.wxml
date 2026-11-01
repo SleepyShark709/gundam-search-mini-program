@@ -1,5 +1,7 @@
 <view class="page">
   <header title="{{title}}" showBack bind:back="handleBack" />
+  <feature-unavailable wx:if="{{!featureEnabled}}" />
+  <block wx:else>
   <scroll-view class="content" scroll-y>
     <view class="discovery-body">
       <text class="eyebrow">DISCOVERY / {{mode === 'compare' ? 'VERSUS' : mode === 'lineage' ? 'LINEAGE' : 'CATALOG'}}</text>
@@ -50,7 +52,7 @@
           </view>
           <view class="comparison-row" wx:for="{{comparisonRows}}" wx:key="label"><text class="comparison-label">{{item.label}}</text><view class="comparison-values"><text>{{item.left}}</text><text>{{item.right}}</text></view></view>
           <text class="footnote" wx:if="{{selectedIds.length === 2}}">价格为目录收录的官方日元价；日期非市场到货或再版时间。</text>
-          <view class="share-actions" wx:if="{{selectedIds.length === 2}}">
+          <view class="share-actions" wx:if="{{features.sharing && selectedIds.length === 2}}">
             <button wx:if="{{shareId}}" class="primary-button" open-type="share">分享这张对比卡 ↗</button>
             <button wx:else class="primary-button" loading="{{generatingShare}}" disabled="{{generatingShare}}" bindtap="handlePrepareShare">{{generatingShare ? '正在生成对比卡' : '生成对比卡'}}</button>
             <text wx:if="{{shareError}}" class="error-text">{{shareError}}</text>
@@ -68,4 +70,5 @@
     </view>
     <view class="bottom-space"></view>
   </scroll-view>
+  </block>
 </view>

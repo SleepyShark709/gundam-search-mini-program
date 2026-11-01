@@ -1,5 +1,7 @@
 <view class="page">
   <header title="机库整备" showBack bind:back="handleBack" />
+  <feature-unavailable wx:if="{{!featureEnabled}}" />
+  <block wx:else>
   <scroll-view class="body" scroll-y>
     <view class="briefing">
       <text class="eyebrow">OPERATION / BUILD THE BACKLOG</text>
@@ -13,9 +15,9 @@
       <view class="progress"><view style="width:{{summary.percent}}%"></view></view>
       <view class="actions">
         <button class="primary" bind:tap="handleDraw" disabled="{{loading || saving || !summary.quantity}}">抽选今日出击</button>
-        <button bind:tap="handlePrepareReport" loading="{{sharing}}" disabled="{{loading || saving || sharing || !summary.quantity}}">生成整备战报</button>
+        <button wx:if="{{features.sharing}}" bind:tap="handlePrepareReport" loading="{{sharing}}" disabled="{{loading || saving || sharing || !summary.quantity}}">生成整备战报</button>
       </view>
-      <text class="note">战报仅公开前50款模型及对应汇总，不包含购买金额、渠道或目标文字。</text>
+      <text wx:if="{{features.sharing}}" class="note">战报仅公开前50款模型及对应汇总，不包含购买金额、渠道或目标文字。</text>
     </view>
     <view class="error" wx:if="{{error}}"><text>{{error}}</text><button size="mini" bind:tap="loadData">重试</button></view>
     <text class="notice" wx:if="{{loading}}">正在同步机库…</text>
@@ -51,4 +53,5 @@
       <view class="actions"><button bind:tap="handleCloseEdit" disabled="{{saving}}">取消</button><button class="primary" bind:tap="handleSave" loading="{{saving}}" disabled="{{saving || loading}}">保存</button></view>
     </scroll-view>
   </view>
+  </block>
 </view>

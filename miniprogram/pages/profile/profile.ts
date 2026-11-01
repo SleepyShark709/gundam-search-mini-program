@@ -1,3 +1,5 @@
+import { getFeatures, isFeatureEnabled, FeatureKey } from '../../utils/feature-flags';
+import { bindPageFeatures, unbindPageFeatures } from '../../utils/feature-page';
 import { getWishlist, loadWishlist } from '../../utils/cloud-favorites';
 import { getPurchases, loadPurchases } from '../../utils/purchase-service';
 import { getUserInfo, updateUserProfile } from '../../utils/user-service';
@@ -12,6 +14,7 @@ Page({
   _nicknameEdited: false,
 
   data: {
+    features: getFeatures(),
     statusBarHeight: 20,
     safeAreaBottom: 0,
     wishlistCount: 0,
@@ -33,15 +36,18 @@ Page({
       statusBarHeight: app.globalData.statusBarHeight,
       safeAreaBottom: app.globalData.safeAreaBottom,
     });
+    bindPageFeatures(this);
     this.renderUserInfo();
   },
 
   onShow() {
+    bindPageFeatures(this);
     return this.loadData();
   },
 
   onUnload() {
     this._unloaded = true;
+    unbindPageFeatures(this);
   },
 
   handleRetry() {
@@ -175,7 +181,7 @@ Page({
 
   handleHangar(e: WechatMiniprogram.TouchEvent) {
     const page = e.currentTarget.dataset.page as string;
-    if (['squad', 'quiz', 'builds'].includes(page)) wx.navigateTo({ url: `/pages/${page}/${page}` });
+    if (['squad', 'quiz', 'builds'].includes(page) && isFeatureEnabled(page as FeatureKey)) wx.navigateTo({ url: `/pages/${page}/${page}` });
   },
 
   handleWishlist() {

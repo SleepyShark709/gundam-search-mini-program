@@ -2,8 +2,16 @@ import { Router, Request, Response } from 'express';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import pool from '../db/pool';
 import { MODEL_ID_PATTERN } from '../utils/share-payload';
+import { requireFeature } from '../utils/features';
 
 const router = Router();
+
+function unavailableSchema(err: unknown, res: Response): boolean {
+  const code = (err as { code?: string } | null)?.code;
+  if (code !== 'ER_NO_SUCH_TABLE' && code !== 'ER_BAD_FIELD_ERROR') return false;
+  res.status(503).json({ code: 'FEATURE_UNAVAILABLE', error: '该功能暂不可用，请稍后重试' });
+  return true;
+}
 
 function validDate(value: unknown): boolean {
   if (value === null) return true;
@@ -14,6 +22,7 @@ function validDate(value: unknown): boolean {
 }
 
 router.get('/', async (req: Request, res: Response) => {
+  if (!requireFeature('builds', res)) return;
   try {
     const [rows] = await pool.query<RowDataPacket[]>(
       `SELECT p.model_id, COALESCE(b.quantity, 1) AS quantity,
@@ -35,11 +44,13 @@ router.get('/', async (req: Request, res: Response) => {
     })) });
   } catch (err) {
     console.error('[GET /api/builds]', err);
+    if (unavailableSchema(err, res)) return;
     res.status(500).json({ error: '获取堆积进度失败' });
   }
 });
 
 router.put('/:modelId', async (req: Request, res: Response) => {
+  if (!requireFeature('builds', res)) return;
   const { modelId } = req.params;
   const { quantity, completedCount, buildingCount, goal, goalDoneDate } = req.body || {};
   const counts = [quantity, completedCount, buildingCount];
@@ -67,6 +78,7 @@ router.put('/:modelId', async (req: Request, res: Response) => {
     res.json({ modelId, quantity, completedCount, buildingCount, goal, goalDoneDate });
   } catch (err) {
     console.error('[PUT /api/builds/:modelId]', err);
+    if (unavailableSchema(err, res)) return;
     res.status(500).json({ error: '保存堆积进度失败' });
   }
 });

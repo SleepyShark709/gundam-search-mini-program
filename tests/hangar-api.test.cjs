@@ -9,6 +9,8 @@ const plain = (value) => JSON.parse(JSON.stringify(value));
 const payloadUtils = loadModule('server/src/utils/share-payload.ts').exports;
 const shareId = 'a'.repeat(32);
 const modelIds = ['hg-001', 'rg-002', 'mg-003'];
+const featureEnvNames = ['FEATURE_DISCOVERY', 'FEATURE_SHARING', 'FEATURE_SQUAD', 'FEATURE_QUIZ',
+  'FEATURE_BUILDS', 'FEATURE_LINEAGE', 'FEATURE_COMPARE', 'FEATURE_PILOT_RATING'];
 const quizInput = () => ({
   kind: 'quiz', title: '认机挑战', modelIds,
   questions: modelIds.map((answerId, index) => ({ prompt: `第 ${index + 1} 题`, optionIds: modelIds, answerId })),
@@ -20,7 +22,7 @@ const modelRow = (id) => ({
   updated_at: 'private metadata', openid: 'other-user', price_cny: '999.00', purchase_date: '2026-01-01',
 });
 
-function routeSession(file, query = async () => [[]], moderation = async () => ({ pass: true })) {
+function routeSession(file, query = async () => [[]], moderation = async () => ({ pass: true }), featureEnv = {}) {
   const routers = [];
   const calls = [];
   const checks = [];
@@ -31,11 +33,15 @@ function routeSession(file, query = async () => [[]], moderation = async () => (
     routers.push(router);
     return router;
   } };
+  const features = loadModule('server/src/utils/features.ts', {
+    globals: { process: { env: { ...Object.fromEntries(featureEnvNames.map((name) => [name, 'true'])), ...featureEnv } } },
+  }).exports;
   const { exports } = loadModule(file, {
     mocks: {
       express,
       '../db/pool': { default: { query: async (sql, params) => { calls.push({ sql, params }); return query(sql, params); } } },
       '../utils/share-payload': payloadUtils,
+      '../utils/features': features,
       '../utils/msg-sec-check': { msgSecCheck: async (text, openid) => { checks.push({ text, openid }); return moderation(text, openid); } },
     },
     globals: { console: quietConsole },
@@ -50,12 +56,12 @@ function routeSession(file, query = async () => [[]], moderation = async () => (
   return { exports, calls, checks, invoke, routers };
 }
 
-function shareSession(query, moderation) {
-  return routeSession('server/src/routes/shares.ts', query, moderation);
+function shareSession(query, moderation, featureEnv) {
+  return routeSession('server/src/routes/shares.ts', query, moderation, featureEnv);
 }
 
-function buildSession(query) {
-  return routeSession('server/src/routes/builds.ts', query);
+function buildSession(query, featureEnv) {
+  return routeSession('server/src/routes/builds.ts', query, undefined, featureEnv);
 }
 
 const progress = () => ({ modelId: 'hg-001', quantity: 3, completedCount: 1, buildingCount: 1, goal: '周末完成', goalDoneDate: null });
@@ -243,6 +249,81 @@ test('堆积读取和保存 SQL 异常只返回通用失败信息', async () => 
   }
 });
 
+test('关闭堆积时读取和保存均在参数校验与 SQL 前拒绝', async () => {
+  const current = buildSession(undefined, { FEATURE_BUILDS: 'false' });
+  for (const [method, route] of [['get', '/'], ['put', '/:modelId']]) {
+    const result = await current.invoke(method, route);
+    assert.equal(result.statusCode, 403);
+    assert.deepEqual(result.body, { code: 'FEATURE_DISABLED', error: '该功能暂未开放' });
+  }
+  assert.equal(current.calls.length, 0);
+});
+
+test('开启堆积但未迁移表结构时明确返回不可用', async () => {
+  for (const code of ['ER_NO_SUCH_TABLE', 'ER_BAD_FIELD_ERROR']) {
+    const current = buildSession(async () => { throw Object.assign(new Error('private schema detail'), { code }); });
+    for (const [method, route] of [['get', '/'], ['put', '/:modelId']]) {
+      const result = await current.invoke(method, route, { params: { modelId: 'hg-001' }, body: progress() });
+      assert.equal(result.statusCode, 503);
+      assert.deepEqual(result.body, { code: 'FEATURE_UNAVAILABLE', error: '该功能暂不可用，请稍后重试' });
+    }
+  }
+});
+
+test('关闭分享后创建、既有快照和答题均不查询数据库或审核内容', async () => {
+  const current = shareSession(undefined, undefined, { FEATURE_SHARING: 'false' });
+  for (const [method, route, router] of [
+    ['post', '/', current.exports.default],
+    ['get', '/:id', current.exports.publicSharesRouter],
+    ['post', '/:id/answers', current.exports.publicSharesRouter],
+  ]) {
+    const result = await current.invoke(method, route, { params: { id: shareId }, body: quizInput() }, router);
+    assert.equal(result.statusCode, 403);
+    assert.deepEqual(result.body, { code: 'FEATURE_DISABLED', error: '该功能暂未开放' });
+  }
+  assert.equal(current.calls.length, 0);
+  assert.equal(current.checks.length, 0);
+});
+
+test('分享总开关开启时，各玩法创建仍在审核和 SQL 前检查对应开关', async () => {
+  for (const [kind, flag] of [['squad', 'FEATURE_SQUAD'], ['quiz', 'FEATURE_QUIZ'], ['compare', 'FEATURE_COMPARE'], ['report', 'FEATURE_BUILDS']]) {
+    const current = shareSession(undefined, undefined, { [flag]: 'false' });
+    const body = kind === 'quiz' ? quizInput() : {
+      kind, title: '分享', modelIds: kind === 'compare' ? modelIds.slice(0, 2) : modelIds,
+      ...(kind === 'report' ? { report: { quantity: 3, completedCount: 1, buildingCount: 1 } } : {}),
+    };
+    const result = await current.invoke('post', '/', { body });
+    assert.equal(result.statusCode, 403, kind);
+    assert.equal(result.body.code, 'FEATURE_DISABLED');
+    assert.equal(current.calls.length, 0, kind);
+    assert.equal(current.checks.length, 0, kind);
+  }
+});
+
+test('读取旧快照按 kind 拦截，wishlist 和 purchased 仅依赖分享开关', async () => {
+  const closed = Object.fromEntries(featureEnvNames.filter((name) => name !== 'FEATURE_SHARING').map((name) => [name, 'false']));
+  for (const kind of ['squad', 'quiz', 'compare', 'report', 'wishlist', 'purchased']) {
+    const current = shareSession(async () => [[{ payload: { kind, title: '旧快照', models: [] } }]], undefined, closed);
+    const result = await current.invoke('get', '/:id', { params: { id: shareId } }, current.exports.publicSharesRouter);
+    assert.equal(result.statusCode, ['wishlist', 'purchased'].includes(kind) ? 200 : 403, kind);
+    assert.equal(current.calls.length, 1);
+    assert.doesNotMatch(current.calls[0].sql, /quiz_answers/);
+    if (result.statusCode === 403) assert.deepEqual(result.body, { code: 'FEATURE_DISABLED', error: '该功能暂未开放' });
+  }
+  for (const kind of ['wishlist', 'purchased']) {
+    const current = shareSession(async (sql) => sql.includes('FROM models') ? [[modelRow('hg-001')]] : [{ affectedRows: 1 }], undefined, closed);
+    assert.equal((await current.invoke('post', '/', { body: { kind, title: '清单', modelIds: ['hg-001'] } })).statusCode, 200);
+  }
+});
+
+test('关闭 quiz 时即使 sharing 开启也不读取快照答案', async () => {
+  const current = shareSession(undefined, undefined, { FEATURE_QUIZ: 'false' });
+  const result = await current.invoke('post', '/:id/answers', { params: { id: shareId }, body: { answers: modelIds } }, current.exports.publicSharesRouter);
+  assert.equal(result.statusCode, 403);
+  assert.equal(result.body.code, 'FEATURE_DISABLED');
+  assert.equal(current.calls.length, 0);
+});
+
 test('公开分享路由先于认证，创建分享和堆积路由位于认证之后', () => {
   const uses = [];
   const app = { use: (...args) => uses.push(args), get() {}, listen() {} };
@@ -258,6 +339,7 @@ test('公开分享路由先于认证，创建分享和堆积路由位于认证�
       './routes/purchases': { default: 'purchases' }, './routes/user': { default: 'user' },
       './routes/forum': { default: 'forum' }, './routes/shares': { default: 'createShare', publicSharesRouter: 'publicShares' },
       './routes/builds': { default: 'builds' },
+      './utils/features': { getFeatures: () => ({}) },
     },
     globals: { __dirname: '/server/src', process: { env: {} }, console: quietConsole },
   });
@@ -283,6 +365,7 @@ test('客户端复用 callAPI、编码分享 ID 并解析 CDN 图片地址', asy
   const service = loadModule('miniprogram/utils/hangar-service.ts', {
     mocks: {
       './cdn-config': cdn,
+      './feature-flags': { requireFeature() {}, canShareKind: () => true, featureRevision: () => 0 },
       './api': { callAPI: async (options) => {
         calls.push(plain(options));
         if (options.path.startsWith('/api/shares/') && options.method === 'GET') return { id: shareId, kind: 'squad', title: '出击', models: [{ id: 'hg-001', imageUrl: '/images/main.jpg', images: ['/images/detail.jpg'] }] };
@@ -304,7 +387,10 @@ test('客户端复用 callAPI、编码分享 ID 并解析 CDN 图片地址', asy
   assert.deepEqual(calls.map(({ method }) => method), ['POST', 'GET', 'POST', 'GET', 'PUT']);
   assert.equal(calls[4].path, '/api/builds/hg-001');
   const broken = loadModule('miniprogram/utils/hangar-service.ts', {
-    mocks: { './api': { callAPI: async () => { throw new Error('network failed'); } }, './cdn-config': cdn },
+    mocks: {
+      './api': { callAPI: async () => { throw new Error('network failed'); } }, './cdn-config': cdn,
+      './feature-flags': { requireFeature() {}, canShareKind: () => true, featureRevision: () => 0 },
+    },
   }).exports;
   await assert.rejects(broken.loadBuildProgress(), /network failed/);
   await assert.rejects(broken.createShare(quizInput()), /network failed/);

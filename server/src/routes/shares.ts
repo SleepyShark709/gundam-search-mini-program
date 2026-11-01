@@ -4,6 +4,7 @@ import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import pool from '../db/pool';
 import { msgSecCheck } from '../utils/msg-sec-check';
 import { parseShareInput, publicModel } from '../utils/share-payload';
+import { requireFeature, requireShareKind } from '../utils/features';
 
 const router = Router();
 export const publicSharesRouter = Router();
@@ -14,11 +15,13 @@ function readJson(value: any): any {
 }
 
 router.post('/', async (req: Request, res: Response) => {
+  if (!requireFeature('sharing', res)) return;
   const input = parseShareInput(req.body);
   if (!input) {
     res.status(400).json({ error: '分享参数无效，请检查标题、模型数量和玩法设置' });
     return;
   }
+  if (!requireShareKind(input.kind, res)) return;
   try {
     const check = await msgSecCheck([input.title, ...(input.questions || []).map((q) => q.prompt)].join('\n'), req.openid);
     if (!check.pass) {
@@ -57,6 +60,7 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 publicSharesRouter.get('/:id', async (req: Request, res: Response) => {
+  if (!requireFeature('sharing', res)) return;
   const { id } = req.params;
   if (!SHARE_ID_PATTERN.test(id)) {
     res.status(404).json({ error: '分享不存在' });
@@ -68,7 +72,9 @@ publicSharesRouter.get('/:id', async (req: Request, res: Response) => {
       res.status(404).json({ error: '分享不存在' });
       return;
     }
-    res.json({ ...readJson(rows[0].payload), id });
+    const payload = readJson(rows[0].payload);
+    if (!requireShareKind(payload.kind, res)) return;
+    res.json({ ...payload, id });
   } catch (err) {
     console.error('[GET /api/shares/:id]', err);
     res.status(500).json({ error: '获取分享失败' });
@@ -76,6 +82,7 @@ publicSharesRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 publicSharesRouter.post('/:id/answers', async (req: Request, res: Response) => {
+  if (!requireFeature('sharing', res) || !requireFeature('quiz', res)) return;
   const { id } = req.params;
   if (!SHARE_ID_PATTERN.test(id)) {
     res.status(404).json({ error: '分享不存在' });

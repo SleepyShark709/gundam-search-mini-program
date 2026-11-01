@@ -87,6 +87,14 @@ async function createMysqlFixture({ allowLocalMockAuth = false } = {}) {
       ALLOW_LOCAL_MOCK_AUTH: allowLocalMockAuth ? 'true' : 'false',
       WX_APPID: 'wx422623fec834054c',
       PORT: '0',
+      FEATURE_DISCOVERY: 'true',
+      FEATURE_SHARING: 'true',
+      FEATURE_SQUAD: 'true',
+      FEATURE_QUIZ: 'true',
+      FEATURE_BUILDS: 'true',
+      FEATURE_LINEAGE: 'true',
+      FEATURE_COMPARE: 'true',
+      FEATURE_PILOT_RATING: 'true',
     };
     const env = { ...process.env, ...overrides };
     for (let index = 0; index < 2; index += 1) {

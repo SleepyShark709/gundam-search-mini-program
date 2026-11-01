@@ -1,5 +1,7 @@
 <view class="page">
   <header title="机库默契测试" showBack bind:back="handleBack" />
+  <feature-unavailable wx:if="{{!featureEnabled}}" />
+  <block wx:else>
   <scroll-view class="scroll-area" scroll-y wx:if="{{!pickerOpen}}">
     <view class="body" style="padding-bottom: calc(60rpx + {{safeAreaBottom}}px)">
       <view class="hero"><text class="eyebrow">HANGAR / CHEMISTRY TEST</text><text class="hero-title">谁更懂你的机库？</text><text class="subtitle">你来选题、配置 3 个选项，并亲自指定答案。好友作答后由服务端判分。</text></view>
@@ -16,14 +18,15 @@
         <button class="secondary-button" data-index="{{questionIndex}}" bind:tap="handleOpenPicker">{{question.models.length ? '编辑 3 个选项' : '选择 3 个选项'}}</button>
         <text class="helper" wx:if="{{question.models.length}}">点击一个选项，设为你心中的正确答案。</text>
       </view>
-      <button wx:if="{{preparedId}}" class="primary-button" open-type="share">邀请好友来答题</button>
-      <button wx:else class="primary-button" loading="{{preparing}}" disabled="{{preparing}}" bind:tap="handlePrepareShare">{{shareError ? '重试生成测试' : '生成默契测试'}}</button>
+      <button wx:if="{{features.sharing && preparedId}}" class="primary-button" open-type="share">邀请好友来答题</button>
+      <button wx:elif="{{features.sharing}}" class="primary-button" loading="{{preparing}}" disabled="{{preparing}}" bind:tap="handlePrepareShare">{{shareError ? '重试生成测试' : '生成默契测试'}}</button>
       <text class="error-text" wx:if="{{shareError}}">{{shareError}}</text>
       <text class="helper">{{preparedId ? '测试已就绪；修改任何题目后需要重新生成。' : '答案由你选择，不会根据收藏记录自动猜测。'}}</text>
     </view>
   </scroll-view>
   <view class="picker-page" wx:else>
     <view class="picker-toolbar"><button bind:tap="handleCancelPicker">返回</button><text>第 {{activeQuestion + 1}} 题 · 选择 3 台</text><button bind:tap="handleClosePicker">完成</button></view>
-    <scroll-view class="scroll-area" scroll-y><view class="body" style="padding-bottom: calc(60rpx + {{safeAreaBottom}}px)"><button wx:if="{{squadModels.length >= 3}}" class="secondary-button use-squad" bind:tap="handleUseSquad">复用六机编队前 3 台</button><model-picker selectedIds="{{activeOptionIds}}" limit="{{3}}" bind:change="handleSelection" /></view></scroll-view>
+    <scroll-view class="scroll-area" scroll-y><view class="body" style="padding-bottom: calc(60rpx + {{safeAreaBottom}}px)"><button wx:if="{{features.squad && squadModels.length >= 3}}" class="secondary-button use-squad" bind:tap="handleUseSquad">复用六机编队前 3 台</button><model-picker selectedIds="{{activeOptionIds}}" limit="{{3}}" bind:change="handleSelection" /></view></scroll-view>
   </view>
+  </block>
 </view>

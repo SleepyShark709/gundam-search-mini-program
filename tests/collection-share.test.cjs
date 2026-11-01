@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { loadModule } = require('./helpers/load-typescript.cjs');
+const { enabledFeatures } = require('./helpers/enabled-features.cjs');
 
 const plain = (value) => JSON.parse(JSON.stringify(value));
 
@@ -18,7 +19,7 @@ function component({ kind = 'wishlist', modelIds = ['hg-001'], share } = {}) {
   const navigations = [];
   const toasts = [];
   const { definition } = loadModule('miniprogram/components/collection-share/collection-share.ts', {
-    mocks: { '../../utils/hangar-service': { createShare: async (input) => { calls.push(plain(input)); return share ? share(input) : { id: 'created-share' }; } } },
+    mocks: { ...enabledFeatures().mocks, '../../utils/hangar-service': { createShare: async (input) => { calls.push(plain(input)); return share ? share(input) : { id: 'created-share' }; } } },
     globals: { wx: { navigateTo: (value) => navigations.push(value), showToast: (value) => toasts.push(value) } },
   });
   const instance = {
@@ -98,7 +99,8 @@ test('个人清单按服务真实类型读取：心愿单为 ID 数组，购买�
   for (const kind of ['wishlist', 'purchased']) {
     const { definition } = loadModule(`miniprogram/pages/${kind}/${kind}.ts`, {
       mocks: {
-        '../../utils/model-service': { getAllModels: () => catalog },
+        ...enabledFeatures().mocks,
+      '../../utils/model-service': { getAllModels: () => catalog },
         '../../utils/cloud-favorites': { getWishlist: () => ['hg-001', 'mg-999'] },
         '../../utils/purchase-service': { getPurchases: () => purchases },
         '../../utils/hangar-service': {}, '../../utils/pilot-progress': pilot,

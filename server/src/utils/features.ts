@@ -14,7 +14,7 @@ const FEATURE_ENV = {
 type FeatureName = keyof typeof FEATURE_ENV;
 
 export function getFeatures(): Record<FeatureName, boolean> {
-  return Object.fromEntries(Object.entries(FEATURE_ENV).map(([name, env]) => [name, process.env[env] === 'true'])) as Record<FeatureName, boolean>;
+  return Object.fromEntries(Object.entries(FEATURE_ENV).map(([name, env]) => [name, (process.env[env] ?? 'true') === 'true'])) as Record<FeatureName, boolean>;
 }
 
 export function requireFeature(name: FeatureName, res: Response): boolean {

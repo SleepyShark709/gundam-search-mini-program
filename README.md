@@ -237,4 +237,4 @@ Private project. All rights reserved. | 私有项目，保留所有权利。
 
 新增首页发现、可直达分享、六机阵容、胶佬默契局、机库整备、精选机体关系和两台 PK。逐项验收见 [TODO.md](TODO.md)，新表迁移、部署顺序、公开范围和原生验收见 [UPGRADE_NOTES.md](UPGRADE_NOTES.md)。部署新版后端前须运行 `server/src/scripts/migrate-hangar.ts`；Git 推送不执行生产数据库迁移或微信发布。
 
-新玩法通过 `GET /api/features` 由服务端统一开关，八项默认关闭。先发布一次支持开关的前端，再按 [服务端功能开关](UPGRADE_NOTES.md#服务端功能开关) 设置 `FEATURE_*` 环境变量并重启或发布 server；旧后端没有配置接口时保留基础浏览、收藏和购买。机库功能须先完成迁移再开启。
+新玩法通过 `GET /api/features` 由服务端统一开关，八项默认开启。先发布一次支持开关的前端，再按 [服务端功能开关](UPGRADE_NOTES.md#服务端功能开关) 设置 `FEATURE_*` 环境变量并重启或发布 server；设为 `false` 可单独关闭。若云托管保留此前的 `false` 配置，部署时需删除或改为 `true`。旧后端没有配置接口时保留基础浏览、收藏和购买，机库功能须先完成迁移再启用。

@@ -13,22 +13,22 @@ function config(env = {}) {
   return loadModule('server/src/utils/features.ts', { globals: { process: { env } } }).exports;
 }
 
-test('八个服务端功能默认全关，返回值均为布尔值', () => {
+test('八个服务端功能默认全开，返回值均为布尔值', () => {
   const actual = plain(config().getFeatures());
-  assert.deepEqual(actual, Object.fromEntries(Object.keys(flags).map((name) => [name, false])));
+  assert.deepEqual(actual, Object.fromEntries(Object.keys(flags).map((name) => [name, true])));
 });
 
 test('服务端功能独立映射环境变量，只有精确 true 开启', () => {
   for (const [name, envName] of Object.entries(flags)) {
     for (const value of ['true', 'false', 'TRUE', 'True', '1', ' true', 'true ', '']) {
       const actual = plain(config({ [envName]: value }).getFeatures());
-      assert.deepEqual(actual, Object.fromEntries(Object.keys(flags).map((key) => [key, key === name && value === 'true'])));
+      assert.deepEqual(actual, Object.fromEntries(Object.keys(flags).map((key) => [key, key === name ? value === 'true' : true])));
     }
   }
 });
 
 test('功能配置在请求时读取，不缓存过期环境值', () => {
-  const env = {};
+  const env = { FEATURE_QUIZ: 'false' };
   const current = config(env);
   assert.equal(current.getFeatures().quiz, false);
   env.FEATURE_QUIZ = 'true';

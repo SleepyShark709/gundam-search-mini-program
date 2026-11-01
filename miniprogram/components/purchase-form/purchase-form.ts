@@ -50,6 +50,9 @@ Component({
     handleDateChange(e: any) {
       this.setData({ formDate: e.detail.value });
     },
+    handleDateClear() {
+      this.setData({ formDate: '' });
+    },
     handleChannelInput(e: any) {
       this.setData({ formChannel: e.detail.value });
     },
@@ -57,11 +60,13 @@ Component({
       this.setData({ formNote: e.detail.value });
     },
     handleSubmit() {
-      const data: any = { modelId: this.data.modelId };
-      if (this.data.formPrice) data.priceCny = parseFloat(this.data.formPrice);
-      if (this.data.formDate) data.purchaseDate = this.data.formDate;
-      if (this.data.formChannel) data.channel = this.data.formChannel;
-      if (this.data.formNote) data.note = this.data.formNote;
+      const data = {
+        modelId: this.data.modelId,
+        priceCny: this.data.formPrice ? parseFloat(this.data.formPrice) : null,
+        purchaseDate: this.data.formDate || null,
+        channel: this.data.formChannel || null,
+        note: this.data.formNote || null,
+      };
       this.triggerEvent('submit', data);
     },
   },

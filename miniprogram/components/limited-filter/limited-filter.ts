@@ -18,19 +18,14 @@ Component({
   },
   properties: {
     value: { type: String, value: 'all' },
-    models: { type: Array, value: [] },
+    counts: { type: Object, value: {} },
     visible: { type: Boolean, value: false },
   },
   data: {
     filters: [] as Array<{ key: string; label: string; count: number; disabled: boolean }>,
   },
   observers: {
-    'models': function (models: any[]) {
-      const counts: Record<string, number> = { all: models.length };
-      for (const m of models) {
-        const type = m.limitedType || 'other';
-        counts[type] = (counts[type] || 0) + 1;
-      }
+    'counts': function (counts: Record<string, number>) {
       const filters = SUB_FILTERS.map((f) => ({
         key: f.key,
         label: f.label,

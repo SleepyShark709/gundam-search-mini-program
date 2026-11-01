@@ -1,0 +1,44 @@
+<view class="page">
+  <header title="六机出击" showBack bind:back="handleBack" />
+  <scroll-view class="scroll-area" scroll-y>
+    <view class="body" style="padding-bottom: calc(60rpx + {{safeAreaBottom}}px)">
+      <view class="hero"><text class="eyebrow">SQUAD / 01—06</text><text class="hero-title">你的机库，你来指挥。</text><text class="subtitle">从完整目录选择 1–6 台机体，点亮队长机位。</text></view>
+      <view class="message" wx:if="{{loading}}">正在恢复编队…</view>
+      <view class="message error" wx:if="{{loadError}}"><text>{{loadError}}</text><button bind:tap="loadSharedSquad">重试</button></view>
+      <view class="panel squad-panel">
+        <view class="panel-heading"><text>出击编队</text><text class="counter">{{modelIds.length}} / 06</text></view>
+        <input class="title-input" value="{{title}}" maxlength="30" placeholder="为编队命名，最多30字" bind:input="handleTitle" />
+        <view class="roster">
+          <view wx:for="{{slots}}" wx:key="*this" class="roster-slot {{models[index].id === captainId ? 'captain' : ''}}">
+            <text class="slot-number">0{{item}}</text>
+            <block wx:if="{{models[index]}}">
+              <image class="slot-image" src="{{models[index].imageUrl}}" mode="aspectFit" />
+              <text class="slot-name">{{models[index].name}}</text>
+              <button class="captain-action" data-id="{{models[index].id}}" bind:tap="handleCaptain">{{models[index].id === captainId ? '★ 队长' : '设为队长'}}</button>
+              <button class="remove-action" data-id="{{models[index].id}}" bind:tap="handleRemove">移除</button>
+            </block>
+            <text wx:else class="vacant">待命机位</text>
+          </view>
+        </view>
+        <text class="helper" wx:if="{{!modelIds.length}}">不需要先收藏，直接在下方目录选台即可。</text>
+        <button class="text-button" bind:tap="handleSaveDraft">保存本地草稿</button>
+      </view>
+      <view class="actions">
+        <button wx:if="{{preparedId}}" class="primary-button" open-type="share">发送编队卡片</button>
+        <button wx:else class="primary-button" loading="{{preparing}}" disabled="{{preparing || loading || !!loadError}}" bind:tap="handlePrepareShare">{{shareError ? '重试准备分享' : '准备分享编队'}}</button>
+        <text class="error-text" wx:if="{{shareError}}">{{shareError}}</text>
+        <text class="helper" wx:if="{{preparedId}}">分享已就绪；编辑编队后需要重新准备。</text>
+        <view class="secondary-actions"><button class="secondary-button" loading="{{posterLoading}}" bind:tap="handlePoster">{{posterError ? '重试生成海报' : '生成编队海报'}}</button><button class="secondary-button" bind:tap="handleQuiz">制作默契测试 →</button></view>
+        <text class="error-text" wx:if="{{posterError}}">{{posterError}}</text>
+      </view>
+      <view class="panel poster-panel" wx:if="{{posterPath}}">
+        <image class="poster-preview" src="{{posterPath}}" mode="widthFix" bind:tap="handlePreviewPoster" />
+        <view class="secondary-actions"><button class="secondary-button" bind:tap="handlePreviewPoster">预览</button><button class="secondary-button" bind:tap="handleSharePoster">分享图片</button><button class="secondary-button" bind:tap="handleSavePoster">保存相册</button></view>
+        <text class="helper">海报不含小程序码；请同时发送上方编队卡片。</text>
+      </view>
+      <view class="section-heading"><text>选择出击机体</text><text class="eyebrow">MODEL CATALOG</text></view>
+      <model-picker selectedIds="{{modelIds}}" limit="{{6}}" bind:change="handleSelection" />
+    </view>
+  </scroll-view>
+  <canvas type="2d" id="hangarPoster" class="poster-canvas"></canvas>
+</view>

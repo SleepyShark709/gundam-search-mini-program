@@ -1,31 +1,50 @@
 <view class="page">
   <header title="已购买" showBack bind:back="handleBack" />
 
+  <collection-share wx:if="{{shareModelIds.length > 0 && !loadError && !loading}}" kind="purchased" modelIds="{{shareModelIds}}" bind:prepared="handleSharePrepared" />
+
   <view class="content">
-    <!-- Loading skeleton -->
-    <view class="skeleton-list" wx:if="{{loading}}">
-      <view class="skeleton-card" wx:for="{{[1,2,3,4]}}" wx:key="*this">
-        <view class="skeleton-thumb"></view>
-        <view class="skeleton-info">
-          <view class="skeleton-text" style="width: 40%;"></view>
-          <view class="skeleton-text" style="width: 90%;"></view>
-          <view class="skeleton-text" style="width: 55%;"></view>
-        </view>
+    <view class="status-state" wx:if="{{loading && totalCount === 0}}">
+      <view class="status-art loading-art">
+        <view class="loading-scan"></view>
+        <image class="loading-image" src="/assets/gundam-loading.png" mode="aspectFit" />
+      </view>
+      <text class="status-title">正在加载已购买</text>
+      <text class="status-subtitle">正在同步你的入手记录</text>
+      <view class="status-action">
+        <view class="loading-dots"><view></view><view></view><view></view></view>
+      </view>
+    </view>
+
+    <view class="status-state" wx:elif="{{loadError && totalCount === 0}}">
+      <image class="status-art" src="/assets/gundam-loading.png" mode="aspectFit" />
+      <text class="status-title">已购买加载失败</text>
+      <text class="status-subtitle">请检查网络后重试</text>
+      <view class="status-action">
+        <button class="retry-button" bind:tap="handleRetry" hover-class="explore-hover">点击重试</button>
       </view>
     </view>
 
     <!-- Empty state -->
-    <view class="empty-state" wx:elif="{{!loading && purchaseItems.length === 0}}">
-      <text class="empty-icon">✓</text>
-      <text class="empty-title">还没有已购买的模型</text>
-      <text class="empty-subtitle">记录你入手的每一台高达</text>
-      <view class="explore-button" bind:tap="handleExplore" hover-class="explore-hover">
-        <text>去探索</text>
+    <view class="status-state" wx:elif="{{totalCount === 0}}">
+      <view class="status-art"><text class="empty-icon">✓</text></view>
+      <text class="status-title empty-title">还没有已购买的模型</text>
+      <text class="status-subtitle empty-subtitle">记录你入手的每一台高达</text>
+      <view class="status-action">
+        <view class="explore-button" bind:tap="handleExplore" hover-class="explore-hover">
+          <text>去探索</text>
+        </view>
       </view>
     </view>
 
     <!-- Main content -->
-    <scroll-view class="scroll-area" scroll-y="{{canScrollY}}" wx:elif="{{!loading}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
+    <view class="list-state" wx:else>
+      <view class="refresh-banner" wx:if="{{loading || loadError}}">
+        <view class="inline-spinner" wx:if="{{loading}}"></view>
+        <text class="refresh-message">{{loading ? '正在更新已购买…' : '加载失败，已保留上次的入手记录'}}</text>
+        <button class="inline-retry" size="mini" wx:if="{{loadError && !loading}}" bind:tap="handleRetry" hover-class="explore-hover">重试</button>
+      </view>
+      <scroll-view class="scroll-area" scroll-y="{{canScrollY}}" style="padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
 
       <!-- Stats section -->
       <view class="stats-section" wx:if="{{hasStats}}">
@@ -44,6 +63,9 @@
           </view>
         </view>
 
+        <view class="build-entry" bind:tap="handleBuilds"><text>机库整备 · 记录拼装成果</text><text>›</text></view>
+        <text class="rating-note">趣味评级按完工、整备、档案、等级探索和目标记录计算，与花费无关。</text>
+        <text class="rating-note" wx:if="{{buildSyncError}}" bind:tap="handleRetry">拼装进度同步失败，评级暂用上次记录。点击此处重新同步。</text>
         <!-- Radar chart section -->
         <view class="radar-section">
           <view class="radar-canvas-wrapper">
@@ -91,7 +113,7 @@
         <!-- Power gauge (price comparison) -->
         <view class="power-gauge" wx:if="{{hasCompare}}">
           <view class="gauge-row">
-            <text class="gauge-label">原价折合</text>
+            <text class="gauge-label">官方定价参考</text>
             <view class="gauge-track">
               <view class="gauge-fill original" style="width: 100%;"></view>
             </view>
@@ -105,7 +127,7 @@
             <text class="gauge-value">¥{{totalSpentText}}</text>
           </view>
           <view class="saved-row">
-            <text class="{{savedIsNegative ? 'saved-amount-negative' : 'saved-amount'}}">{{savedIsNegative ? '多花' : '已省'}} ¥{{savedAmountText}}</text>
+            <text class="{{savedIsNegative ? 'saved-amount-negative' : 'saved-amount'}}">{{savedIsNegative ? '高于参考' : '低于参考'}} ¥{{savedAmountText}}</text>
             <text class="saved-label">{{savedFunText}}</text>
           </view>
         </view>
@@ -145,24 +167,31 @@
               style="{{activeSwipeIndex === index ? activeSwipeStyle : ''}}">
               <view class="card-thumb" catch:tap="handleThumbTap" data-index="{{index}}">
                 <image
+                  wx:if="{{item.model}}"
                   src="{{item.model.imageUrl}}"
                   mode="aspectFill"
                   lazy-load
                 ></image>
+                <view class="missing-thumb" wx:else>待同步</view>
               </view>
               <view class="card-info" catch:tap="handleInfoTap" data-index="{{index}}">
                 <view class="card-top-row">
-                  <text class="card-series">{{item.seriesLabel}} #{{item.numberText}}</text>
+                  <text class="card-series">{{item.seriesLabel}}{{item.numberText ? ' #' + item.numberText : ''}}</text>
                   <text class="card-date">{{item.displayDate}}</text>
                 </view>
-                <text class="card-name">{{item.model.name}}</text>
+                <text class="card-name">{{item.model ? item.model.name : '模型信息暂未同步'}}</text>
+                <text class="card-note" wx:if="{{!item.model}}">{{item.modelId}}</text>
                 <view class="card-bottom-row">
                   <text class="card-price" wx:if="{{item.priceText}}">¥{{item.priceText}}</text>
                   <text class="card-no-price" wx:else>未填写价格</text>
-                  <badge variant="default" wx:if="{{item.record.channel}}">{{item.record.channel}}</badge>
+                  <view class="card-channel" wx:if="{{item.record.channel}}">
+                    <badge variant="default"><text class="card-channel-text">{{item.record.channel}}</text></badge>
+                  </view>
                 </view>
-                <text class="card-note" wx:if="{{item.record.note}}">{{item.record.note}}</text>
-                <text class="card-edit-hint">编辑</text>
+                <view class="card-footer">
+                  <text class="card-note" wx:if="{{item.record.note}}">{{item.record.note}}</text>
+                  <text class="card-edit-hint">编辑</text>
+                </view>
               </view>
             </view>
             <view class="delete-action" catch:tap="handleDelete" data-model-id="{{item.record.modelId}}">
@@ -173,6 +202,7 @@
       </view>
 
     </scroll-view>
+    </view>
   </view>
 
   <!-- Model detail bottom sheet -->

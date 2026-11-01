@@ -1,0 +1,54 @@
+<view class="page">
+  <header title="机库整备" showBack bind:back="handleBack" />
+  <scroll-view class="body" scroll-y>
+    <view class="briefing">
+      <text class="eyebrow">OPERATION / BUILD THE BACKLOG</text>
+      <text class="headline">让堆积，成为作品。</text>
+      <text class="intro">先在模型详情记录入手，再管理每款的盒数与拼装进度。</text>
+      <view class="metrics">
+        <view><text class="metric-value">{{summary.backlogCount}}</text><text>未开盒</text></view>
+        <view><text class="metric-value amber">{{summary.buildingCount}}</text><text>拼装中</text></view>
+        <view><text class="metric-value green">{{summary.completedCount}}</text><text>已完成 / {{summary.quantity}}盒</text></view>
+      </view>
+      <view class="progress"><view style="width:{{summary.percent}}%"></view></view>
+      <view class="actions">
+        <button class="primary" bind:tap="handleDraw" disabled="{{loading || saving || !summary.quantity}}">抽选今日出击</button>
+        <button bind:tap="handlePrepareReport" loading="{{sharing}}" disabled="{{loading || saving || sharing || !summary.quantity}}">生成整备战报</button>
+      </view>
+      <text class="note">战报仅公开前50款模型及对应汇总，不包含购买金额、渠道或目标文字。</text>
+    </view>
+    <view class="error" wx:if="{{error}}"><text>{{error}}</text><button size="mini" bind:tap="loadData">重试</button></view>
+    <text class="notice" wx:if="{{loading}}">正在同步机库…</text>
+    <view class="mission" wx:if="{{selected}}">
+      <text class="eyebrow">TODAY'S SORTIE</text>
+      <text class="mission-name">{{selected.model ? selected.model.name : selected.modelId}}</text>
+      <text>{{selected.goal || '设一个小目标，例如：今天完成头部素组。'}}</text>
+      <button size="mini" data-id="{{selected.modelId}}" bind:tap="handleEdit">设置整备目标</button>
+    </view>
+    <view class="tabs">
+      <view wx:for="{{filters}}" wx:key="id" class="tab {{filter === item.id ? 'active' : ''}}" data-id="{{item.id}}" bind:tap="handleFilter">{{item.label}}</view>
+    </view>
+    <view class="empty" wx:if="{{!loading && !items.length}}">
+      <text>{{summary.quantity ? '这个状态还没有模型' : '机库等待第一台机体入驻'}}</text><button bind:tap="handleExplore">去目录挑一台</button>
+    </view>
+    <view class="kit" wx:for="{{items}}" wx:key="modelId">
+      <view class="kit-top" data-id="{{item.modelId}}" bind:tap="handleModel">
+        <image src="{{item.model.imageUrl}}" mode="aspectFit" wx:if="{{item.model}}" />
+        <view class="kit-info"><text class="kit-id">{{item.modelId}}</text><text class="kit-name">{{item.model ? item.model.name : '模型信息暂未同步'}}</text><text class="counts">共{{item.quantity}}盒 · 未开{{item.backlogCount}} · 在拼{{item.buildingCount}} · 完成{{item.completedCount}}</text></view>
+      </view>
+      <view class="goal" wx:if="{{item.goal}}"><text>今日目标 / {{item.goal}}</text><button size="mini" disabled="{{saving || loading || item.doneToday}}" data-id="{{item.modelId}}" bind:tap="handleGoalDone">{{item.doneToday ? '今日已达成' : '目标完成'}}</button></view>
+      <button class="edit" size="mini" disabled="{{loading || saving}}" data-id="{{item.modelId}}" bind:tap="handleEdit">管理盒数与进度</button>
+    </view>
+    <view class="bottom-space"></view>
+  </scroll-view>
+  <view class="editor" wx:if="{{editOpen}}">
+    <scroll-view scroll-y class="editor-body">
+      <text class="headline">更新整备记录</text><text class="note">{{editId}} · 此处盒数不改变原有购买金额记录。</text>
+      <view class="field"><text>总盒数（1–999）</text><input type="number" disabled="{{saving}}" value="{{quantityInput}}" data-field="quantityInput" bindinput="handleInput" /></view>
+      <view class="field"><text>已完成盒数</text><input type="number" disabled="{{saving}}" value="{{completedInput}}" data-field="completedInput" bindinput="handleInput" /></view>
+      <view class="field"><text>正在拼装盒数</text><input type="number" disabled="{{saving}}" value="{{buildingInput}}" data-field="buildingInput" bindinput="handleInput" /></view>
+      <view class="field"><text>今日小目标</text><input disabled="{{saving}}" maxlength="100" placeholder="例如：完成一只手臂" value="{{goalInput}}" data-field="goalInput" bindinput="handleInput" /></view>
+      <view class="actions"><button bind:tap="handleCloseEdit" disabled="{{saving}}">取消</button><button class="primary" bind:tap="handleSave" loading="{{saving}}" disabled="{{saving || loading}}">保存</button></view>
+    </scroll-view>
+  </view>
+</view>

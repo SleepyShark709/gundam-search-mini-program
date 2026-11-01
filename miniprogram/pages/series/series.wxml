@@ -2,35 +2,36 @@
   <header
     title="{{seriesTitle}}"
     showBack
-    showFilter
-    filterActive="{{filterOpen}}"
     bind:back="handleBack"
-    bind:filtertap="handleFilterTap"
   />
 
   <view class="content">
     <!-- Search bar -->
     <view class="search-wrapper">
       <search-bar
+        class="search-input"
         value="{{searchInput}}"
         placeholder="搜索 {{seriesTitle}} 型号..."
         bind:input="handleSearchInput"
         bind:clear="handleSearchInput"
       />
+      <view class="filter-toggle {{filterOpen ? 'filter-toggle-active' : ''}}" bind:tap="handleFilterTap" hover-class="filter-toggle-hover">
+        <text>筛选</text>
+      </view>
     </view>
 
     <!-- Category tabs -->
     <category-tabs
       activeTab="{{activeTab}}"
-      regularCount="{{regularModels.length}}"
-      limitedCount="{{limitedModels.length}}"
+      regularCount="{{regularCount}}"
+      limitedCount="{{limitedCount}}"
       bind:change="handleTabChange"
     />
 
     <!-- Limited sub-filter -->
     <limited-filter
       value="{{limitedSubFilter}}"
-      models="{{limitedModels}}"
+      counts="{{limitedCounts}}"
       visible="{{activeTab === 'limited'}}"
       bind:change="handleLimitedChange"
     />
@@ -66,16 +67,19 @@
       show-scrollbar="{{false}}"
       scroll-top="{{scrollTop}}"
       bindscroll="handleScroll"
+      bindscrolltolower="handleLoadMore"
     >
 
       <!-- Loading skeleton -->
       <view class="model-grid" wx:if="{{loading}}" style="padding: 0 24rpx;">
-        <view class="skeleton-card skeleton-cell" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
-          <view class="skeleton-image"></view>
-          <view class="skeleton-info">
-            <view class="skeleton-text" style="width: 40%;"></view>
-            <view class="skeleton-text" style="width: 90%;"></view>
-            <view class="skeleton-text" style="width: 55%;"></view>
+        <view class="skeleton-cell" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
+          <view class="skeleton-card">
+            <view class="skeleton-image"></view>
+            <view class="skeleton-info">
+              <view class="skeleton-text" style="width: 40%;"></view>
+              <view class="skeleton-text" style="width: 90%;"></view>
+              <view class="skeleton-text" style="width: 55%;"></view>
+            </view>
           </view>
         </view>
       </view>

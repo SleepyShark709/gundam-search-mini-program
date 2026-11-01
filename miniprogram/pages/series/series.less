@@ -23,8 +23,35 @@
 }
 
 .search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: @spacing-sm;
   padding: @spacing-sm @spacing-md;
   flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-toggle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx;
+  padding: 0 @spacing-md;
+  border: 2rpx solid @color-border;
+  border-radius: @radius-lg;
+  color: @color-text-secondary;
+  font-size: @font-size-sm;
+}
+
+.filter-toggle-active,
+.filter-toggle-hover {
+  border-color: @color-accent-primary;
+  color: @color-accent-primary;
 }
 
 .sort-bar {

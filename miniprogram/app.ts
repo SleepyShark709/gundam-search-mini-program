@@ -1,7 +1,7 @@
 import { loadWishlist } from './utils/cloud-favorites';
 import { loadPurchases } from './utils/purchase-service';
 import { refreshSeriesMeta } from './utils/model-service';
-import { loadUserInfo } from './utils/user-service';
+import { getUserInfo, loadUserInfo } from './utils/user-service';
 
 const sysInfo = wx.getWindowInfo();
 const safeArea = sysInfo.safeArea;
@@ -13,7 +13,7 @@ App<IAppOption>({
     statusBarHeight: sysInfo.statusBarHeight || 20,
     safeAreaBottom: sysInfo.screenHeight - (safeArea ? safeArea.bottom : sysInfo.screenHeight),
     windowWidth: sysInfo.windowWidth,
-    userInfo: null,
+    userInfo: getUserInfo(),
     userInfoLoaded: false,
   },
   onLaunch() {
@@ -24,9 +24,9 @@ App<IAppOption>({
     this.loadUserInfo();
   },
   async loadUserInfo() {
-    const info = await loadUserInfo();
-    this.globalData.userInfo = info;
-    this.globalData.userInfoLoaded = true;
+    const success = await loadUserInfo();
+    this.globalData.userInfo = getUserInfo();
+    this.globalData.userInfoLoaded = success;
   },
   loadExchangeRate() {
     const STORAGE_KEY = 'gundam-exchange-rate';

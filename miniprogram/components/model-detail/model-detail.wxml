@@ -102,6 +102,7 @@
           </view>
         </view>
 
+        <view class="dossier-link" bind:tap="handleDossier">打开机体档案 · 分享给朋友 ›</view>
         <!-- Actions -->
         <view class="actions">
           <view class="action-btn" bind:tap="handleFavToggle" hover-class="action-hover">

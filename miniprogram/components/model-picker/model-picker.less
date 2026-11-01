@@ -1,0 +1,24 @@
+@import '../../styles/variables.less';
+:host { display: block; }
+button { margin: 0; padding: 0; border-radius: 0; font-size: 24rpx; line-height: 1.5; &::after { border: 0; } }
+.search-box { display: flex; align-items: center; height: 88rpx; background: @color-bg-secondary; border: 1rpx solid @color-border-active; border-radius: @radius-md; padding: 0 24rpx; }
+.search-mark { font-size: 46rpx; color: @color-accent-primary; margin-right: 16rpx; }
+.search-input { flex: 1; font-size: 25rpx; color: @color-text-primary; }
+.search-placeholder { color: @color-text-muted; }
+.series-tabs { display: flex; gap: 12rpx; padding: 20rpx 0; }
+.series-tab { flex: 1; padding: 12rpx 0; background: @color-bg-secondary; color: @color-text-secondary; border: 1rpx solid @color-border; border-radius: 8rpx; font-family: monospace; }
+.series-tab.active { background: rgba(0, 212, 255, .12); border-color: @color-accent-primary; color: @color-accent-primary; }
+.catalog-meta { display: flex; justify-content: space-between; font-size: 22rpx; color: @color-text-muted; margin-bottom: 20rpx; }
+.catalog-grid { display: flex; flex-wrap: wrap; gap: 16rpx; }
+.model-cell { width: calc(50% - 8rpx); padding: 12rpx; background: @color-bg-secondary; border: 1rpx solid @color-border; border-radius: @radius-md; }
+.model-cell.selected { border-color: @color-accent-primary; background: @color-bg-tertiary; }
+.model-image-wrap { height: 190rpx; position: relative; display: flex; align-items: center; justify-content: center; }
+.model-image { width: 100%; height: 100%; }
+.image-placeholder { text-transform: uppercase; color: @color-text-muted; font: 44rpx monospace; }
+.selection-dot { position: absolute; right: 0; top: 0; width: 38rpx; height: 38rpx; text-align: center; line-height: 38rpx; color: @color-accent-primary; border-radius: 50%; border: 1rpx solid @color-border-active; background: @color-bg-primary; }
+.selected .selection-dot { color: @color-bg-primary; background: @color-accent-primary; }
+.model-code { display: block; text-transform: uppercase; font: 20rpx monospace; color: @color-accent-primary; margin-top: 12rpx; }
+.model-name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 72rpx; margin-top: 8rpx; font-size: 25rpx; line-height: 36rpx; }
+.load-more, .empty button { background: transparent; color: @color-accent-primary; padding: 24rpx; margin-top: 16rpx; }
+.empty { color: @color-text-secondary; padding: 40rpx 12rpx; text-align: center; font-size: 24rpx; }
+.cell-hover { opacity: .7; }

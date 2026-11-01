@@ -1,13 +1,28 @@
-import { getAllModels } from '../../utils/model-service';
+import { getAllModels, refreshMissingModels } from '../../utils/model-service';
 import { loadWishlist, getWishlist, isInWishlist, toggleWishlist } from '../../utils/cloud-favorites';
-import { isPurchased, addPurchase, updatePurchase, getPurchaseRecord } from '../../utils/purchase-service';
+import { isPurchased, addPurchase, updatePurchase, getPurchaseRecord, loadPurchases } from '../../utils/purchase-service';
 import type { GundamModel } from '../../utils/types';
 
+interface WishlistItem {
+  id: string;
+  model: GundamModel | null;
+}
+
+const PAGE_SIZE = 40;
+
 Page({
+  _allModels: [] as GundamModel[],
+  _wishlistItems: [] as WishlistItem[],
+  _loading: null as Promise<void> | null,
+  _unloaded: false,
+
   data: {
-    allModels: [] as GundamModel[],
-    wishlistModels: [] as GundamModel[],
+    wishlistItems: [] as WishlistItem[],
+    totalCount: 0,
     loading: true,
+    shareModelIds: [] as string[],
+    publicShareId: '',
+    loadError: false,
     statusBarHeight: 20,
     safeAreaBottom: 0,
     selectedModel: null as GundamModel | null,
@@ -27,40 +42,93 @@ Page({
 
   onLoad() {
     const app = getApp<IAppOption>();
-    const allModels = getAllModels();
+    this._allModels = getAllModels();
     this.setData({
-      allModels,
       statusBarHeight: app.globalData.statusBarHeight,
       exchangeRate: app.globalData.exchangeRate || 0.05,
       safeAreaBottom: app.globalData.safeAreaBottom,
     });
+    this.refreshList();
   },
 
-  async onShow() {
-    await loadWishlist();
-    this.refreshList();
-    if (this.data.selectedModel) {
-      this.setData({
-        selectedIsWishlist: isInWishlist(this.data.selectedModel.id),
-        selectedIsPurchased: isPurchased(this.data.selectedModel.id),
-      });
-    }
-    const app = getApp<IAppOption>();
-    if (app.globalData.exchangeRate) {
-      this.setData({ exchangeRate: app.globalData.exchangeRate });
-    }
+  onShow() {
+    return this.loadData();
+  },
+
+  onUnload() {
+    this._unloaded = true;
+  },
+
+  handleRetry() {
+    return this.loadData();
+  },
+
+  loadData(): Promise<void> {
+    if (this._loading) return this._loading;
+    if (this._unloaded) return Promise.resolve();
+    this.setData({ loading: true, loadError: false });
+    this._loading = Promise.allSettled([loadWishlist(), loadPurchases()]).then(async ([wishlistResult]) => {
+      if (this._unloaded) return;
+      if (wishlistResult.status !== 'fulfilled' || !wishlistResult.value) {
+        this.setData({ loadError: true });
+        return;
+      }
+      try {
+        this._allModels = await refreshMissingModels(getWishlist());
+      } catch {
+        this._allModels = getAllModels();
+      }
+      if (this._unloaded) return;
+      this.refreshList();
+      if (this.data.selectedModel) {
+        this.setData({
+          selectedIsWishlist: isInWishlist(this.data.selectedModel.id),
+          selectedIsPurchased: isPurchased(this.data.selectedModel.id),
+        });
+      }
+      const app = getApp<IAppOption>();
+      if (app.globalData.exchangeRate) {
+        this.setData({ exchangeRate: app.globalData.exchangeRate });
+      }
+    }).finally(() => {
+      this._loading = null;
+      if (!this._unloaded) this.setData({ loading: false });
+    });
+    return this._loading;
   },
 
   refreshList() {
-    const wishlistIds = getWishlist();
-    const wishlistModels = this.data.allModels.filter((m) => wishlistIds.includes(m.id));
-    this.setData({ wishlistModels, loading: false });
+    const wishlistIds = new Set(getWishlist());
+    const wishlistItems: WishlistItem[] = [];
+    for (const model of this._allModels) {
+      if (!wishlistIds.delete(model.id)) continue;
+      wishlistItems.push({ id: model.id, model });
+    }
+    wishlistIds.forEach((id) => wishlistItems.push({ id, model: null }));
+    this._wishlistItems = wishlistItems;
+    const count = Math.max(PAGE_SIZE, this.data.wishlistItems.length);
+    this.setData({ wishlistItems: wishlistItems.slice(0, count), totalCount: wishlistItems.length,
+      shareModelIds: wishlistItems.filter((item) => item.model).map((item) => item.id), publicShareId: '' });
+  },
+
+  handleLoadMore() {
+    if (this.data.wishlistItems.length >= this._wishlistItems.length) return;
+    const count = this.data.wishlistItems.length + PAGE_SIZE;
+    this.setData({ wishlistItems: this._wishlistItems.slice(0, count) });
+  },
+
+  handleRemoveMissing(e: WechatMiniprogram.TouchEvent) {
+    return this.handleToggleWishlist({ detail: { id: e.currentTarget.dataset.id as string } });
+  },
+
+  handleSharePrepared(e: WechatMiniprogram.CustomEvent<{ id: string }>) {
+    this.setData({ publicShareId: e.detail.id });
   },
 
   onShareAppMessage() {
     return {
-      title: '我的高达心愿单',
-      path: '/pages/home/home',
+      title: this.data.publicShareId ? '我的高达心愿单' : '高达模型目录',
+      path: this.data.publicShareId ? `/pages/share/share?id=${this.data.publicShareId}` : '/pages/home/home',
     };
   },
 
@@ -94,11 +162,12 @@ Page({
 
   async handleToggleWishlist(e: any) {
     const id = e.detail.id;
-    const nowInWishlist = await toggleWishlist(id);
+    const result = await toggleWishlist(id);
     this.refreshList();
     if (this.data.selectedModel && this.data.selectedModel.id === id) {
-      this.setData({ selectedIsWishlist: nowInWishlist });
+      this.setData({ selectedIsWishlist: result.isFavorite });
     }
+    if (!result.success) wx.showToast({ title: '心愿单更新失败', icon: 'none' });
   },
 
   // Purchase
@@ -124,10 +193,12 @@ Page({
     const data = e.detail;
     const existing = getPurchaseRecord(data.modelId);
     try {
-      if (existing) {
-        await updatePurchase(data.modelId, data);
-      } else {
-        await addPurchase(data);
+      const success = existing
+        ? await updatePurchase(data.modelId, data)
+        : await addPurchase(data);
+      if (!success) {
+        wx.showToast({ title: '保存失败', icon: 'none' });
+        return;
       }
       this.setData({ formOpen: false, selectedIsPurchased: true });
       wx.showToast({ title: '保存成功', icon: 'success' });

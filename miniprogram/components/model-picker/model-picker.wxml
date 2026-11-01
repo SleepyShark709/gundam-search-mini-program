@@ -1,0 +1,22 @@
+<view class="picker">
+  <view class="search-box">
+    <text class="search-mark">⌕</text>
+    <input class="search-input" placeholder="搜索中文 / 日本語 / English" placeholder-class="search-placeholder" value="{{keyword}}" bind:input="handleSearch" confirm-type="search" />
+  </view>
+  <view class="series-tabs">
+    <button wx:for="{{seriesOptions}}" wx:key="code" class="series-tab {{series === item.code ? 'active' : ''}}" data-code="{{item.code}}" bind:tap="handleSeries">{{item.label}}</button>
+  </view>
+  <view class="catalog-meta"><text>目录 {{resultCount}} 台</text><text>{{selectedIds.length}} / {{limit}} 已选</text></view>
+  <view class="empty" wx:if="{{!resultCount}}">
+    <text>{{loading ? '正在同步模型目录…' : '未找到模型，试试其他名称或系列'}}</text>
+    <button wx:if="{{!loading}}" bind:tap="loadCatalog">重新加载目录</button>
+  </view>
+  <view class="catalog-grid">
+    <view wx:for="{{candidates}}" wx:key="id" class="model-cell {{item.selected ? 'selected' : ''}}" data-id="{{item.id}}" bind:tap="handleSelect" hover-class="cell-hover">
+      <view class="model-image-wrap"><image wx:if="{{item.imageUrl}}" class="model-image" src="{{item.imageUrl}}" mode="aspectFit" lazy-load /><text wx:else class="image-placeholder">{{item.series}}</text><text class="selection-dot">{{item.selected ? '✓' : '+'}}</text></view>
+      <text class="model-code">{{item.series}} · {{item.number}}</text>
+      <text class="model-name">{{item.name}}</text>
+    </view>
+  </view>
+  <button wx:if="{{candidates.length < resultCount}}" class="load-more" bind:tap="handleMore">继续加载 · {{candidates.length}} / {{resultCount}}</button>
+</view>

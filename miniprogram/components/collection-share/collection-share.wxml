@@ -1,0 +1,4 @@
+<view class="share-strip">
+  <view><text class="share-title">把喜欢的机体分享给朋友</text><text class="share-note">公开{{modelIds.length > 50 ? '前50款' : modelIds.length + '款'}}模型，不含购买金额、渠道与备注</text></view>
+  <button size="mini" loading="{{preparing}}" disabled="{{preparing || !modelIds.length}}" bind:tap="handlePrepare">生成清单</button>
+</view>

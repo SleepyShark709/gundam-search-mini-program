@@ -1,13 +1,15 @@
-import { getAllModels } from '../../utils/model-service';
+import { loadBuildProgress, BuildProgress } from '../../utils/hangar-service';
+import { pilotProgress } from '../../utils/pilot-progress';
+import { getAllModels, refreshMissingModels } from '../../utils/model-service';
 import { getPurchases, getPurchaseRecord, updatePurchase, removePurchase, loadPurchases } from '../../utils/purchase-service';
-import { isInWishlist, toggleWishlist } from '../../utils/cloud-favorites';
+import { isInWishlist, toggleWishlist, loadWishlist } from '../../utils/cloud-favorites';
 import type { GundamModel, PurchaseRecord, SeriesCode } from '../../utils/types';
 
 // ---------- 辅助类型 ----------
 
 interface PurchaseItem {
   modelId: string;
-  model: GundamModel;
+  model: GundamModel | null;
   record: PurchaseRecord;
   seriesLabel: string;
   numberText: string;
@@ -60,11 +62,14 @@ function getPilotRating(avgScore: number): { pilotRank: string; pilotTitle: stri
 
 Page({
   _allModels: [] as GundamModel[],
+  _loading: null as Promise<void> | null,
+  _unloaded: false,
   _touchStartX: 0,
   _touchStartY: 0,
   _touchStartIndex: -1,
   _isHorizontalSwipe: false,
   _directionLocked: false,
+  _buildProgress: [] as BuildProgress[],
   _baseOffsetPx: 0,
   _openOffsetPx: 0,
 
@@ -72,6 +77,10 @@ Page({
     // 列表数据
     purchaseItems: [] as PurchaseItem[],
     loading: true,
+    shareModelIds: [] as string[],
+    publicShareId: '',
+    loadError: false,
+    buildSyncError: false,
     statusBarHeight: 20,
     safeAreaBottom: 0,
     exchangeRate: 0.05,
@@ -133,35 +142,68 @@ Page({
       exchangeRate: app.globalData.exchangeRate || 0.05,
       safeAreaBottom: app.globalData.safeAreaBottom,
     });
+    this.refreshList();
   },
 
-  async onShow() {
-    await loadPurchases();
-    this.refreshList();
-    const app = getApp<IAppOption>();
-    if (app.globalData.exchangeRate) {
-      this.setData({ exchangeRate: app.globalData.exchangeRate });
-    }
+  onShow() {
+    return this.loadData();
+  },
+
+  onUnload() {
+    this._unloaded = true;
+  },
+
+  handleRetry() {
+    return this.loadData();
+  },
+
+  loadData(): Promise<void> {
+    if (this._loading) return this._loading;
+    if (this._unloaded) return Promise.resolve();
+    this.setData({ loading: true, loadError: false });
+    this._loading = Promise.allSettled([loadPurchases(), loadWishlist(), loadBuildProgress()]).then(async ([purchaseResult, _wishlistResult, buildResult]) => {
+      if (this._unloaded) return;
+      if (purchaseResult.status !== 'fulfilled' || !purchaseResult.value) {
+        this.setData({ loadError: true });
+        return;
+      }
+      if (buildResult.status === 'fulfilled') this._buildProgress = buildResult.value;
+      this.setData({ buildSyncError: buildResult.status !== 'fulfilled' });
+      try {
+        this._allModels = await refreshMissingModels(getPurchases().map((record) => record.modelId));
+      } catch {
+        this._allModels = getAllModels();
+      }
+      if (this._unloaded) return;
+      const app = getApp<IAppOption>();
+      if (app.globalData.exchangeRate) {
+        this.setData({ exchangeRate: app.globalData.exchangeRate });
+      }
+      this.refreshList();
+      if (this.data.selectedModel) {
+        this.setData({ selectedIsWishlist: isInWishlist(this.data.selectedModel.id) });
+      }
+    }).finally(() => {
+      this._loading = null;
+      if (!this._unloaded) this.setData({ loading: false });
+    });
+    return this._loading;
   },
 
   refreshList() {
     const purchases = getPurchases();
-    const purchaseMap = new Map<string, PurchaseRecord>();
-    for (const p of purchases) {
-      purchaseMap.set(p.modelId, p);
-    }
+    const modelMap = new Map<string, GundamModel>(this._allModels.map((model: GundamModel) => [model.id, model]));
 
     // 合并为 PurchaseItem[]
     const purchaseItems: PurchaseItem[] = [];
-    for (const model of this._allModels) {
-      const record = purchaseMap.get(model.id);
-      if (!record) continue;
+    for (const record of purchases) {
+      const model = modelMap.get(record.modelId) || null;
       purchaseItems.push({
-        modelId: model.id,
+        modelId: record.modelId,
         model,
         record,
-        seriesLabel: seriesLabel(model.series),
-        numberText: String(model.number).padStart(3, '0'),
+        seriesLabel: model ? seriesLabel(model.series) : '待同步',
+        numberText: model ? String(model.number).padStart(3, '0') : '',
         displayDate: record.purchaseDate || '未填写',
         priceText: record.priceCny != null ? record.priceCny.toFixed(2) : '',
       });
@@ -189,27 +231,30 @@ Page({
     let totalSpent = 0;
     let totalOriginal = 0;
     let priceRecordCount = 0;
+    let missingPriceModel = false;
 
     for (const item of purchaseItems) {
       if (item.record.priceCny != null) {
         totalSpent += item.record.priceCny;
-        totalOriginal += item.model.price * exchangeRate;
+        if (item.model) totalOriginal += item.model.price * exchangeRate;
+        else missingPriceModel = true;
         priceRecordCount++;
       }
     }
 
-    const hasCompare = priceRecordCount > 0;
+    const hasCompare = priceRecordCount > 0 && !missingPriceModel;
     const savedAmount = totalOriginal - totalSpent;
     const spentPercent = totalOriginal > 0 ? Math.min(Math.round(totalSpent / totalOriginal * 100), 100) : 0;
     // 省钱率 = 20%(容忍加价) - 实际溢价率，买到原价即 20%，超出原价 20% 才为 0
     const premiumRate = totalOriginal > 0 ? ((totalSpent - totalOriginal) / totalOriginal * 100) : 0;
-    const savedRate = 20 - premiumRate;
+    const savedRate = missingPriceModel ? 0 : 20 - premiumRate;
     const savedFunText = getSavedFunText(savedRate);
     const savedIsNegative = savedAmount < 0;
 
     // 系列分布
     const seriesCountMap: Record<string, number> = {};
     for (const item of purchaseItems) {
+      if (!item.model) continue;
       const code = item.model.series;
       seriesCountMap[code] = (seriesCountMap[code] || 0) + 1;
     }
@@ -228,97 +273,25 @@ Page({
       }
     }
 
-    // ---------- 雷达图5维 ----------
-
-    // 1. 总台数 / 20
-    const dimCount = Math.min(totalCount / 20, 1);
-
-    // 2. 总花费 / 10000
-    const dimSpent = Math.min(totalSpent / 10000, 1);
-
-    // 3. 省钱率 / 25
-    const dimSaved = Math.min((savedRate > 0 ? savedRate : 0) / 25, 1);
-
-    // 4. 覆盖度：不同系列数 / 4
-    const uniqueSeriesCount = Object.keys(seriesCountMap).length;
-    const dimCoverage = Math.min(uniqueSeriesCount / 4, 1);
-
-    // 5. 频率：最近3个月月均购买量（月均2台为满分）
-    const now = new Date();
-    const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
-    const threeMonthsAgoStr = threeMonthsAgo.toISOString().slice(0, 10);
-    let recent3MonthCount = 0;
-    for (const item of purchaseItems) {
-      if (item.record.purchaseDate && item.record.purchaseDate >= threeMonthsAgoStr) {
-        recent3MonthCount++;
-      }
-    }
-    const dimFreq = Math.min(recent3MonthCount / 3 / 2, 1);
-
-    const radarDimensions = [dimCount, dimSpent, dimSaved, dimCoverage, dimFreq];
-
-    // 驾驶员评级（加权：台数1.5 > 花费1.2 > 覆盖1.0 > 频率0.8 > 省钱0.5）
-    const weights = [1.5, 1.2, 0.5, 1.0, 0.8];
-    const weightedSum = radarDimensions.reduce((sum, v, i) => sum + v * weights[i], 0);
-    const avgScore = weightedSum / weights.reduce((sum, w) => sum + w, 0);
-    const { pilotRank, pilotTitle } = getPilotRating(avgScore);
-
-    // ---------- 得分详情 ----------
-
-    const pilotScore = Math.round(avgScore * 100);
-
-    // 下一等级
-    const rankThresholds = [
-      { rank: 'S级', score: 90 },
-      { rank: 'A级', score: 70 },
-      { rank: 'B级', score: 50 },
-      { rank: 'C级', score: 30 },
-    ];
-    let nextRank = '';
-    let nextRankScore = 0;
-    let scoreGap = 0;
-    for (const t of rankThresholds) {
-      if (pilotScore < t.score) {
-        nextRank = t.rank;
-        nextRankScore = t.score;
-        scoreGap = t.score - pilotScore;
-      }
-    }
-
-    // 各维度详情
-    const dimLabels = ['台数', '花费', '省钱', '覆盖', '频率'];
-    const dimMaxTexts = ['20台', '¥10,000', '25%', '4系列', '2台·月'];
-    const dimCurrentTexts = [
-      `${totalCount}`,
-      `¥${formatMoney(totalSpent)}`,
-      `${Math.max(savedRate, 0).toFixed(0)}%`,
-      `${uniqueSeriesCount}`,
-      `${(recent3MonthCount / 3).toFixed(1)}`,
-    ];
-    const dimDetails = dimLabels.map((label, i) => ({
-      label,
-      valueText: `${dimCurrentTexts[i]}/${dimMaxTexts[i]}`,
-      percent: Math.round(radarDimensions[i] * 100),
-    }));
-
-    // 升级建议：找加权得分最低的维度
-    const weightedDimScores = radarDimensions.map((v, i) => ({ index: i, weighted: v * weights[i] }));
-    weightedDimScores.sort((a, b) => a.weighted - b.weighted);
-    const weakest = weightedDimScores[0];
-    const tipMap = [
-      '多入手几台心仪的高达吧',
-      '买买买，花费越高评分越高',
-      `多找折扣渠道，省钱率达 25% 即满分`,
-      '尝试不同系列，集齐HG/RG/MG/PG',
-      '保持购买频率，月均2台即满分',
-    ];
-    const upgradeTip = tipMap[weakest.index];
+    // 拼装进度与收藏探索；不将花费或购买频率计入评级。
+    const rating = pilotProgress(purchases, this._allModels, this._buildProgress);
+    const radarDimensions = rating.dimensions;
+    const pilotScore = rating.score;
+    const { pilotRank, pilotTitle } = getPilotRating(pilotScore / 100);
+    const dimDetails = rating.details;
+    const upgradeTip = rating.tip;
+    const next = [{ rank: 'C级', score: 30 }, { rank: 'B级', score: 50 }, { rank: 'A级', score: 70 }, { rank: 'S级', score: 90 }]
+      .find((threshold) => pilotScore < threshold.score);
+    const nextRank = next?.rank || '';
+    const nextRankScore = next?.score || 0;
+    const scoreGap = next ? next.score - pilotScore : 0;
 
     // ---------- setData ----------
 
     this.setData({
       purchaseItems,
-      loading: false,
+      shareModelIds: purchaseItems.filter((item) => item.model).map((item) => item.modelId),
+      publicShareId: '',
       hasStats,
       totalCount,
       totalSpentText: formatMoney(totalSpent),
@@ -344,7 +317,7 @@ Page({
     // 绘制雷达图（需等待 wx:if 条件渲染完成后 canvas 才存在于 DOM）
     if (hasStats) {
       wx.nextTick(() => {
-        this.drawRadar();
+        if (!this._unloaded) this.drawRadar();
       });
     }
   },
@@ -352,7 +325,7 @@ Page({
   drawRadar() {
     const query = wx.createSelectorQuery();
     query.select('#radarCanvas').fields({ node: true, size: true }).exec((res) => {
-      if (!res || !res[0] || !res[0].node) return;
+      if (this._unloaded || !res || !res[0] || !res[0].node) return;
 
       const canvas = res[0].node;
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -370,7 +343,7 @@ Page({
       const radius = Math.min(width, height) / 2 - fontSize - 10; // 留出标签空间
 
       const dimensions = this.data.radarDimensions;
-      const labels = ['台数', '花费', '省钱', '覆盖', '频率'];
+      const labels = ['完工', '整备', '档案', '探索', '目标'];
       const angleStep = (Math.PI * 2) / 5;
       const startAngle = -Math.PI / 2; // 从顶部开始
 
@@ -468,7 +441,7 @@ Page({
   handleThumbTap(e: WechatMiniprogram.TouchEvent) {
     const index = e.currentTarget.dataset.index as number;
     const item = this.data.purchaseItems[index];
-    if (!item) return;
+    if (!item || !item.model) return;
     this.setData({
       selectedModel: item.model,
       detailOpen: true,
@@ -482,8 +455,8 @@ Page({
     if (!item) return;
     this.setData({
       formOpen: true,
-      formModelId: item.model.id,
-      formModelName: item.model.name,
+      formModelId: item.modelId,
+      formModelName: item.model ? item.model.name : `模型信息暂未同步（${item.modelId}）`,
       formPriceCny: item.record.priceCny,
       formPurchaseDate: item.record.purchaseDate,
       formChannel: item.record.channel,
@@ -499,10 +472,11 @@ Page({
 
   async handleToggleWishlist(e: any) {
     const id = e.detail.id;
-    const nowInWishlist = await toggleWishlist(id);
+    const result = await toggleWishlist(id);
     if (this.data.selectedModel && this.data.selectedModel.id === id) {
-      this.setData({ selectedIsWishlist: nowInWishlist });
+      this.setData({ selectedIsWishlist: result.isFavorite });
     }
+    if (!result.success) wx.showToast({ title: '心愿单更新失败', icon: 'none' });
   },
 
   // ---------- 编辑表单 ----------
@@ -636,12 +610,18 @@ Page({
     this._isHorizontalSwipe = false;
   },
 
+  handleBuilds() { wx.navigateTo({ url: '/pages/builds/builds' }); },
+
   // ---------- 分享 ----------
+
+  handleSharePrepared(e: WechatMiniprogram.CustomEvent<{ id: string }>) {
+    this.setData({ publicShareId: e.detail.id });
+  },
 
   onShareAppMessage() {
     return {
-      title: '我的高达收藏',
-      path: '/pages/home/home',
+      title: this.data.publicShareId ? '我的高达收藏' : '高达模型目录',
+      path: this.data.publicShareId ? `/pages/share/share?id=${this.data.publicShareId}` : '/pages/home/home',
     };
   },
 

@@ -3,6 +3,7 @@
     "header": "../../components/header/header",
     "badge": "../../components/badge/badge",
     "model-detail": "../../components/model-detail/model-detail",
-    "purchase-form": "../../components/purchase-form/purchase-form"
+    "purchase-form": "../../components/purchase-form/purchase-form",
+    "collection-share": "../../components/collection-share/collection-share"
   }
 }

@@ -1,0 +1,3951 @@
+{
+  "date": "2026-11-01",
+  "source": "https://bandai-hobby.net/brand/{hg,rg,mg,pg}/",
+  "scope": "本地目录增量与官方日元含税标价；保留原ID、中文名、日期及其他字段；未连接数据库或发布。",
+  "summary": [
+    {
+      "series": "hg",
+      "before": 1404,
+      "added": 33,
+      "priceChanges": 128,
+      "after": 1437
+    },
+    {
+      "series": "rg",
+      "before": 176,
+      "added": 9,
+      "priceChanges": 23,
+      "after": 185
+    },
+    {
+      "series": "mg",
+      "before": 565,
+      "added": 6,
+      "priceChanges": 67,
+      "after": 571
+    },
+    {
+      "series": "pg",
+      "before": 52,
+      "added": 2,
+      "priceChanges": 2,
+      "after": 54
+    }
+  ],
+  "additions": [
+    {
+      "id": "hg-935",
+      "series": "hg",
+      "number": 935,
+      "name": "HG 1/144 グフイグナイテッドカスタム",
+      "nameJa": "HG 1/144 グフイグナイテッドカスタム",
+      "price": 3190,
+      "priceTaxFree": 2900,
+      "releaseDate": "2027-04",
+      "isLimited": false,
+      "imageUrl": "/images/hg-935/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7438/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-936",
+      "series": "hg",
+      "number": 936,
+      "name": "HG 機動戦士ガンダムRG XARX-ZERO 新商品A(仮)",
+      "nameJa": "HG 機動戦士ガンダムRG XARX-ZERO 新商品A(仮)",
+      "price": 2860,
+      "priceTaxFree": 2600,
+      "releaseDate": "2027-04",
+      "isLimited": false,
+      "imageUrl": "/images/hg-936/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7436/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-937",
+      "series": "hg",
+      "number": 937,
+      "name": "HG 1/144 ガンダムZERO",
+      "nameJa": "HG 1/144 ガンダムZERO",
+      "price": 2750,
+      "priceTaxFree": 2500,
+      "releaseDate": "2027-04",
+      "isLimited": false,
+      "imageUrl": "/images/hg-937/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7435/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-938",
+      "series": "hg",
+      "number": 938,
+      "name": "HG 1/144 ハンマ・ハンマ",
+      "nameJa": "HG 1/144 ハンマ・ハンマ",
+      "price": 4400,
+      "priceTaxFree": 4000,
+      "releaseDate": "2027-03",
+      "isLimited": false,
+      "imageUrl": "/images/hg-938/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7377/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-939",
+      "series": "hg",
+      "number": 939,
+      "name": "HG 1/144 インフィニットジャスティスガンダム&ブースターユニット（仮）",
+      "nameJa": "HG 1/144 インフィニットジャスティスガンダム&ブースターユニット（仮）",
+      "price": 4070,
+      "priceTaxFree": 3700,
+      "releaseDate": "2027-02",
+      "isLimited": false,
+      "imageUrl": "/images/hg-939/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7434/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-940",
+      "series": "hg",
+      "number": 940,
+      "name": "HG 1/144 バウバラム",
+      "nameJa": "HG 1/144 バウバラム",
+      "price": 3080,
+      "priceTaxFree": 2800,
+      "releaseDate": "2027-02",
+      "isLimited": false,
+      "imageUrl": "/images/hg-940/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7433/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-941",
+      "series": "hg",
+      "number": 941,
+      "name": "HG 1/144 ケリィース",
+      "nameJa": "HG 1/144 ケリィース",
+      "price": 3080,
+      "priceTaxFree": 2800,
+      "releaseDate": "2027-02",
+      "isLimited": false,
+      "imageUrl": "/images/hg-941/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7432/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-942",
+      "series": "hg",
+      "number": 942,
+      "name": "HG 1/144 ストライクフリーダムガンダム SEED FREEDOM ZERO Ver.（仮）",
+      "nameJa": "HG 1/144 ストライクフリーダムガンダム SEED FREEDOM ZERO Ver.（仮）",
+      "price": 2970,
+      "priceTaxFree": 2700,
+      "releaseDate": "2027-01",
+      "isLimited": false,
+      "imageUrl": "/images/hg-942/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7430/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-943",
+      "series": "hg",
+      "number": 943,
+      "name": "HG 1/144 ガンダムヘリックス",
+      "nameJa": "HG 1/144 ガンダムヘリックス",
+      "price": 2750,
+      "priceTaxFree": 2500,
+      "releaseDate": "2027-01",
+      "isLimited": false,
+      "imageUrl": "/images/hg-943/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7429/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-944",
+      "series": "hg",
+      "number": 944,
+      "name": "HG 1/144 ムラサメ改(初期生産型)",
+      "nameJa": "HG 1/144 ムラサメ改(初期生産型)",
+      "price": 2970,
+      "priceTaxFree": 2700,
+      "releaseDate": "2026-12",
+      "isLimited": false,
+      "imageUrl": "/images/hg-944/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7428/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-945",
+      "series": "hg",
+      "number": 945,
+      "name": "HG 1/144 ガンダムアシュタロン",
+      "nameJa": "HG 1/144 ガンダムアシュタロン",
+      "price": 3960,
+      "priceTaxFree": 3600,
+      "releaseDate": "2026-11",
+      "isLimited": false,
+      "imageUrl": "/images/hg-945/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7253/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-946",
+      "series": "hg",
+      "number": 946,
+      "name": "HG 1/144 ガンダムヴァサーゴ",
+      "nameJa": "HG 1/144 ガンダムヴァサーゴ",
+      "price": 3190,
+      "priceTaxFree": 2900,
+      "releaseDate": "2026-10",
+      "isLimited": false,
+      "imageUrl": "/images/hg-946/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7249/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-947",
+      "series": "hg",
+      "number": 947,
+      "name": "HGBD:R 1/144 ガンダムテルティウム",
+      "nameJa": "HGBD:R 1/144 ガンダムテルティウム",
+      "price": 2090,
+      "priceTaxFree": 1900,
+      "releaseDate": "2020-02",
+      "isLimited": false,
+      "imageUrl": "/images/hg-947/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_2704/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-948",
+      "series": "hg",
+      "number": 948,
+      "name": "HGBD:R 1/144 メルクワンユニット",
+      "nameJa": "HGBD:R 1/144 メルクワンユニット",
+      "price": 935,
+      "priceTaxFree": 850,
+      "releaseDate": "2020-02",
+      "isLimited": false,
+      "imageUrl": "/images/hg-948/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_2603/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-949",
+      "series": "hg",
+      "number": 949,
+      "name": "HGBD:R 1/144 ゼルトザームアームズ",
+      "nameJa": "HGBD:R 1/144 ゼルトザームアームズ",
+      "price": 770,
+      "priceTaxFree": 700,
+      "releaseDate": "2020-01",
+      "isLimited": false,
+      "imageUrl": "/images/hg-949/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_2571/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-950",
+      "series": "hg",
+      "number": 950,
+      "name": "HGUC 1/144 イフリート・シュナイド",
+      "nameJa": "HGUC 1/144 イフリート・シュナイド",
+      "price": 2200,
+      "priceTaxFree": 2000,
+      "releaseDate": "2017-07",
+      "isLimited": false,
+      "imageUrl": "/images/hg-950/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_1053/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-471",
+      "series": "hg",
+      "number": 471,
+      "name": "HG 1/144 流星号(グレイズ改参)",
+      "nameJa": "HG 1/144 流星号(グレイズ改参)",
+      "price": 2750,
+      "priceTaxFree": 2500,
+      "releaseDate": "2027-02",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-471/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000257632/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-472",
+      "series": "hg",
+      "number": 472,
+      "name": "HG 1/144 リーベン・ヴォルフ (スペース・ウルフ隊仕様)(A.O.Z RE-BOOT版)",
+      "nameJa": "HG 1/144 リーベン・ヴォルフ (スペース・ウルフ隊仕様)(A.O.Z RE-BOOT版)",
+      "price": 5720,
+      "priceTaxFree": 5200,
+      "releaseDate": "2027-01",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-472/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000257634/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-473",
+      "series": "hg",
+      "number": 473,
+      "name": "HG 1/144 ガンダムルブリスジウツー",
+      "nameJa": "HG 1/144 ガンダムルブリスジウツー",
+      "price": 2860,
+      "priceTaxFree": 2600,
+      "releaseDate": "2027-01",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-473/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000257633/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-474",
+      "series": "hg",
+      "number": 474,
+      "name": "HG 1/144 グスタフ・カール００型(隊長機)",
+      "nameJa": "HG 1/144 グスタフ・カール００型(隊長機)",
+      "price": 3850,
+      "priceTaxFree": 3500,
+      "releaseDate": "2026-11",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-474/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000255874/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-475",
+      "series": "hg",
+      "number": 475,
+      "name": "HG 1/144 ハイドラガンダム",
+      "nameJa": "HG 1/144 ハイドラガンダム",
+      "price": 5500,
+      "priceTaxFree": 5000,
+      "releaseDate": "2026-11",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-475/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000252373/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-476",
+      "series": "hg",
+      "number": 476,
+      "name": "HG 1/144 ビルドストライクガンダム フルパッケージ&ビルドバーニングガンダムセット [クリアカラー]",
+      "nameJa": "HG 1/144 ビルドストライクガンダム フルパッケージ&ビルドバーニングガンダムセット [クリアカラー]",
+      "price": 4400,
+      "priceTaxFree": 4000,
+      "releaseDate": "2026-10",
+      "isLimited": true,
+      "limitedType": "event",
+      "imageUrl": "/images/hg-l-476/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7422/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-477",
+      "series": "hg",
+      "number": 477,
+      "name": "HG 1/144 ガンダムシュピーゲル",
+      "nameJa": "HG 1/144 ガンダムシュピーゲル",
+      "price": 3740,
+      "priceTaxFree": 3400,
+      "releaseDate": "2026-09",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-477/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000252182/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-478",
+      "series": "hg",
+      "number": 478,
+      "name": "HG 1/144 ギャン(ハクジ装備)",
+      "nameJa": "HG 1/144 ギャン(ハクジ装備)",
+      "price": 2860,
+      "priceTaxFree": 2600,
+      "releaseDate": "2026-09",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-478/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000249505/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-479",
+      "series": "hg",
+      "number": 479,
+      "name": "HG 1/144 ズゴック(SEED FREEDOM Ver.)[クリアカラー]",
+      "nameJa": "HG 1/144 ズゴック(SEED FREEDOM Ver.)[クリアカラー]",
+      "price": 3630,
+      "priceTaxFree": 3300,
+      "releaseDate": "2026-07",
+      "isLimited": true,
+      "limitedType": "event",
+      "imageUrl": "/images/hg-l-479/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7310/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-480",
+      "series": "hg",
+      "number": 480,
+      "name": "HG 1/144 Ξガンダム[クリアカラー]劇場公開記念パッケージ",
+      "nameJa": "HG 1/144 Ξガンダム[クリアカラー]劇場公開記念パッケージ",
+      "price": 6930,
+      "priceTaxFree": 6300,
+      "releaseDate": "2026-06",
+      "isLimited": true,
+      "limitedType": "event",
+      "imageUrl": "/images/hg-l-480/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7300/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-481",
+      "series": "hg",
+      "number": 481,
+      "name": "HG 1/144 ガンダムベース限定 Ξガンダム/ペーネロペー用ファンネル･ミサイル エフェクトセット",
+      "nameJa": "HG 1/144 ガンダムベース限定 Ξガンダム/ペーネロペー用ファンネル･ミサイル エフェクトセット",
+      "price": 2530,
+      "priceTaxFree": 2300,
+      "releaseDate": "2026-04",
+      "isLimited": true,
+      "limitedType": "gbase",
+      "imageUrl": "/images/hg-l-481/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7228/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-482",
+      "series": "hg",
+      "number": 482,
+      "name": "ＨＧ 1/144 イフリート（ダグ・シュナイド機）",
+      "nameJa": "ＨＧ 1/144 イフリート（ダグ・シュナイド機）",
+      "price": 2640,
+      "priceTaxFree": 2400,
+      "releaseDate": "2020-03",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-482/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000140759/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-483",
+      "series": "hg",
+      "number": 483,
+      "name": "ＨＧ 1/144 ジム・ガードカスタム（Ｅ-２ビーム・スプレーガン装備）",
+      "nameJa": "ＨＧ 1/144 ジム・ガードカスタム（Ｅ-２ビーム・スプレーガン装備）",
+      "price": 2530,
+      "priceTaxFree": 2300,
+      "releaseDate": "2020-03",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-483/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000140608/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-484",
+      "series": "hg",
+      "number": 484,
+      "name": "ＨＧ 1/144 ガンダムＴＲ-６［ハイゼンスレイII・ラー］（ADVANCE OF Z ティターンズの旗のもとに）",
+      "nameJa": "ＨＧ 1/144 ガンダムＴＲ-６［ハイゼンスレイII・ラー］（ADVANCE OF Z ティターンズの旗のもとに）",
+      "price": 6490,
+      "priceTaxFree": 5900,
+      "releaseDate": "2020-02",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-484/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000140363/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-485",
+      "series": "hg",
+      "number": 485,
+      "name": "ＨＧ 1/144 ピクシー（フレッド・リーバー機）",
+      "nameJa": "ＨＧ 1/144 ピクシー（フレッド・リーバー機）",
+      "price": 2200,
+      "priceTaxFree": 2000,
+      "releaseDate": "2020-02",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-485/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000140218/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-486",
+      "series": "hg",
+      "number": 486,
+      "name": "ＨＧ 1/144 スレイヴ・レイス（パラシュート・パック仕様）",
+      "nameJa": "ＨＧ 1/144 スレイヴ・レイス（パラシュート・パック仕様）",
+      "price": 2420,
+      "priceTaxFree": 2200,
+      "releaseDate": "2020-02",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-486/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000140220/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "hg-l-487",
+      "series": "hg",
+      "number": 487,
+      "name": "HGBD:R 1/144 エルドラドートレス",
+      "nameJa": "HGBD:R 1/144 エルドラドートレス",
+      "price": 1650,
+      "priceTaxFree": 1500,
+      "releaseDate": "2020-02",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/hg-l-487/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_4059/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "rg-044",
+      "series": "rg",
+      "number": 44,
+      "name": "RG 1/144 陸戦型ガンダム",
+      "nameJa": "RG 1/144 陸戦型ガンダム",
+      "price": 4620,
+      "priceTaxFree": 4200,
+      "releaseDate": "2027-02",
+      "isLimited": false,
+      "imageUrl": "/images/rg-044/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7365/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "rg-l-134",
+      "series": "rg",
+      "number": 134,
+      "name": "RG 1/144 RX-178 ガンダムMk-II(ケロロ仕様)",
+      "nameJa": "RG 1/144 RX-178 ガンダムMk-II(ケロロ仕様)",
+      "price": 4180,
+      "priceTaxFree": 3800,
+      "releaseDate": "2026-10",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/rg-l-134/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000254631/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "rg-l-135",
+      "series": "rg",
+      "number": 135,
+      "name": "RG 1/144 フリーダムガンダム -APEX LEGENDS(TM) クリプト Ver.-",
+      "nameJa": "RG 1/144 フリーダムガンダム -APEX LEGENDS(TM) クリプト Ver.-",
+      "price": 4400,
+      "priceTaxFree": 4000,
+      "releaseDate": "2026-07",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/rg-l-135/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000248316/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "rg-l-136",
+      "series": "rg",
+      "number": 136,
+      "name": "RG 1/144 ガンダムエピオン -APEX LEGENDS(TM) オルター Ver.-",
+      "nameJa": "RG 1/144 ガンダムエピオン -APEX LEGENDS(TM) オルター Ver.-",
+      "price": 5500,
+      "priceTaxFree": 5000,
+      "releaseDate": "2026-07",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/rg-l-136/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000248317/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "rg-l-137",
+      "series": "rg",
+      "number": 137,
+      "name": "RG 1/144 ウイングガンダムゼロ EW -APEX LEGENDS(TM) ヴァルキリー Ver.-",
+      "nameJa": "RG 1/144 ウイングガンダムゼロ EW -APEX LEGENDS(TM) ヴァルキリー Ver.-",
+      "price": 4400,
+      "priceTaxFree": 4000,
+      "releaseDate": "2026-07",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/rg-l-137/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000248318/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "rg-l-138",
+      "series": "rg",
+      "number": 138,
+      "name": "ＲＧ 1/144 フォースインパルスガンダム ディアクティブモード",
+      "nameJa": "ＲＧ 1/144 フォースインパルスガンダム ディアクティブモード",
+      "price": 3300,
+      "priceTaxFree": 3000,
+      "releaseDate": "2026-07",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/rg-l-138/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000248109/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "rg-l-139",
+      "series": "rg",
+      "number": 139,
+      "name": "RG 1/144 ガンダムエクシア リペアIV",
+      "nameJa": "RG 1/144 ガンダムエクシア リペアIV",
+      "price": 4950,
+      "priceTaxFree": 4500,
+      "releaseDate": "2026-06",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/rg-l-139/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000250020/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "rg-l-140",
+      "series": "rg",
+      "number": 140,
+      "name": "RG 1/144 MSN-04FF サザビー[クリアカラー]",
+      "nameJa": "RG 1/144 MSN-04FF サザビー[クリアカラー]",
+      "price": 8910,
+      "priceTaxFree": 8100,
+      "releaseDate": "2026-05",
+      "isLimited": true,
+      "limitedType": "sidef",
+      "imageUrl": "/images/rg-l-140/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7233/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "rg-l-141",
+      "series": "rg",
+      "number": 141,
+      "name": "RG 1/144 Hi-νガンダム専用ハイパー・メガ・バズーカ・ランチャー&フィン・ファンネルディスプレイセット",
+      "nameJa": "RG 1/144 Hi-νガンダム専用ハイパー・メガ・バズーカ・ランチャー&フィン・ファンネルディスプレイセット",
+      "price": 3080,
+      "priceTaxFree": 2800,
+      "releaseDate": "2025-11",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/rg-l-141/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000246086/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "mg-301",
+      "series": "mg",
+      "number": 301,
+      "name": "MG 1/100 ガンダムリバティアストレイ レッドフレーム",
+      "nameJa": "MG 1/100 ガンダムリバティアストレイ レッドフレーム",
+      "price": 8250,
+      "priceTaxFree": 7500,
+      "releaseDate": "2026-12",
+      "isLimited": false,
+      "imageUrl": "/images/mg-301/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7269/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "mg-302",
+      "series": "mg",
+      "number": 302,
+      "name": "MG 1/100 デスティニーガンダム エクストリームブラストモード",
+      "nameJa": "MG 1/100 デスティニーガンダム エクストリームブラストモード",
+      "price": 7700,
+      "priceTaxFree": 7000,
+      "releaseDate": "2007-10",
+      "isLimited": false,
+      "imageUrl": "/images/mg-302/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_1668/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "mg-l-266",
+      "series": "mg",
+      "number": 266,
+      "name": "MG 1/100 スペルビア ジンクス",
+      "nameJa": "MG 1/100 スペルビア ジンクス",
+      "price": 6050,
+      "priceTaxFree": 5500,
+      "releaseDate": "2027-03",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/mg-l-266/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000257635/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "mg-l-267",
+      "series": "mg",
+      "number": 267,
+      "name": "ＭＧ 1/100 ガンダムＭｋ-Ｖ(連邦カラー)",
+      "nameJa": "ＭＧ 1/100 ガンダムＭｋ-Ｖ(連邦カラー)",
+      "price": 9900,
+      "priceTaxFree": 9000,
+      "releaseDate": "2026-10",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/mg-l-267/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000253221/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "mg-l-268",
+      "series": "mg",
+      "number": 268,
+      "name": "MG 1/100 ガンダムベース限定 ガンダムキュリオス(トランザムモード)[メタリックグロスインジェクション]",
+      "nameJa": "MG 1/100 ガンダムベース限定 ガンダムキュリオス(トランザムモード)[メタリックグロスインジェクション]",
+      "price": 5830,
+      "priceTaxFree": 5300,
+      "releaseDate": "2026-09",
+      "isLimited": true,
+      "limitedType": "gbase",
+      "imageUrl": "/images/mg-l-268/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_7414/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "mg-l-269",
+      "series": "mg",
+      "number": 269,
+      "name": "MG 1/100 ブレイズザクファントム(ハイネ・ヴェステンフルス専用機)",
+      "nameJa": "MG 1/100 ブレイズザクファントム(ハイネ・ヴェステンフルス専用機)",
+      "price": 5390,
+      "priceTaxFree": 4900,
+      "releaseDate": "2026-09",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/mg-l-269/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000251330/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "pg-033",
+      "series": "pg",
+      "number": 33,
+      "name": "PG 1/60 ガンダムエクシア",
+      "nameJa": "PG 1/60 ガンダムエクシア",
+      "price": 19800,
+      "priceTaxFree": 18000,
+      "releaseDate": "2017-12",
+      "isLimited": false,
+      "imageUrl": "/images/pg-033/cover.jpg",
+      "productUrl": "https://bandai-hobby.net/item/01_1203/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    },
+    {
+      "id": "pg-l-021",
+      "series": "pg",
+      "number": 21,
+      "name": "PG UNLEASHED 1/60 νガンダム用 フィン・ファンネル & クリアカラーボディ",
+      "nameJa": "PG UNLEASHED 1/60 νガンダム用 フィン・ファンネル & クリアカラーボディ",
+      "price": 16500,
+      "priceTaxFree": 15000,
+      "releaseDate": "2026-12",
+      "isLimited": true,
+      "limitedType": "pbandai",
+      "imageUrl": "/images/pg-l-021/cover.jpg",
+      "productUrl": "https://p-bandai.jp/item/item-1000255597/",
+      "_limitedSource": "",
+      "_limitedMethod": "scrape"
+    }
+  ],
+  "priceChanges": [
+    {
+      "id": "hg-014",
+      "series": "hg",
+      "name": "HGUC 1/144 MSM-03 卡克",
+      "productUrl": "https://bandai-hobby.net/item/01_1632/",
+      "before": {
+        "price": 880,
+        "priceTaxFree": 800
+      },
+      "after": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      }
+    },
+    {
+      "id": "hg-026",
+      "series": "hg",
+      "name": "HGUC 1/144 吉翁号",
+      "productUrl": "https://bandai-hobby.net/item/01_1088/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2310,
+        "priceTaxFree": 2100
+      }
+    },
+    {
+      "id": "hg-047",
+      "series": "hg",
+      "name": "HGUC 1/144 迪奥",
+      "productUrl": "https://bandai-hobby.net/item/01_2204/",
+      "before": {
+        "price": 2640,
+        "priceTaxFree": 2400
+      },
+      "after": {
+        "price": 2860,
+        "priceTaxFree": 2600
+      }
+    },
+    {
+      "id": "hg-060",
+      "series": "hg",
+      "name": "HG 1/144 高达异端 红色机",
+      "productUrl": "https://bandai-hobby.net/item/01_2922/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-064",
+      "series": "hg",
+      "name": "HG 1/144 高达异端 蓝色机",
+      "productUrl": "https://bandai-hobby.net/item/01_3135/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-077",
+      "series": "hg",
+      "name": "HGUC 1/144 精神力高达",
+      "productUrl": "https://bandai-hobby.net/item/01_3769/",
+      "before": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      },
+      "after": {
+        "price": 6050,
+        "priceTaxFree": 5500
+      }
+    },
+    {
+      "id": "hg-081",
+      "series": "hg",
+      "name": "HGUC 1/144 G装甲",
+      "productUrl": "https://bandai-hobby.net/item/01_3909/",
+      "before": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      },
+      "after": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      }
+    },
+    {
+      "id": "hg-083",
+      "series": "hg",
+      "name": "HG 扎古战士",
+      "productUrl": "https://bandai-hobby.net/item/01_3976/",
+      "before": {
+        "price": 1100,
+        "priceTaxFree": 1000
+      },
+      "after": {
+        "price": 1430,
+        "priceTaxFree": 1300
+      }
+    },
+    {
+      "id": "hg-085",
+      "series": "hg",
+      "name": "HG 1/144 混沌高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4085/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-086",
+      "series": "hg",
+      "name": "HG 1/144 盖亚高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4210/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-088",
+      "series": "hg",
+      "name": "HG  1/144 炮击扎古战士（露娜玛利亚·霍克专用机）",
+      "productUrl": "https://bandai-hobby.net/item/01_4318/",
+      "before": {
+        "price": 1430,
+        "priceTaxFree": 1300
+      },
+      "after": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      }
+    },
+    {
+      "id": "hg-089",
+      "series": "hg",
+      "name": "HG 1/144 剑装脉冲高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4340/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-090",
+      "series": "hg",
+      "name": "HG 1/144 炮击扎古战士",
+      "productUrl": "https://bandai-hobby.net/item/01_4384/",
+      "before": {
+        "price": 1430,
+        "priceTaxFree": 1300
+      },
+      "after": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      }
+    },
+    {
+      "id": "hg-091",
+      "series": "hg",
+      "name": "HG 1/144 扎古战士(演唱会版)",
+      "productUrl": "https://bandai-hobby.net/item/01_4444/",
+      "before": {
+        "price": 1100,
+        "priceTaxFree": 1000
+      },
+      "after": {
+        "price": 1430,
+        "priceTaxFree": 1300
+      }
+    },
+    {
+      "id": "hg-092",
+      "series": "hg",
+      "name": "HG 1/144 救世主高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4373/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-093",
+      "series": "hg",
+      "name": "1/144 HG 深渊高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4485/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-096",
+      "series": "hg",
+      "name": "1/144 HG 烈焰扎古幻影（雷·扎·巴雷尔专用机）",
+      "productUrl": "https://bandai-hobby.net/item/01_4755/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-098",
+      "series": "hg",
+      "name": "1/144 HG 大魔骑兵",
+      "productUrl": "https://bandai-hobby.net/item/01_4838/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-109",
+      "series": "hg",
+      "name": "HG 1/144 村雨(安德鲁·巴尔特菲尔德专用机)",
+      "productUrl": "https://bandai-hobby.net/item/01_5234/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-110",
+      "series": "hg",
+      "name": "HGUC 1/144 加布斯雷",
+      "productUrl": "https://bandai-hobby.net/item/01_5245/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-115",
+      "series": "hg",
+      "name": "HG 村雨(量产机)",
+      "productUrl": "https://bandai-hobby.net/item/01_5391/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-121",
+      "series": "hg",
+      "name": "HGUC 1/144 扎古I",
+      "productUrl": "https://bandai-hobby.net/item/01_5598/",
+      "before": {
+        "price": 1100,
+        "priceTaxFree": 1000
+      },
+      "after": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      }
+    },
+    {
+      "id": "hg-122",
+      "series": "hg",
+      "name": "HG 1/144 强袭漆黑高达",
+      "productUrl": "https://bandai-hobby.net/item/01_5604/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-124",
+      "series": "hg",
+      "name": "HGUC 1/144 高达GP02A 紫苑",
+      "productUrl": "https://bandai-hobby.net/item/01_5607/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-126",
+      "series": "hg",
+      "name": "HG 1/144 翠绿暴风高达",
+      "productUrl": "https://bandai-hobby.net/item/01_5610/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-127",
+      "series": "hg",
+      "name": "HGUC 1/144 扎古I 黑色三连星规格",
+      "productUrl": "https://bandai-hobby.net/item/01_5615/",
+      "before": {
+        "price": 1100,
+        "priceTaxFree": 1000
+      },
+      "after": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      }
+    },
+    {
+      "id": "hg-130",
+      "series": "hg",
+      "name": "HG 1/144 决斗高达",
+      "productUrl": "https://bandai-hobby.net/item/01_5617/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-132",
+      "series": "hg",
+      "name": "HGUC 1/144 夏亚专用格鲁古古",
+      "productUrl": "https://bandai-hobby.net/item/01_5623/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-133",
+      "series": "hg",
+      "name": "HG 1/144 地狱犬巴库猎犬",
+      "productUrl": "https://bandai-hobby.net/item/01_5631/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-134",
+      "series": "hg",
+      "name": "HG 1/144 观星者高达",
+      "productUrl": "https://bandai-hobby.net/item/01_5633/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-135",
+      "series": "hg",
+      "name": "HGUC 扎古I狙击型",
+      "productUrl": "https://bandai-hobby.net/item/01_5634/",
+      "before": {
+        "price": 1540,
+        "priceTaxFree": 1400
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-154",
+      "series": "hg",
+      "name": "HG 1/144 高达主天使",
+      "productUrl": "https://bandai-hobby.net/item/01_5656/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-155",
+      "series": "hg",
+      "name": "HG 1/144 高达力天使",
+      "productUrl": "https://bandai-hobby.net/item/01_5655/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1540,
+        "priceTaxFree": 1400
+      }
+    },
+    {
+      "id": "hg-158",
+      "series": "hg",
+      "name": "HG 1/144 格拉汉专用联合旗定制",
+      "productUrl": "https://bandai-hobby.net/item/01_889/",
+      "before": {
+        "price": 1100,
+        "priceTaxFree": 1000
+      },
+      "after": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      }
+    },
+    {
+      "id": "hg-162",
+      "series": "hg",
+      "name": "HG 1/144 高达座天使一型",
+      "productUrl": "https://bandai-hobby.net/item/01_891/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-202",
+      "series": "hg",
+      "name": "HGUC 1/144 基拉多加(蕾兹恩·修奈达专用机)",
+      "productUrl": "https://bandai-hobby.net/item/01_1810/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-203",
+      "series": "hg",
+      "name": "HG 1/144 炽天使高达",
+      "productUrl": "https://bandai-hobby.net/item/01_921/",
+      "before": {
+        "price": 1100,
+        "priceTaxFree": 1000
+      },
+      "after": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      }
+    },
+    {
+      "id": "hg-210",
+      "series": "hg",
+      "name": "HG 1/144 权天使高达",
+      "productUrl": "https://bandai-hobby.net/item/01_926/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-214",
+      "series": "hg",
+      "name": "HGUC 1/144 强袭·迪亚斯",
+      "productUrl": "https://bandai-hobby.net/item/01_3713/",
+      "before": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      },
+      "after": {
+        "price": 2310,
+        "priceTaxFree": 2100
+      }
+    },
+    {
+      "id": "hg-215",
+      "series": "hg",
+      "name": "HG 1/144 零高达（実戦配備型）",
+      "productUrl": "https://bandai-hobby.net/item/01_928/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1540,
+        "priceTaxFree": 1400
+      }
+    },
+    {
+      "id": "hg-216",
+      "series": "hg",
+      "name": "HG 1/144 高达能天使 修复II",
+      "productUrl": "https://bandai-hobby.net/item/01_927/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1540,
+        "priceTaxFree": 1400
+      }
+    },
+    {
+      "id": "hg-217",
+      "series": "hg",
+      "name": "HG 1/144 须佐能乎",
+      "productUrl": "https://bandai-hobby.net/item/01_930/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-222",
+      "series": "hg",
+      "name": "HG 1/144 智天使高达GNHW/R",
+      "productUrl": "https://bandai-hobby.net/item/01_932/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-223",
+      "series": "hg",
+      "name": "HG 1/144 堕天使高达　ＧＮＨW／Ｍ",
+      "productUrl": "https://bandai-hobby.net/item/01_934/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-225",
+      "series": "hg",
+      "name": "HGUC 1/144 杰刚",
+      "productUrl": "https://bandai-hobby.net/item/01_1711/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-227",
+      "series": "hg",
+      "name": "HG 1/144 疗天使高达GNHW/B",
+      "productUrl": "https://bandai-hobby.net/item/01_935/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-228",
+      "series": "hg",
+      "name": "HG 1/144 再生高达",
+      "productUrl": "https://bandai-hobby.net/item/01_937/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-231",
+      "series": "hg",
+      "name": "HG 1/144 00升降机＋GN剑III",
+      "productUrl": "https://bandai-hobby.net/item/01_938/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2530,
+        "priceTaxFree": 2300
+      }
+    },
+    {
+      "id": "hg-234",
+      "series": "hg",
+      "name": "HGUC 1/144 独角兽高达 独角兽模式",
+      "productUrl": "https://bandai-hobby.net/item/01_5663/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-236",
+      "series": "hg",
+      "name": "HGUC 1/144 基拉祖鲁",
+      "productUrl": "https://bandai-hobby.net/item/01_5664/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-238",
+      "series": "hg",
+      "name": "HGUC 1/144 MS-06F-2 扎古II(吉翁軍规格)",
+      "productUrl": "https://bandai-hobby.net/item/01_1745/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-240",
+      "series": "hg",
+      "name": "HGUC 1/144 MS-06F-2 扎古II(联邦军规格)",
+      "productUrl": "https://bandai-hobby.net/item/01_1749/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-241",
+      "series": "hg",
+      "name": "HGUC 1/144 利赛尔（隊長機）",
+      "productUrl": "https://bandai-hobby.net/item/01_5672/",
+      "before": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      },
+      "after": {
+        "price": 2640,
+        "priceTaxFree": 2400
+      }
+    },
+    {
+      "id": "hg-242",
+      "series": "hg",
+      "name": "HGUC 1/144 洛特 双套装",
+      "productUrl": "https://bandai-hobby.net/item/01_5669/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-268",
+      "series": "hg",
+      "name": "HGAW 1/144 高达X分裂者",
+      "productUrl": "https://bandai-hobby.net/item/01_1772/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-275",
+      "series": "hg",
+      "name": "HGUC 1/144 基拉祖鲁（親衛隊规格）",
+      "productUrl": "https://bandai-hobby.net/item/01_5693/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2640,
+        "priceTaxFree": 2400
+      }
+    },
+    {
+      "id": "hg-282",
+      "series": "hg",
+      "name": "HGFC 1/144 闪光高达",
+      "productUrl": "https://bandai-hobby.net/item/01_1782/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-283",
+      "series": "hg",
+      "name": "HGFC 1/144 大师高达＆風雲再起",
+      "productUrl": "https://bandai-hobby.net/item/01_1783/",
+      "before": {
+        "price": 2860,
+        "priceTaxFree": 2600
+      },
+      "after": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      }
+    },
+    {
+      "id": "hg-286",
+      "series": "hg",
+      "name": "HGUC 1/144 杰斯塔",
+      "productUrl": "https://bandai-hobby.net/item/01_5717/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-289",
+      "series": "hg",
+      "name": "HGUC 1/144 吉姆II",
+      "productUrl": "https://bandai-hobby.net/item/01_1785/",
+      "before": {
+        "price": 1540,
+        "priceTaxFree": 1400
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-291",
+      "series": "hg",
+      "name": "HG 1/144 R02 决斗高达 突击装甲",
+      "productUrl": "https://bandai-hobby.net/item/01_4579/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-292",
+      "series": "hg",
+      "name": "HG 1/144 R03 暴风高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4580/",
+      "before": {
+        "price": 1100,
+        "priceTaxFree": 1000
+      },
+      "after": {
+        "price": 1430,
+        "priceTaxFree": 1300
+      }
+    },
+    {
+      "id": "hg-293",
+      "series": "hg",
+      "name": "HG 1/144 R04 电光高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4581/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-294",
+      "series": "hg",
+      "name": "HG 1/144 R05 神盾高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4582/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-295",
+      "series": "hg",
+      "name": "HG 1/144 R06 基恩",
+      "productUrl": "https://bandai-hobby.net/item/01_3722/",
+      "before": {
+        "price": 1100,
+        "priceTaxFree": 1000
+      },
+      "after": {
+        "price": 1430,
+        "priceTaxFree": 1300
+      }
+    },
+    {
+      "id": "hg-306",
+      "series": "hg",
+      "name": "HG 1/144 R07 西古",
+      "productUrl": "https://bandai-hobby.net/item/01_3723/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-307",
+      "series": "hg",
+      "name": "HG 1/144 R08 灾厄高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4591/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-308",
+      "series": "hg",
+      "name": "HG 1/144 R09 禁断高达",
+      "productUrl": "https://bandai-hobby.net/item/01_3006/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-309",
+      "series": "hg",
+      "name": "HG 1/144 R10 突击者高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4592/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-315",
+      "series": "hg",
+      "name": "HG 1/144 R11 拉古",
+      "productUrl": "https://bandai-hobby.net/item/01_2873/",
+      "before": {
+        "price": 1540,
+        "priceTaxFree": 1400
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-316",
+      "series": "hg",
+      "name": "HG 1/144 R12 移动巴库",
+      "productUrl": "https://bandai-hobby.net/item/01_2874/",
+      "before": {
+        "price": 1540,
+        "priceTaxFree": 1400
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-317",
+      "series": "hg",
+      "name": "HG 1/144 R13 天意高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4601/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-335",
+      "series": "hg",
+      "name": "HG 1/144 R16 M1异端",
+      "productUrl": "https://bandai-hobby.net/item/01_4619/",
+      "before": {
+        "price": 1540,
+        "priceTaxFree": 1400
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-336",
+      "series": "hg",
+      "name": "HG 1/144 吉拉格",
+      "productUrl": "https://bandai-hobby.net/item/01_1816/",
+      "before": {
+        "price": 1430,
+        "priceTaxFree": 1300
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-345",
+      "series": "hg",
+      "name": "HG 1/144 高达 雷吉尔斯",
+      "productUrl": "https://bandai-hobby.net/item/01_3605/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-347",
+      "series": "hg",
+      "name": "HGUC 1/144 拜亚兰·定制",
+      "productUrl": "https://bandai-hobby.net/item/01_5769/",
+      "before": {
+        "price": 2860,
+        "priceTaxFree": 2600
+      },
+      "after": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      }
+    },
+    {
+      "id": "hg-353",
+      "series": "hg",
+      "name": "HG 1/144 R17 完美强袭高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4641/",
+      "before": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-409",
+      "series": "hg",
+      "name": "HGUC 1/144 德莱森",
+      "productUrl": "https://bandai-hobby.net/item/01_56/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2640,
+        "priceTaxFree": 2400
+      }
+    },
+    {
+      "id": "hg-422",
+      "series": "hg",
+      "name": "HGUC 1/144 刹帝利·修复型",
+      "productUrl": "https://bandai-hobby.net/item/01_108/",
+      "before": {
+        "price": 7150,
+        "priceTaxFree": 6500
+      },
+      "after": {
+        "price": 8030,
+        "priceTaxFree": 7300
+      }
+    },
+    {
+      "id": "hg-434",
+      "series": "hg",
+      "name": "HG 1/144 高达 G-Self(大気圏用背包装備型)",
+      "productUrl": "https://bandai-hobby.net/item/01_192/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-469",
+      "series": "hg",
+      "name": "HG 1/144 高达 G-路西法",
+      "productUrl": "https://bandai-hobby.net/item/01_293/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      }
+    },
+    {
+      "id": "hg-497",
+      "series": "hg",
+      "name": "HG 1/144 卡巴卡利",
+      "productUrl": "https://bandai-hobby.net/item/01_363/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-550",
+      "series": "hg",
+      "name": "HGUC 1/144 盖恩",
+      "productUrl": "https://bandai-hobby.net/item/01_555/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-551",
+      "series": "hg",
+      "name": "HG 1/144 扎古I“旧扎古”(GUNDAM THUNDERBOLT Ver.)",
+      "productUrl": "https://bandai-hobby.net/item/01_566/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-626",
+      "series": "hg",
+      "name": "HGUC 1/144 巴扎姆",
+      "productUrl": "https://bandai-hobby.net/item/01_1000/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-685",
+      "series": "hg",
+      "name": "HGUC 1/144 加尔巴迪β",
+      "productUrl": "https://bandai-hobby.net/item/01_1353/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-686",
+      "series": "hg",
+      "name": "HGUC 1/144 独角兽高达3号机 凤凰 (毁灭模式) (NTVer.)",
+      "productUrl": "https://bandai-hobby.net/item/01_1392/",
+      "before": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      },
+      "after": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      }
+    },
+    {
+      "id": "hg-692",
+      "series": "hg",
+      "name": "HGBD 1/144 高达00潜行者王牌",
+      "productUrl": "https://bandai-hobby.net/item/01_1393/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-693",
+      "series": "hg",
+      "name": "HGUC 1/144 拜亚兰",
+      "productUrl": "https://bandai-hobby.net/item/01_1395/",
+      "before": {
+        "price": 2860,
+        "priceTaxFree": 2600
+      },
+      "after": {
+        "price": 3190,
+        "priceTaxFree": 2900
+      }
+    },
+    {
+      "id": "hg-699",
+      "series": "hg",
+      "name": "HGBD 1/144 高达AGEＩＩ马格南[潜入次元透明]",
+      "productUrl": "https://bandai-hobby.net/item/01_2005/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2640,
+        "priceTaxFree": 2400
+      }
+    },
+    {
+      "id": "hg-701",
+      "series": "hg",
+      "name": "HGBD 1/144　高达00天空",
+      "productUrl": "https://bandai-hobby.net/item/01_1409/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-734",
+      "series": "hg",
+      "name": "HGCE 1/144 命运高达(海涅专用机)",
+      "productUrl": "https://bandai-hobby.net/item/01_2302/",
+      "before": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      },
+      "after": {
+        "price": 2640,
+        "priceTaxFree": 2400
+      }
+    },
+    {
+      "id": "hg-736",
+      "series": "hg",
+      "name": "HGAC 1/144 高达沙漠高达",
+      "productUrl": "https://bandai-hobby.net/item/01_2391/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-786",
+      "series": "hg",
+      "name": "HG 1/144 高达重装高达",
+      "productUrl": "https://bandai-hobby.net/item/01_2966/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-820",
+      "series": "hg",
+      "name": "HG 1/144 神龙高达",
+      "productUrl": "https://bandai-hobby.net/item/01_4179/",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-l-063",
+      "series": "hg",
+      "name": "HGUC 1/144 银色子弹(浮游炮试验型)",
+      "productUrl": "https://p-bandai.jp/item/item-1000138957",
+      "before": {
+        "price": 2640,
+        "priceTaxFree": 2400
+      },
+      "after": {
+        "price": 2970,
+        "priceTaxFree": 2700
+      }
+    },
+    {
+      "id": "hg-l-067",
+      "series": "hg",
+      "name": "HGUC 1/144 AMS-129 基拉·祖鲁(丘亚隆机)",
+      "productUrl": "https://p-bandai.jp/item/item-1000106594",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2640,
+        "priceTaxFree": 2400
+      }
+    },
+    {
+      "id": "hg-l-068",
+      "series": "hg",
+      "name": "HGUC 1/144 AMS-129 基拉·祖鲁(吉尔博亚·桑特机)",
+      "productUrl": "https://p-bandai.jp/item/item-1000106595",
+      "before": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      },
+      "after": {
+        "price": 2860,
+        "priceTaxFree": 2600
+      }
+    },
+    {
+      "id": "hg-l-098",
+      "series": "hg",
+      "name": "HGUC 1/144 银弹（盖尔·张专用机）",
+      "productUrl": "https://p-bandai.jp/item/item-1000098174",
+      "before": {
+        "price": 2530,
+        "priceTaxFree": 2300
+      },
+      "after": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      }
+    },
+    {
+      "id": "hg-l-099",
+      "series": "hg",
+      "name": "HGUC 1/144 吉姆II·半打击者",
+      "productUrl": "https://p-bandai.jp/item/item-1000105872",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      }
+    },
+    {
+      "id": "hg-l-105",
+      "series": "hg",
+      "name": "HG 1/144 格雷兹（阿瑞斯所属机 一般机/指挥官机）",
+      "productUrl": "https://p-bandai.jp/item/item-1000115269",
+      "before": {
+        "price": 1100,
+        "priceTaxFree": 1000
+      },
+      "after": {
+        "price": 1430,
+        "priceTaxFree": 1300
+      }
+    },
+    {
+      "id": "hg-l-106",
+      "series": "hg",
+      "name": "HG 1/144 燕式格雷兹（盖里奥机）",
+      "productUrl": "https://p-bandai.jp/item/item-1000110844",
+      "before": {
+        "price": 1430,
+        "priceTaxFree": 1300
+      },
+      "after": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      }
+    },
+    {
+      "id": "hg-l-108",
+      "series": "hg",
+      "name": "ＨＧ 1/144 MS-06RD-4 高機動试作型扎古",
+      "productUrl": "https://p-bandai.jp/item/item-1000142507",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-l-133",
+      "series": "hg",
+      "name": "ＨＧ 1/144 伊奥骨架獅電改（流星号）",
+      "productUrl": "https://p-bandai.jp/item/item-1000109974",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-l-138",
+      "series": "hg",
+      "name": "ＨＧ 1/144 格雷兹骑士(麦吉利斯機）",
+      "productUrl": "http://p-bandai.jp/item/item-1000111693/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-l-142",
+      "series": "hg",
+      "name": "HGＵＣ 1/144 大魔·热带型(独角兽Ｖｅｒ．)",
+      "productUrl": "http://p-bandai.jp/item/item-1000112046",
+      "before": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      },
+      "after": {
+        "price": 2310,
+        "priceTaxFree": 2100
+      }
+    },
+    {
+      "id": "hg-l-144",
+      "series": "hg",
+      "name": "ＨＧ 1/144 移动雷金莱兹（一般機）",
+      "productUrl": "http://p-bandai.jp/item/item-1000113445/",
+      "before": {
+        "price": 1320,
+        "priceTaxFree": 1200
+      },
+      "after": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      }
+    },
+    {
+      "id": "hg-l-157",
+      "series": "hg",
+      "name": "HGUC 1/144 伊夫利特改",
+      "productUrl": "http://p-bandai.jp/item/item-1000115644/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "hg-l-198",
+      "series": "hg",
+      "name": "HGUC 1/144 高达妖精",
+      "productUrl": "http://p-bandai.jp/item/item-1000124478",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2530,
+        "priceTaxFree": 2300
+      }
+    },
+    {
+      "id": "hg-l-200",
+      "series": "hg",
+      "name": "ＨＧ 1/144 陆战型高达（降落伞·背包规格）",
+      "productUrl": "http://p-bandai.jp/item/item-1000125322",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-l-205",
+      "series": "hg",
+      "name": "ＨＧ 1/144 约翰尼·莱登专用格鲁古古",
+      "productUrl": "http://p-bandai.jp/item/item-1000126354",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2640,
+        "priceTaxFree": 2400
+      }
+    },
+    {
+      "id": "hg-l-206",
+      "series": "hg",
+      "name": "ＨＧ 1/144 真·松永专用格鲁古古Ｊ",
+      "productUrl": "http://p-bandai.jp/item/item-1000126355",
+      "before": {
+        "price": 1650,
+        "priceTaxFree": 1500
+      },
+      "after": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      }
+    },
+    {
+      "id": "hg-l-212",
+      "series": "hg",
+      "name": "ＨＧ 1/144 杰斯塔 （赛萨尔隊规格 Ａ班装備）",
+      "productUrl": "http://p-bandai.jp/item/item-1000127868/",
+      "before": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      },
+      "after": {
+        "price": 3520,
+        "priceTaxFree": 3200
+      }
+    },
+    {
+      "id": "hg-l-213",
+      "series": "hg",
+      "name": "ＨＧ 1/144 杰斯塔 （赛萨尔隊规格 Ｂ＆Ｃ班装備）",
+      "productUrl": "http://p-bandai.jp/item/item-1000127870/",
+      "before": {
+        "price": 2530,
+        "priceTaxFree": 2300
+      },
+      "after": {
+        "price": 2970,
+        "priceTaxFree": 2700
+      }
+    },
+    {
+      "id": "hg-l-229",
+      "series": "hg",
+      "name": "HG 1/144 高级基恩克斯（黛博拉机）",
+      "productUrl": "https://p-bandai.jp/item/item-1000132864",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-l-232",
+      "series": "hg",
+      "name": "HG 1/144 NT高达 C装備 [透明配色]",
+      "productUrl": "https://bandai-hobby.net/item/01_2295/",
+      "before": {
+        "price": 2530,
+        "priceTaxFree": 2300
+      },
+      "after": {
+        "price": 2970,
+        "priceTaxFree": 2700
+      }
+    },
+    {
+      "id": "hg-l-257",
+      "series": "hg",
+      "name": "ＨＧ 1/144 第二Ｖ",
+      "productUrl": "https://p-bandai.jp/item/item-1000137105",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-l-261",
+      "series": "hg",
+      "name": "HG 1/144 高达基地限定 NT高达 C装備[钛金属涂装]",
+      "productUrl": "https://bandai-hobby.net/item/01_2604/",
+      "before": {
+        "price": 6160,
+        "priceTaxFree": 5600
+      },
+      "after": {
+        "price": 6820,
+        "priceTaxFree": 6200
+      }
+    },
+    {
+      "id": "hg-l-263",
+      "series": "hg",
+      "name": "HG 1/144 高达基地限定 NT高达 B装備",
+      "productUrl": "https://bandai-hobby.net/item/01_2666/",
+      "before": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      },
+      "after": {
+        "price": 3740,
+        "priceTaxFree": 3400
+      }
+    },
+    {
+      "id": "hg-l-264",
+      "series": "hg",
+      "name": "ＨＧ 1/144 新安州原石（独角兽Ｖｅｒ．）",
+      "productUrl": "https://p-bandai.jp/item/item-1000138624/",
+      "before": {
+        "price": 2860,
+        "priceTaxFree": 2600
+      },
+      "after": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      }
+    },
+    {
+      "id": "hg-l-275",
+      "series": "hg",
+      "name": "ＨＧ 1/144 高达双子座０１",
+      "productUrl": "https://p-bandai.jp/item/item-1000142882/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-l-288",
+      "series": "hg",
+      "name": "ＨＧ 1/144 力克迪亚斯（古华多罗·巴吉纳機）",
+      "productUrl": "https://p-bandai.jp/item/item-1000145001/",
+      "before": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-l-291",
+      "series": "hg",
+      "name": "ＨＧ 1/144 高达双子座０１用突击推进器＆高机动型组件 扩展套装",
+      "productUrl": "https://p-bandai.jp/item/item-1000146104/",
+      "before": {
+        "price": 1760,
+        "priceTaxFree": 1600
+      },
+      "after": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      }
+    },
+    {
+      "id": "hg-l-295",
+      "series": "hg",
+      "name": "HGBD:R 1/144 厄尔德拉温达姆",
+      "productUrl": "https://p-bandai.jp/item/item-1000146103/",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2310,
+        "priceTaxFree": 2100
+      }
+    },
+    {
+      "id": "hg-l-308",
+      "series": "hg",
+      "name": "ＨＧ 1/144 高达双子座０２",
+      "productUrl": "https://p-bandai.jp/item/item-1000150581/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-l-324",
+      "series": "hg",
+      "name": "ＨＧ 1/144 高达双子座０２用 陸戦重装组件 扩展零件",
+      "productUrl": "https://p-bandai.jp/item/item-1000154315/",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2530,
+        "priceTaxFree": 2300
+      }
+    },
+    {
+      "id": "hg-l-331",
+      "series": "hg",
+      "name": "ＨＧ 1/144 力克迪亚斯",
+      "productUrl": "https://p-bandai.jp/item/item-1000155118/",
+      "before": {
+        "price": 2090,
+        "priceTaxFree": 1900
+      },
+      "after": {
+        "price": 2420,
+        "priceTaxFree": 2200
+      }
+    },
+    {
+      "id": "hg-l-347",
+      "series": "hg",
+      "name": "HG 1/144 邦多·德克（盖茨·卡帕专用机）",
+      "productUrl": "https://p-bandai.jp/item/item-1000159026/",
+      "before": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      },
+      "after": {
+        "price": 6050,
+        "priceTaxFree": 5500
+      }
+    },
+    {
+      "id": "rg-006",
+      "series": "rg",
+      "name": "RG 1/144 空中霸者[发射器·剑背包]",
+      "productUrl": "https://bandai-hobby.net/item/01_5740/",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      }
+    },
+    {
+      "id": "rg-007",
+      "series": "rg",
+      "name": "RG 1/144 RX-178 高达Mk-II（迪坦斯规格）",
+      "productUrl": "https://bandai-hobby.net/item/01_2881/",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      }
+    },
+    {
+      "id": "rg-011",
+      "series": "rg",
+      "name": "RG 1/144 ZGMF-X42S 命运高达",
+      "productUrl": "https://bandai-hobby.net/item/01_5802/",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      }
+    },
+    {
+      "id": "rg-014",
+      "series": "rg",
+      "name": "RG 1/144 强袭自由高达",
+      "productUrl": "https://bandai-hobby.net/item/01_5895/",
+      "before": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      },
+      "after": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      }
+    },
+    {
+      "id": "rg-022",
+      "series": "rg",
+      "name": "RG 1/144 MSN-06S 新安州",
+      "productUrl": "https://bandai-hobby.net/item/01_660/",
+      "before": {
+        "price": 4180,
+        "priceTaxFree": 3800
+      },
+      "after": {
+        "price": 5170,
+        "priceTaxFree": 4700
+      }
+    },
+    {
+      "id": "rg-025",
+      "series": "rg",
+      "name": "RG 1/144 独角兽高达",
+      "productUrl": "https://bandai-hobby.net/item/01_1085/",
+      "before": {
+        "price": 4180,
+        "priceTaxFree": 3800
+      },
+      "after": {
+        "price": 4510,
+        "priceTaxFree": 4100
+      }
+    },
+    {
+      "id": "rg-031",
+      "series": "rg",
+      "name": "RG 1/144 海盗高达X1",
+      "productUrl": "https://bandai-hobby.net/item/01_2251/",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      }
+    },
+    {
+      "id": "rg-l-002",
+      "series": "rg",
+      "name": "RG 1/144 GAT-X105强袭高达 非活性模式",
+      "productUrl": "https://p-bandai.jp/item/item-1000112766",
+      "before": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      },
+      "after": {
+        "price": 2530,
+        "priceTaxFree": 2300
+      }
+    },
+    {
+      "id": "rg-l-003",
+      "series": "rg",
+      "name": "RG 1/144 ZGMF-X10A 自由高达 非活性模式",
+      "productUrl": "https://p-bandai.jp/item/item-1000132010",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      }
+    },
+    {
+      "id": "rg-l-004",
+      "series": "rg",
+      "name": "RG 1/144 ZGMF-X09A 正义高达 非活性模式",
+      "productUrl": "https://p-bandai.jp/item/item-1000132011",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      }
+    },
+    {
+      "id": "rg-l-008",
+      "series": "rg",
+      "name": "RG 1/144 命运高达 非活性模式",
+      "productUrl": "https://p-bandai.jp/item/item-1000128696",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      }
+    },
+    {
+      "id": "rg-l-010",
+      "series": "rg",
+      "name": "ＲＧ 1/144 强袭自由高达 非活性模式",
+      "productUrl": "https://p-bandai.jp/item/item-1000132012",
+      "before": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      },
+      "after": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      }
+    },
+    {
+      "id": "rg-l-021",
+      "series": "rg",
+      "name": "ＲＧ 1/144 MSM-07 量产型兹寇克",
+      "productUrl": "https://p-bandai.jp/item/item-1000162572",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      }
+    },
+    {
+      "id": "rg-l-022",
+      "series": "rg",
+      "name": "ＲＧ 1/144 高达异端 蓝色机",
+      "productUrl": "https://p-bandai.jp/item/item-1000114752",
+      "before": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      },
+      "after": {
+        "price": 3630,
+        "priceTaxFree": 3300
+      }
+    },
+    {
+      "id": "rg-l-023",
+      "series": "rg",
+      "name": "ＲＧ 1/144 高达异端金色机",
+      "productUrl": "https://p-bandai.jp/item/item-1000145557",
+      "before": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      },
+      "after": {
+        "price": 3410,
+        "priceTaxFree": 3100
+      }
+    },
+    {
+      "id": "rg-l-032",
+      "series": "rg",
+      "name": "RG 1/144 高达基地限定 新安州 [金属光泽注塑]",
+      "productUrl": "https://bandai-hobby.net/item/01_1919/",
+      "before": {
+        "price": 4400,
+        "priceTaxFree": 4000
+      },
+      "after": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      }
+    },
+    {
+      "id": "rg-l-035",
+      "series": "rg",
+      "name": "RG 1/144 高达异端 金色机天",
+      "productUrl": "http://p-bandai.jp/item/item-1000116090/",
+      "before": {
+        "price": 3520,
+        "priceTaxFree": 3200
+      },
+      "after": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      }
+    },
+    {
+      "id": "rg-l-037",
+      "series": "rg",
+      "name": "RG 1/144 新安州[透明配色]",
+      "productUrl": "https://bandai-hobby.net/item/01_1950/",
+      "before": {
+        "price": 4180,
+        "priceTaxFree": 3800
+      },
+      "after": {
+        "price": 5280,
+        "priceTaxFree": 4800
+      }
+    },
+    {
+      "id": "rg-l-064",
+      "series": "rg",
+      "name": "RG 1/144 高达异端 金色机天 蜜娜",
+      "productUrl": "https://p-bandai.jp/item/item-1000134497",
+      "before": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      },
+      "after": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      }
+    },
+    {
+      "id": "rg-l-075",
+      "series": "rg",
+      "name": "ＲＧ 1/144 独角兽高达3号机 凤凰（NTVer.）",
+      "productUrl": "https://p-bandai.jp/item/item-1000139902/",
+      "before": {
+        "price": 12760,
+        "priceTaxFree": 11600
+      },
+      "after": {
+        "price": 13530,
+        "priceTaxFree": 12300
+      }
+    },
+    {
+      "id": "rg-l-081",
+      "series": "rg",
+      "name": "ＲＧ 1/144 ν高达ＨＷＳ",
+      "productUrl": "https://p-bandai.jp/item/item-1000146277/",
+      "before": {
+        "price": 6600,
+        "priceTaxFree": 6000
+      },
+      "after": {
+        "price": 6930,
+        "priceTaxFree": 6300
+      }
+    },
+    {
+      "id": "rg-l-091",
+      "series": "rg",
+      "name": "RG 1/144 海盗高达X1[透明配色]",
+      "productUrl": "https://bandai-hobby.net/item/01_3415/",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3410,
+        "priceTaxFree": 3100
+      }
+    },
+    {
+      "id": "rg-l-093",
+      "series": "rg",
+      "name": "RG 1/144 海盗高达X1[钛金属涂装]",
+      "productUrl": "https://bandai-hobby.net/item/01_3456/",
+      "before": {
+        "price": 6050,
+        "priceTaxFree": 5500
+      },
+      "after": {
+        "price": 7260,
+        "priceTaxFree": 6600
+      }
+    },
+    {
+      "id": "mg-010",
+      "series": "mg",
+      "name": "MG 1/100 高达RX-78GP01",
+      "productUrl": "https://bandai-hobby.net/item/01_1448/",
+      "before": {
+        "price": 2750,
+        "priceTaxFree": 2500
+      },
+      "after": {
+        "price": 3190,
+        "priceTaxFree": 2900
+      }
+    },
+    {
+      "id": "mg-012",
+      "series": "mg",
+      "name": "MG 1/100 高达GP01Fb",
+      "productUrl": "https://bandai-hobby.net/item/01_1569/",
+      "before": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      },
+      "after": {
+        "price": 3740,
+        "priceTaxFree": 3400
+      }
+    },
+    {
+      "id": "mg-013",
+      "series": "mg",
+      "name": "MG 1/100 高达GP02A",
+      "productUrl": "https://bandai-hobby.net/item/01_1588/",
+      "before": {
+        "price": 4400,
+        "priceTaxFree": 4000
+      },
+      "after": {
+        "price": 4840,
+        "priceTaxFree": 4400
+      }
+    },
+    {
+      "id": "mg-016",
+      "series": "mg",
+      "name": "MG 1/100 超级高达",
+      "productUrl": "https://bandai-hobby.net/item/01_1601/",
+      "before": {
+        "price": 4400,
+        "priceTaxFree": 4000
+      },
+      "after": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      }
+    },
+    {
+      "id": "mg-037",
+      "series": "mg",
+      "name": "MG 1/100 高达 GP03S(雄蕊)",
+      "productUrl": "https://bandai-hobby.net/item/01_1025/",
+      "before": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      },
+      "after": {
+        "price": 4290,
+        "priceTaxFree": 3900
+      }
+    },
+    {
+      "id": "mg-044",
+      "series": "mg",
+      "name": "MG RX-77-2 钢加农",
+      "productUrl": "https://bandai-hobby.net/item/01_1446/",
+      "before": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      },
+      "after": {
+        "price": 3960,
+        "priceTaxFree": 3600
+      }
+    },
+    {
+      "id": "mg-060",
+      "series": "mg",
+      "name": "MG 1/100 量产型兹寇克",
+      "productUrl": "https://bandai-hobby.net/item/01_2597/",
+      "before": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      },
+      "after": {
+        "price": 3960,
+        "priceTaxFree": 3600
+      }
+    },
+    {
+      "id": "mg-062",
+      "series": "mg",
+      "name": "MG 1/100 RX-78-4 高达4号机",
+      "productUrl": "https://bandai-hobby.net/item/01_1636/",
+      "before": {
+        "price": 3080,
+        "priceTaxFree": 2800
+      },
+      "after": {
+        "price": 3520,
+        "priceTaxFree": 3200
+      }
+    },
+    {
+      "id": "mg-072",
+      "series": "mg",
+      "name": "MG 1/100 力克迪亚斯(古华多罗机)",
+      "productUrl": "https://bandai-hobby.net/item/01_4177/",
+      "before": {
+        "price": 3960,
+        "priceTaxFree": 3600
+      },
+      "after": {
+        "price": 4400,
+        "priceTaxFree": 4000
+      }
+    },
+    {
+      "id": "mg-093",
+      "series": "mg",
+      "name": "MG 1/100 百式＋气球制动系统",
+      "productUrl": "https://bandai-hobby.net/item/01_4990/",
+      "before": {
+        "price": 4400,
+        "priceTaxFree": 4000
+      },
+      "after": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      }
+    },
+    {
+      "id": "mg-100",
+      "series": "mg",
+      "name": "MG 1/100 RX-178 高达Mk-II Ver.2.0（迪坦斯）",
+      "productUrl": "https://bandai-hobby.net/item/01_5466/",
+      "before": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      },
+      "after": {
+        "price": 4400,
+        "priceTaxFree": 4000
+      }
+    },
+    {
+      "id": "mg-108",
+      "series": "mg",
+      "name": "MG 1/100 强袭高达＋I.W.S.P.",
+      "productUrl": "https://bandai-hobby.net/item/01_5627/",
+      "before": {
+        "price": 4620,
+        "priceTaxFree": 4200
+      },
+      "after": {
+        "price": 5170,
+        "priceTaxFree": 4700
+      }
+    },
+    {
+      "id": "mg-111",
+      "series": "mg",
+      "name": "MG 1/100 强袭自由高达",
+      "productUrl": "https://bandai-hobby.net/item/01_5643/",
+      "before": {
+        "price": 5280,
+        "priceTaxFree": 4800
+      },
+      "after": {
+        "price": 5720,
+        "priceTaxFree": 5200
+      }
+    },
+    {
+      "id": "mg-113",
+      "series": "mg",
+      "name": "MG 1/100 海盗高达X-1全十字",
+      "productUrl": "https://bandai-hobby.net/item/01_5649/",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5390,
+        "priceTaxFree": 4900
+      }
+    },
+    {
+      "id": "mg-115",
+      "series": "mg",
+      "name": "MG 1/100 强袭漆黑高达",
+      "productUrl": "https://bandai-hobby.net/item/01_1645/",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      }
+    },
+    {
+      "id": "mg-119",
+      "series": "mg",
+      "name": "MG 1/100 MS-06J 量产型扎古 Ver.2.0",
+      "productUrl": "https://bandai-hobby.net/item/01_1646/",
+      "before": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      },
+      "after": {
+        "price": 4290,
+        "priceTaxFree": 3900
+      }
+    },
+    {
+      "id": "mg-122",
+      "series": "mg",
+      "name": "MG 1/100 夏亚专用格鲁古古Ver.2.0",
+      "productUrl": "https://bandai-hobby.net/item/01_1659/",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5390,
+        "priceTaxFree": 4900
+      }
+    },
+    {
+      "id": "mg-131",
+      "series": "mg",
+      "name": "MG 1/100 发射器/剑强袭高达",
+      "productUrl": "https://bandai-hobby.net/item/01_1678/",
+      "before": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      },
+      "after": {
+        "price": 6160,
+        "priceTaxFree": 5600
+      }
+    },
+    {
+      "id": "mg-135",
+      "series": "mg",
+      "name": "MG 1/100 RX-78-2高达 Ver2.0",
+      "productUrl": "https://bandai-hobby.net/item/01_1453/",
+      "before": {
+        "price": 4620,
+        "priceTaxFree": 4200
+      },
+      "after": {
+        "price": 5060,
+        "priceTaxFree": 4600
+      }
+    },
+    {
+      "id": "mg-150",
+      "series": "mg",
+      "name": "MG 1/100 G战斗机 (高达Ver.2.0用 V作戦型号)",
+      "productUrl": "https://bandai-hobby.net/item/01_1692/",
+      "before": {
+        "price": 6160,
+        "priceTaxFree": 5600
+      },
+      "after": {
+        "price": 6820,
+        "priceTaxFree": 6200
+      }
+    },
+    {
+      "id": "mg-158",
+      "series": "mg",
+      "name": "MG 1/100 G装甲 真实型配色",
+      "productUrl": "https://bandai-hobby.net/item/01_1705/",
+      "before": {
+        "price": 10780,
+        "priceTaxFree": 9800
+      },
+      "after": {
+        "price": 11880,
+        "priceTaxFree": 10800
+      }
+    },
+    {
+      "id": "mg-160",
+      "series": "mg",
+      "name": "MG 1/100 高达能天使",
+      "productUrl": "https://bandai-hobby.net/item/01_981/",
+      "before": {
+        "price": 4180,
+        "priceTaxFree": 3800
+      },
+      "after": {
+        "price": 4620,
+        "priceTaxFree": 4200
+      }
+    },
+    {
+      "id": "mg-171",
+      "series": "mg",
+      "name": "MG 1/100 杰刚",
+      "productUrl": "https://bandai-hobby.net/item/01_983/",
+      "before": {
+        "price": 3960,
+        "priceTaxFree": 3600
+      },
+      "after": {
+        "price": 4400,
+        "priceTaxFree": 4000
+      }
+    },
+    {
+      "id": "mg-196",
+      "series": "mg",
+      "name": "MG 1/100 RMS-108 玛拉赛",
+      "productUrl": "https://bandai-hobby.net/item/01_1791/",
+      "before": {
+        "price": 4400,
+        "priceTaxFree": 4000
+      },
+      "after": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      }
+    },
+    {
+      "id": "mg-220",
+      "series": "mg",
+      "name": "MG 1/100 高达X",
+      "productUrl": "https://bandai-hobby.net/item/01_33/",
+      "before": {
+        "price": 4180,
+        "priceTaxFree": 3800
+      },
+      "after": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      }
+    },
+    {
+      "id": "mg-247",
+      "series": "mg",
+      "name": "MG 1/100 正义高达",
+      "productUrl": "https://bandai-hobby.net/item/01_1019/",
+      "before": {
+        "price": 5280,
+        "priceTaxFree": 4800
+      },
+      "after": {
+        "price": 5720,
+        "priceTaxFree": 5200
+      }
+    },
+    {
+      "id": "mg-260",
+      "series": "mg",
+      "name": "MG 1/100 00量子全刃",
+      "productUrl": "https://bandai-hobby.net/item/01_1883/",
+      "before": {
+        "price": 6050,
+        "priceTaxFree": 5500
+      },
+      "after": {
+        "price": 6490,
+        "priceTaxFree": 5900
+      }
+    },
+    {
+      "id": "mg-268",
+      "series": "mg",
+      "name": "MG 1/100 高达NT-1 Ver.2.0",
+      "productUrl": "https://bandai-hobby.net/item/01_2254/",
+      "before": {
+        "price": 6380,
+        "priceTaxFree": 5800
+      },
+      "after": {
+        "price": 6820,
+        "priceTaxFree": 6200
+      }
+    },
+    {
+      "id": "mg-269",
+      "series": "mg",
+      "name": "MG 1/100 炮击扎古战士（露娜玛利亚·霍克专用机）",
+      "productUrl": "https://bandai-hobby.net/item/01_2402/",
+      "before": {
+        "price": 4730,
+        "priceTaxFree": 4300
+      },
+      "after": {
+        "price": 5280,
+        "priceTaxFree": 4800
+      }
+    },
+    {
+      "id": "mg-l-024",
+      "series": "mg",
+      "name": "MG 1/100 00升降机",
+      "productUrl": "https://p-bandai.jp/item/item-1000141550/",
+      "before": {
+        "price": 7150,
+        "priceTaxFree": 6500
+      },
+      "after": {
+        "price": 7590,
+        "priceTaxFree": 6900
+      }
+    },
+    {
+      "id": "mg-l-025",
+      "series": "mg",
+      "name": "ＭＧ 1/100 Trans-AM升降机",
+      "productUrl": "https://p-bandai.jp/item/item-1000011986/",
+      "before": {
+        "price": 7150,
+        "priceTaxFree": 6500
+      },
+      "after": {
+        "price": 7700,
+        "priceTaxFree": 7000
+      }
+    },
+    {
+      "id": "mg-l-034",
+      "series": "mg",
+      "name": "ＭＧ 1/100 MS-06R-1A 尤马·莱特宁专用扎古II",
+      "productUrl": "https://p-bandai.jp/item/item-1000118896/",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      }
+    },
+    {
+      "id": "mg-l-035",
+      "series": "mg",
+      "name": "ＭＧ 1/100 MS-06S 约翰尼·莱登专用扎古II",
+      "productUrl": "https://p-bandai.jp/item/item-1000119053",
+      "before": {
+        "price": 4180,
+        "priceTaxFree": 3800
+      },
+      "after": {
+        "price": 4730,
+        "priceTaxFree": 4300
+      }
+    },
+    {
+      "id": "mg-l-036",
+      "series": "mg",
+      "name": "ＭＧ 1/100 玛拉赛（独角兽配色Ver.）",
+      "productUrl": "https://p-bandai.jp/item/item-1000111837",
+      "before": {
+        "price": 4620,
+        "priceTaxFree": 4200
+      },
+      "after": {
+        "price": 5280,
+        "priceTaxFree": 4800
+      }
+    },
+    {
+      "id": "mg-l-037",
+      "series": "mg",
+      "name": "ＭＧ 1/100 MS-06R-1A 阿纳贝尔·卡多专用扎古II Ver.2.0",
+      "productUrl": "https://p-bandai.jp/item/item-1000115498",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5830,
+        "priceTaxFree": 5300
+      }
+    },
+    {
+      "id": "mg-l-039",
+      "series": "mg",
+      "name": "ＭＧ 1/100 高达ＡＧＥ-１ ２号机",
+      "productUrl": "https://p-bandai.jp/item/item-1000128730",
+      "before": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      },
+      "after": {
+        "price": 4290,
+        "priceTaxFree": 3900
+      }
+    },
+    {
+      "id": "mg-l-040",
+      "series": "mg",
+      "name": "ＭＧ 1/100 高达ＡＧＥ-２普通型 特務隊规格",
+      "productUrl": "https://p-bandai.jp/item/item-1000128729",
+      "before": {
+        "price": 4620,
+        "priceTaxFree": 4200
+      },
+      "after": {
+        "price": 5280,
+        "priceTaxFree": 4800
+      }
+    },
+    {
+      "id": "mg-l-041",
+      "series": "mg",
+      "name": "ＭＧ 1/100 基拉多加（蕾兹恩·修奈达专用机）",
+      "productUrl": "https://p-bandai.jp/item/item-1000128400",
+      "before": {
+        "price": 5280,
+        "priceTaxFree": 4800
+      },
+      "after": {
+        "price": 6050,
+        "priceTaxFree": 5500
+      }
+    },
+    {
+      "id": "mg-l-042",
+      "series": "mg",
+      "name": "MG 1/100 扎古·加农(独角兽配色Ver.)",
+      "productUrl": "https://p-bandai.jp/item/item-1000083368",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5610,
+        "priceTaxFree": 5100
+      }
+    },
+    {
+      "id": "mg-l-043",
+      "series": "mg",
+      "name": "MG 1/100 兹寇克(独角兽配色Ver.)",
+      "productUrl": "https://p-bandai.jp/item/item-1000083369",
+      "before": {
+        "price": 3300,
+        "priceTaxFree": 3000
+      },
+      "after": {
+        "price": 3960,
+        "priceTaxFree": 3600
+      }
+    },
+    {
+      "id": "mg-l-044",
+      "series": "mg",
+      "name": "MG 1/100 高达异端 幻惑机",
+      "productUrl": "https://p-bandai.jp/item/item-1000105795",
+      "before": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      },
+      "after": {
+        "price": 5940,
+        "priceTaxFree": 5400
+      }
+    },
+    {
+      "id": "mg-l-052",
+      "series": "mg",
+      "name": "ＭＧ 1/100 MS-14C 格鲁古古加农（MSV配色）",
+      "productUrl": "https://p-bandai.jp/item/item-1000087946",
+      "before": {
+        "price": 5280,
+        "priceTaxFree": 4800
+      },
+      "after": {
+        "price": 5720,
+        "priceTaxFree": 5200
+      }
+    },
+    {
+      "id": "mg-l-054",
+      "series": "mg",
+      "name": "ＭＧ 1/100 全装甲独角兽高达（红色配色Ｖｅｒ.）",
+      "productUrl": "https://p-bandai.jp/item/item-1000110175",
+      "before": {
+        "price": 8800,
+        "priceTaxFree": 8000
+      },
+      "after": {
+        "price": 9790,
+        "priceTaxFree": 8900
+      }
+    },
+    {
+      "id": "mg-l-066",
+      "series": "mg",
+      "name": "ＭＧ 1/100 沙扎比 Ver.Ka & ＲＥ/100 1/100 夜莺用 扩展浮游炮效果套装",
+      "productUrl": "https://p-bandai.jp/item/item-1000097986",
+      "before": {
+        "price": 1870,
+        "priceTaxFree": 1700
+      },
+      "after": {
+        "price": 2310,
+        "priceTaxFree": 2100
+      }
+    },
+    {
+      "id": "mg-l-068",
+      "series": "mg",
+      "name": "ＭＧ 1/100 ∀高达用扩展效果组件 “月光蝶”",
+      "productUrl": "https://p-bandai.jp/item/item-1000165581",
+      "before": {
+        "price": 1980,
+        "priceTaxFree": 1800
+      },
+      "after": {
+        "price": 2200,
+        "priceTaxFree": 2000
+      }
+    },
+    {
+      "id": "mg-l-071",
+      "series": "mg",
+      "name": "MG 1/100 FA-78-2 重高达",
+      "productUrl": "https://p-bandai.jp/item/item-1000098739",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5390,
+        "priceTaxFree": 4900
+      }
+    },
+    {
+      "id": "mg-l-072",
+      "series": "mg",
+      "name": "ＭＧ 1/100 双头龙高达 ＥＷ",
+      "productUrl": "https://p-bandai.jp/item/item-1000161110/",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5390,
+        "priceTaxFree": 4900
+      }
+    },
+    {
+      "id": "mg-l-077",
+      "series": "mg",
+      "name": "ＭＧ 1/100 自由高达 Ｖｅｒ．２．０　全射击模式 特殊涂装Ｖｅｒ．",
+      "productUrl": "https://p-bandai.jp/item/item-1000131426",
+      "before": {
+        "price": 11000,
+        "priceTaxFree": 10000
+      },
+      "after": {
+        "price": 11770,
+        "priceTaxFree": 10700
+      }
+    },
+    {
+      "id": "mg-l-079",
+      "series": "mg",
+      "name": "ＭＧ 1/100 基拉多加（独角兽Ｖｅｒ．）",
+      "productUrl": "https://p-bandai.jp/item/item-1000132017",
+      "before": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      },
+      "after": {
+        "price": 5940,
+        "priceTaxFree": 5400
+      }
+    },
+    {
+      "id": "mg-l-080",
+      "series": "mg",
+      "name": "ＭＧ 1/100 Z Plus（独角兽Ｖｅｒ．）",
+      "productUrl": "https://p-bandai.jp/item/item-1000105646",
+      "before": {
+        "price": 3520,
+        "priceTaxFree": 3200
+      },
+      "after": {
+        "price": 4180,
+        "priceTaxFree": 3800
+      }
+    },
+    {
+      "id": "mg-l-082",
+      "series": "mg",
+      "name": "ＭＧ 1/100 百式改",
+      "productUrl": "https://p-bandai.jp/item/item-1000139113",
+      "before": {
+        "price": 11000,
+        "priceTaxFree": 10000
+      },
+      "after": {
+        "price": 11770,
+        "priceTaxFree": 10700
+      }
+    },
+    {
+      "id": "mg-l-083",
+      "series": "mg",
+      "name": "ＭＧ 1/100 高达重装高达改 ＥＷ",
+      "productUrl": "https://p-bandai.jp/item/item-1000152635",
+      "before": {
+        "price": 5280,
+        "priceTaxFree": 4800
+      },
+      "after": {
+        "price": 5720,
+        "priceTaxFree": 5200
+      }
+    },
+    {
+      "id": "mg-l-092",
+      "series": "mg",
+      "name": "ＭＧ 1/100 MS-06R-1A 真·松永专用扎古IＩ（定制型）",
+      "productUrl": "http://p-bandai.jp/item/item-1000114191/",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      }
+    },
+    {
+      "id": "mg-l-114",
+      "series": "mg",
+      "name": "ＭＧ 1/100 MS-14B 尤马·莱特宁专用高机动型格鲁古古",
+      "productUrl": "http://p-bandai.jp/item/item-1000119060/",
+      "before": {
+        "price": 6050,
+        "priceTaxFree": 5500
+      },
+      "after": {
+        "price": 6600,
+        "priceTaxFree": 6000
+      }
+    },
+    {
+      "id": "mg-l-131",
+      "series": "mg",
+      "name": "ＭＧ 1/100 高达Ｘ３号机",
+      "productUrl": "http://p-bandai.jp/item/item-1000124674",
+      "before": {
+        "price": 4400,
+        "priceTaxFree": 4000
+      },
+      "after": {
+        "price": 4840,
+        "priceTaxFree": 4400
+      }
+    },
+    {
+      "id": "mg-l-133",
+      "series": "mg",
+      "name": "ＭＧ 1/100 阿纳贝尔·卡多专用格鲁古古 Ver.2.0",
+      "productUrl": "http://p-bandai.jp/item/item-1000124942",
+      "before": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      },
+      "after": {
+        "price": 6050,
+        "priceTaxFree": 5500
+      }
+    },
+    {
+      "id": "mg-l-142",
+      "series": "mg",
+      "name": "MG 1/100 吉姆II·半打击型",
+      "productUrl": "https://p-bandai.jp/item/item-1000130158",
+      "before": {
+        "price": 4620,
+        "priceTaxFree": 4200
+      },
+      "after": {
+        "price": 5060,
+        "priceTaxFree": 4600
+      }
+    },
+    {
+      "id": "mg-l-151",
+      "series": "mg",
+      "name": "MG 1/100 利卡兹·定制",
+      "productUrl": "https://p-bandai.jp/item/item-1000134054/",
+      "before": {
+        "price": 6050,
+        "priceTaxFree": 5500
+      },
+      "after": {
+        "price": 6600,
+        "priceTaxFree": 6000
+      }
+    },
+    {
+      "id": "mg-l-156",
+      "series": "mg",
+      "name": "MG 1/100 ∀高达/倒X［纳米皮肤涂层］",
+      "productUrl": "https://p-bandai.jp/item/item-1000135920",
+      "before": {
+        "price": 12650,
+        "priceTaxFree": 11500
+      },
+      "after": {
+        "price": 15180,
+        "priceTaxFree": 13800
+      }
+    },
+    {
+      "id": "mg-l-164",
+      "series": "mg",
+      "name": "ＭＧ 1/100 高达力天使（Trans-AM模式）［金属光泽注塑］",
+      "productUrl": "https://p-bandai.jp/item/item-1000137643/",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5500,
+        "priceTaxFree": 5000
+      }
+    },
+    {
+      "id": "mg-l-169",
+      "series": "mg",
+      "name": "ＭＧ 1/100 利卡兹（独角兽Ｖｅｒ．）",
+      "productUrl": "https://p-bandai.jp/item/item-1000138934/",
+      "before": {
+        "price": 5830,
+        "priceTaxFree": 5300
+      },
+      "after": {
+        "price": 6270,
+        "priceTaxFree": 5700
+      }
+    },
+    {
+      "id": "mg-l-175",
+      "series": "mg",
+      "name": "MG 1/100 斩击型扎古幻影（伊扎克·玖尔专用机）",
+      "productUrl": "https://p-bandai.jp/item/item-1000158699",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5390,
+        "priceTaxFree": 4900
+      }
+    },
+    {
+      "id": "mg-l-177",
+      "series": "mg",
+      "name": "ＭＧ 1/100 RGM-89D 杰刚 Ｄ型（先行配備機）",
+      "productUrl": "https://p-bandai.jp/item/item-1000143254/",
+      "before": {
+        "price": 4620,
+        "priceTaxFree": 4200
+      },
+      "after": {
+        "price": 5170,
+        "priceTaxFree": 4700
+      }
+    },
+    {
+      "id": "mg-l-187",
+      "series": "mg",
+      "name": "ＭＧ 1/100 高达巴巴托斯用 扩展零件套装",
+      "productUrl": "https://p-bandai.jp/item/item-1000146674/",
+      "before": {
+        "price": 3410,
+        "priceTaxFree": 3100
+      },
+      "after": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      }
+    },
+    {
+      "id": "mg-l-193",
+      "series": "mg",
+      "name": "ＭＧ 1/100 烈焰扎古幻影／烈焰扎古战士",
+      "productUrl": "https://p-bandai.jp/item/item-1000148704/",
+      "before": {
+        "price": 4950,
+        "priceTaxFree": 4500
+      },
+      "after": {
+        "price": 5390,
+        "priceTaxFree": 4900
+      }
+    },
+    {
+      "id": "mg-l-237",
+      "series": "mg",
+      "name": "MG 1/100 枪手型/斩击型/烈焰型巫师背包套装",
+      "productUrl": "https://p-bandai.jp/item/item-1000183862/",
+      "before": {
+        "price": 3850,
+        "priceTaxFree": 3500
+      },
+      "after": {
+        "price": 4290,
+        "priceTaxFree": 3900
+      }
+    },
+    {
+      "id": "mg-l-241",
+      "series": "mg",
+      "name": "ＭＧ 1/100 约翰尼·莱登专用格鲁古古",
+      "productUrl": "https://p-bandai.jp/item/item-1000187840/",
+      "before": {
+        "price": 6380,
+        "priceTaxFree": 5800
+      },
+      "after": {
+        "price": 6930,
+        "priceTaxFree": 6300
+      }
+    },
+    {
+      "id": "pg-019",
+      "series": "pg",
+      "name": "PG 1/60 RX-0 独角兽高达",
+      "productUrl": "https://bandai-hobby.net/item/01_237/",
+      "before": {
+        "price": 22000,
+        "priceTaxFree": 20000
+      },
+      "after": {
+        "price": 24200,
+        "priceTaxFree": 22000
+      }
+    },
+    {
+      "id": "pg-020",
+      "series": "pg",
+      "name": "PG 1/60 RX-0 独角兽高达用 LED组件",
+      "productUrl": "https://bandai-hobby.net/item/01_238/",
+      "before": {
+        "price": 13200,
+        "priceTaxFree": 12000
+      },
+      "after": {
+        "price": 14300,
+        "priceTaxFree": 13000
+      }
+    }
+  ],
+  "imageSha256": {
+    "/images/hg-935/cover.jpg": "33f52bc1a27d6eca375e2b5c29f07858c7b0ca29f911e4d314568c4b5830746d",
+    "/images/hg-936/cover.jpg": "53faa1d2f55d3c3702868b7ac6b02cd365977589144b60e88d993e9d06265997",
+    "/images/hg-937/cover.jpg": "c1af38525334fcfcdbe350b78494141ab87f1afe998603f5f4419b14de18cd52",
+    "/images/hg-938/cover.jpg": "f6f564d25e3f9242025128dcb6e8aea09c5c4ab740e75d9d003d17911ae8a859",
+    "/images/hg-939/cover.jpg": "ab011d5665d1bbbcb863a88ef68e522e65d312347ad9268325f0ad5e90d8d504",
+    "/images/hg-940/cover.jpg": "ae243a4a933b25d938956fba81d948cc1159eedb571729ec1525a817a30a5bc2",
+    "/images/hg-941/cover.jpg": "bfe00d021880fff6e62437b2d6f3192cbdae7496a94745a3a2b9dbfd7149b228",
+    "/images/hg-942/cover.jpg": "940de0bb47d291cd62d734a0ae68fbcbf0af82f5f02f5b80a0a1ac40fbf57793",
+    "/images/hg-943/cover.jpg": "e37dddf00a6eb431ea7b1d18c8a65663b0c3919db983f78bb0aaddcbb2ee350b",
+    "/images/hg-944/cover.jpg": "cfcc237411d8b71d632714dcda1e31537d96355ccc8e05f917cfe5d57bad508b",
+    "/images/hg-945/cover.jpg": "ad1d97295974f1550a6dffa1487612a0623e08277315d6a24be7acf706f0165a",
+    "/images/hg-946/cover.jpg": "16a5ae56cd72c878584864a1c71e4d1eadb7de68f4becfb6082672883c4639a3",
+    "/images/hg-947/cover.jpg": "11a0c6c32e478692263e0b57d69a0e548e1458d29f24a44f44d30c30cb4940aa",
+    "/images/hg-948/cover.jpg": "c81b715da3fef4dfa2eb27d56e17e2b25b2c55687d31d22ba50358e38db86c6e",
+    "/images/hg-949/cover.jpg": "e15cc9417bd2cc805bccda3b523b16bd33decee7ffcd1cefe19fcfe8e196abd5",
+    "/images/hg-950/cover.jpg": "e9109eed914969055df6558d3840e6d576e429a7c66556f561012f4cd0c2148d",
+    "/images/hg-l-471/cover.jpg": "7ac22d6f9783fba9ee00486b3f2e3dbe5a4916e624bb232f6c72be7b0a0f4856",
+    "/images/hg-l-472/cover.jpg": "9422bffc3ab3a741175949e6768bd31c61ca91cd7e90f11f849dd2d921aaf40d",
+    "/images/hg-l-473/cover.jpg": "0a16dad941b65f8a000374bb2b17413b60b044c9db356df5a6abab0fedcd3b82",
+    "/images/hg-l-474/cover.jpg": "e19b055bb85b85156c7462e3e4361c3fa77910564f7789dc90c39aa9a4081c3d",
+    "/images/hg-l-475/cover.jpg": "3d2c244797a019bad138d22abac01c38012bf7388070509dd509ee18e8ee7a08",
+    "/images/hg-l-476/cover.jpg": "a2b01f947f80a652d337ad1eb33cf7c4568ab75595cce2e4d159795f955bcbc5",
+    "/images/hg-l-477/cover.jpg": "e64faa957c79a322e607773db91d979b314498aefd802017e90ee4d06adc3eeb",
+    "/images/hg-l-478/cover.jpg": "0c4d36a997f3fc870046549eb8ef7af4ad16f84969888a11bd4110dbf10b4f7f",
+    "/images/hg-l-479/cover.jpg": "7fef90d17003aaebe763966312eb5b8c9d58f32d3f88f18b5107d8e259c9a8e6",
+    "/images/hg-l-480/cover.jpg": "8cd98fd3b9103046eb27c7e956e632c3592fae0d87754485017286e06b0d8ead",
+    "/images/hg-l-481/cover.jpg": "90172bc252a4d2c76d3a19c17d36d9c38cef42e93ea79bc239c08fb3d0df4e21",
+    "/images/hg-l-482/cover.jpg": "68231e0aa82c39c71b8112ba536e2b5943d90255a778ab6aaff12c2322ae80de",
+    "/images/hg-l-483/cover.jpg": "e74a233dc62fd13fe840dec211a90ff30f8dba7c93d635668ac69e747463fdd4",
+    "/images/hg-l-484/cover.jpg": "6d96cf870ae78f99e2daeca052ad707bf7d18c7e1d7032ab1053b28be4371d0f",
+    "/images/hg-l-485/cover.jpg": "629622ce5a0c6bd11087e4c3df1d89821232f38b38170fcf4720bbc06c7e6343",
+    "/images/hg-l-486/cover.jpg": "ebce9820c0badf5c6a399e02fed8856984d7c93d8a00a336e342565983ea9a11",
+    "/images/hg-l-487/cover.jpg": "dbdd9938afca57265c071b676365d77466c497cecc38a297b4e461aad7a469f4",
+    "/images/rg-044/cover.jpg": "a64db83007db24100a219954f80ffef103e394e2bb2eafe8440af88b12da5d73",
+    "/images/rg-l-134/cover.jpg": "2bbafa1815c9ee07539bef74e1f5e55e3557a27ae2a442b0a0c48337a4bcff56",
+    "/images/rg-l-135/cover.jpg": "4801bbbfca724d1bdcbdcc7574e0611b290fd60e7033d78e0809697595e5755e",
+    "/images/rg-l-136/cover.jpg": "bd64ee495b53a040407a3839359c3ddaaf2cb55fc15f075d95b840375a579b40",
+    "/images/rg-l-137/cover.jpg": "f5ace852afc60119ebe7a61846fe35fc73f51b86be107c211b808d2db7d8fc69",
+    "/images/rg-l-138/cover.jpg": "aecf45e3ad1f2ad84e03ba7e45cbb5d7eec0c9598724996c72440591f84d758f",
+    "/images/rg-l-139/cover.jpg": "1c475cd45d4b0af44364b4da0ee10784fae02c81b3ecc04de8ca772b7b1b871d",
+    "/images/rg-l-140/cover.jpg": "565c767824e4727f08034e87cf9b0d8738cd62505f47825e325c6d00ba79bb10",
+    "/images/rg-l-141/cover.jpg": "410db4b63f548aff178e7750581cd2762a3ad8845098b6f420240f303c8e9783",
+    "/images/mg-301/cover.jpg": "7d92a9febc786ff0ed730bde25ca0e82ffba6e5cdcf678cefef39328e3363f5e",
+    "/images/mg-302/cover.jpg": "2dddddcddab7b0280ccf19e416a22fe5f8a4a22102a1b4ce23ac58f600fbe40b",
+    "/images/mg-l-266/cover.jpg": "36ec101843d6aef6c5c3cb24910519b5d5d03a4bb3bc2cf1f1fcc6263d18bac3",
+    "/images/mg-l-267/cover.jpg": "e17b952fd13cbabdded773d6427d91107962b087a484d63f38a441df6a55ea7e",
+    "/images/mg-l-268/cover.jpg": "49e976c4d32ad4befda6d535383669da1e8622ad2d37e63e076e5a779cd3c3ad",
+    "/images/mg-l-269/cover.jpg": "dc0038ecd2c157514bad3f3f86cf650436b9e496d4a609436a9c36a42b87a3c3",
+    "/images/pg-033/cover.jpg": "37250088fcb45fc007beba88fbe032d21fd108f6b83c3962ed42d0d4885d7648",
+    "/images/pg-l-021/cover.jpg": "5ce82406f36693811702bc2fb43c0e71d36bee658b269cb3b5b90c1a4f686ecf"
+  }
+}

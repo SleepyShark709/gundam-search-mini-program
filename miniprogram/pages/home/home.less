@@ -1,74 +1,40 @@
 @import '../../styles/variables.less';
 
-.page {
-  position: relative;
-  height: 100%;
-  background: @color-bg-primary;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: @spacing-xl;
-  padding: @spacing-xl 0;
-}
-
-.carousel {
-  width: 100%;
-  height: 780rpx;
-}
-
-.card-wrapper {
-  padding: 0 24rpx;
-}
-
-.dots {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: @spacing-sm;
-}
-
-.dot {
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: @radius-full;
-  background: @color-text-muted;
-}
-
-.dot-active {
-  width: 40rpx;
-  background: @color-accent-primary;
-  box-shadow: 0 0 16rpx rgba(0, 212, 255, 0.6);
-}
-
-.subtitle {
-  font-size: @font-size-sm;
-  color: @color-text-muted;
-  letter-spacing: 4rpx;
-  text-align: center;
-}
-
-.loading {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.loading-text {
-  font-size: @font-size-md;
-  color: @color-text-muted;
-}
+.page { height: 100%; background: @color-bg-primary; display: flex; flex-direction: column; overflow: hidden; }
+.content { flex: 1; min-height: 0; }
+.search-section { padding: 28rpx 32rpx 40rpx; }
+.eyebrow, .section-code, .play-code, .model-meta { font-family: monospace; color: @color-accent-primary; font-size: 20rpx; letter-spacing: 2rpx; }
+.eyebrow { display: block; margin-bottom: 20rpx; }
+.search-bar { display: flex; align-items: center; height: 96rpx; border: 1rpx solid @color-border-active; border-radius: 12rpx; background: @color-bg-secondary; overflow: hidden; }
+.search-input { flex: 1; min-width: 0; padding: 0 24rpx; font-size: 26rpx; }
+.input-placeholder { color: @color-text-muted; }
+.search-button { margin: 0 12rpx 0 0; padding: 0 22rpx; height: 64rpx; line-height: 64rpx; background: @color-accent-primary; color: @color-bg-primary; font-size: 24rpx; font-weight: 700; border-radius: 8rpx; }
+button::after { border: 0; }
+.section-heading { display: flex; align-items: center; justify-content: space-between; margin: 0 32rpx 24rpx; }
+.section-title { font-size: 32rpx; font-weight: 700; letter-spacing: 2rpx; }
+.section-code { color: @color-text-muted; }
+.main { display: flex; flex-direction: column; align-items: center; margin-bottom: 48rpx; }
+.carousel { width: 100%; height: 748rpx; }
+.card-wrapper { padding: 0 24rpx; }
+.dots { display: flex; align-items: center; gap: 16rpx; padding-top: 20rpx; }
+.dot { width: 10rpx; height: 10rpx; border-radius: 10rpx; background: @color-text-muted; }
+.dot-active { width: 36rpx; background: @color-accent-primary; box-shadow: @glow-primary; }
+.loading { padding: 64rpx; text-align: center; color: @color-text-muted; }
+.play-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16rpx; padding: 0 32rpx 48rpx; }
+.play-card { display: flex; flex-direction: column; padding: 28rpx; min-height: 176rpx; border: 1rpx solid @color-border; border-radius: 12rpx; background: @gradient-card; }
+.play-wide { grid-column: span 2; flex-direction: row; align-items: center; gap: 28rpx; min-height: 144rpx; border-left: 4rpx solid @color-accent-primary; }
+.play-index { font-family: monospace; font-size: 64rpx; font-weight: 700; color: @color-accent-primary; line-height: 1; }
+.play-title { display: block; font-size: 30rpx; font-weight: 600; margin: 8rpx 0; }
+.play-subtitle { display: block; font-size: 22rpx; color: @color-text-secondary; }
+.play-arrow { margin-left: auto; font-size: 40rpx; color: @color-accent-primary; }
+.card-hover { opacity: .75; }
+.text-button { margin: 0; padding: 0; background: transparent; color: @color-accent-primary; font-size: 23rpx; line-height: 40rpx; }
+.date-note { display: block; font-size: 22rpx; color: @color-text-muted; margin: -12rpx 32rpx 24rpx; }
+.recent-list { padding: 0 32rpx; }
+.recent-card { display: flex; align-items: center; padding: 20rpx 0; gap: 24rpx; border-top: 1rpx solid @color-border; }
+.recent-image { width: 120rpx; height: 120rpx; background: @color-bg-secondary; border-radius: 8rpx; flex-shrink: 0; }
+.recent-info { min-width: 0; flex: 1; }
+.model-name { display: block; margin: 8rpx 0; font-size: 26rpx; line-height: 1.5; }
+.model-price { display: block; color: @color-text-secondary; font-size: 22rpx; }
+.recent-arrow { color: @color-text-muted; }
+.bottom-space { height: calc(80rpx + env(safe-area-inset-bottom)); }

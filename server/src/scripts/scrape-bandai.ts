@@ -15,10 +15,13 @@
  *   --sync-db              同时更新数据库（需要数据库连接）
  *   --full                 全量爬取所有页面（等价于 --max-pages 0）
  *   --force                强制更新已存在产品的信息（价格、日期等）
+ *   --update-prices        仅更新已有产品的价格，保留原发售日期
+ *   --download-images      下载新产品首图并使用本地稳定路径
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
+import sharp from 'sharp';
 
 // ---- 配置 ----
 const BASE_URL = 'https://bandai-hobby.net';
@@ -33,6 +36,7 @@ const BRAND_URLS: Record<string, string> = {
 };
 
 const DATA_DIR = path.resolve(__dirname, '../../../miniprogram/data');
+const IMAGE_DIR = path.resolve(__dirname, '../../public/images');
 
 // 限定类型映射（列表页 CSS 类 → 数据字段）
 const TAG_TO_LIMITED: Record<string, { isLimited: boolean; limitedType?: string }> = {
@@ -80,17 +84,20 @@ interface Config {
   dryRun: boolean;
   syncDb: boolean;
   force: boolean;
+  updatePrices: boolean;
+  downloadImages: boolean;
 }
 
 // ---- 参数解析 ----
-function parseArgs(): Config {
-  const args = process.argv.slice(2);
+export function parseArgs(args = process.argv.slice(2)): Config {
   const config: Config = {
     maxPages: 5,
     delay: 1500,
     dryRun: false,
     syncDb: false,
     force: false,
+    updatePrices: false,
+    downloadImages: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -116,6 +123,12 @@ function parseArgs(): Config {
       case '--force':
         config.force = true;
         break;
+      case '--update-prices':
+        config.updatePrices = true;
+        break;
+      case '--download-images':
+        config.downloadImages = true;
+        break;
     }
   }
 
@@ -123,27 +136,42 @@ function parseArgs(): Config {
 }
 
 // ---- 网络请求 ----
-async function fetchPage(url: string): Promise<string | null> {
-  try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': USER_AGENT,
-        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'ja,en;q=0.5',
-      },
-      redirect: 'follow',
-    });
-
-    if (!response.ok) {
-      console.warn(`  [${response.status}] ${url}`);
-      return null;
+async function fetchResponse(url: string, accept: string): Promise<Response> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': USER_AGENT,
+          Accept: accept,
+          'Accept-Language': 'ja,en;q=0.5',
+        },
+        signal: AbortSignal.timeout(20_000),
+        redirect: 'follow',
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
+      return response;
+    } catch (err) {
+      if (attempt >= 3) throw err;
+      await sleep(500 * attempt);
     }
-
-    return await response.text();
-  } catch (err: any) {
-    console.warn(`  [error] ${url}: ${err.message}`);
-    return null;
   }
+}
+
+async function fetchPage(url: string): Promise<string> {
+  const response = await fetchResponse(url, 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+  return response.text();
+}
+
+async function downloadCover(model: ModelEntry): Promise<string> {
+  if (!model.imageUrl) throw new Error(`${model.id} 缺少首图地址`);
+  const response = await fetchResponse(model.imageUrl, 'image/*');
+  const buffer = Buffer.from(await response.arrayBuffer());
+  // 解码验证并统一转为 JPEG，避免把防盗链 HTML 或损坏文件写成成功图片。
+  const cover = await sharp(buffer).jpeg({ quality: 90 }).toBuffer();
+  const directory = path.join(IMAGE_DIR, model.id);
+  fs.mkdirSync(directory, { recursive: true });
+  fs.writeFileSync(path.join(directory, 'cover.jpg'), cover);
+  return `/images/${model.id}/cover.jpg`;
 }
 
 function sleep(ms: number): Promise<void> {
@@ -168,58 +196,70 @@ function sleep(ms: number): Promise<void> {
  *   </div>
  * </a>
  */
-function parseListingPage(html: string): ScrapedProduct[] {
-  const products: ScrapedProduct[] = [];
+function decodeHtml(value: string): string {
+  const entities: Record<string, string> = { amp: '&', quot: '"', apos: "'", nbsp: ' ' };
+  return value.replace(/&(#x[\da-f]+|#\d+|amp|quot|apos|nbsp);/gi, (entity, code: string) => {
+    if (code[0] !== '#') return entities[code.toLowerCase()];
+    const point = code[1].toLowerCase() === 'x' ? parseInt(code.slice(2), 16) : parseInt(code.slice(1), 10);
+    return point > 0 && point <= 0x10ffff ? String.fromCodePoint(point) : entity;
+  });
+}
 
-  // 匹配每个产品卡片链接
-  const cardRegex =
-    /<a\s+href="(https?:\/\/bandai-hobby\.net\/item\/[^"]+)"[^>]*class="c-card p-card[^"]*">([\s\S]*?)<\/a>/g;
+function attribute(html: string, name: string): string {
+  const match = html.match(new RegExp(`\\b${name}\\s*=\\s*(["'])([\\s\\S]*?)\\1`, 'i'));
+  return match ? decodeHtml(match[2]) : '';
+}
+
+function normalizeProductUrl(value: string): string {
+  const url = new URL(decodeHtml(value), BASE_URL);
+  url.search = '';
+  url.hash = '';
+  return url.href.replace(/\/$/, '') + '/';
+}
+
+export function parseListingPage(html: string, pageUrl = BASE_URL): ScrapedProduct[] {
+  const products: ScrapedProduct[] = [];
+  const cardRegex = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
   let match: RegExpExecArray | null;
 
   while ((match = cardRegex.exec(html)) !== null) {
-    const productUrl = match[1];
+    const classes = attribute(match[1], 'class').split(/\s+/);
+    if (!classes.includes('p-card') || !classes.includes('-landscape')) continue;
+    const href = attribute(match[1], 'href');
+    if (!href) continue;
+    const url = new URL(href, pageUrl);
+    if (!['http:', 'https:'].includes(url.protocol)) continue;
+    if (!(url.hostname === 'bandai-hobby.net' && url.pathname.startsWith('/item/')) &&
+        !(url.hostname === 'p-bandai.jp' && url.pathname.startsWith('/item/item-'))) continue;
     const cardHtml = match[2];
-
-    // 只处理横向卡片（列表项），跳过底部"关连商品"等区域的竖向卡片
-    if (!match[0].includes('-landscape')) continue;
-
-    // 产品名
-    const titleMatch = cardHtml.match(/<div class="p-card__tit">([\s\S]*?)<\/div>/);
-    const nameJa = titleMatch ? titleMatch[1].trim() : '';
-
-    // 价格（含税）
-    const priceMatch = cardHtml.match(/<div class="p-card__price">([\d,]+)円/);
+    const titleMatch = cardHtml.match(/<div\b[^>]*class=["']p-card__tit["'][^>]*>([\s\S]*?)<\/div>/);
+    const nameJa = titleMatch ? decodeHtml(titleMatch[1].replace(/<[^>]*>/g, '')).trim() : '';
+    const priceMatch = cardHtml.match(/<div\b[^>]*class=["']p-card__price["'][^>]*>([\d,]+)円/);
     const price = priceMatch ? parseInt(priceMatch[1].replace(/,/g, ''), 10) : 0;
-    const priceTaxFree = price ? Math.round(price / 1.1) : 0;
-
-    // 发售日期
-    const dateMatch = cardHtml.match(/<div class="p-card_date">(\d{4})年(\d{2})月/);
-    const releaseDate = dateMatch ? `${dateMatch[1]}-${dateMatch[2]}` : '';
-
-    // 限定类型标签
-    const tagMatch = cardHtml.match(/<div class="p-card__tag\s+(-\w+)">/);
-    const tagClass = tagMatch ? tagMatch[1] : '';
-    const limitedInfo = TAG_TO_LIMITED[tagClass] || { isLimited: false };
-
-    // 图片 URL
-    const imgMatch = cardHtml.match(/<img\s+src="([^"]+)"/);
-    const imageUrl = imgMatch ? imgMatch[1] : '';
-
-    if (nameJa && productUrl) {
+    const dateMatch = cardHtml.match(/<div\b[^>]*class=["']p-card_date["'][^>]*>(\d{4})年(\d{1,2})月/);
+    const releaseDate = dateMatch ? `${dateMatch[1]}-${dateMatch[2].padStart(2, '0')}` : '';
+    const tagMatch = cardHtml.match(/<div\b[^>]*class=["']p-card__tag\s+(-\w+)["']/);
+    const limitedInfo = TAG_TO_LIMITED[tagMatch ? tagMatch[1] : ''] || { isLimited: false };
+    const imgMatch = cardHtml.match(/<img\b([^>]*)>/i);
+    const imgSrc = imgMatch ? attribute(imgMatch[1], 'src') : '';
+    if (nameJa) {
       products.push({
         nameJa,
         price,
-        priceTaxFree,
+        priceTaxFree: price ? Math.round(price / 1.1) : 0,
         releaseDate,
         isLimited: limitedInfo.isLimited,
         limitedType: limitedInfo.limitedType,
-        imageUrl,
-        productUrl: productUrl.replace(/\/$/, '') + '/',
+        imageUrl: imgSrc ? new URL(imgSrc, pageUrl).href : '',
+        productUrl: normalizeProductUrl(url.href),
       });
     }
   }
-
   return products;
+}
+
+function productKey(product: Pick<ModelEntry, 'nameJa'>): string {
+  return decodeHtml(product.nameJa).normalize('NFKC').replace(/\s/g, '');
 }
 
 /** 获取列表页最大页码 */
@@ -243,12 +283,14 @@ function saveData(seriesCode: string, data: ModelEntry[]): void {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 }
 
-function updateSeriesMeta(seriesCode: string, totalCount: number): void {
+export function updateSeriesMeta(seriesCode: string, totalCount: number): void {
   const filePath = path.join(DATA_DIR, 'series-meta.json');
   const meta = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
   const entry = meta.find((m: any) => m.code === seriesCode);
   if (entry) entry.totalCount = totalCount;
-  fs.writeFileSync(filePath, JSON.stringify(meta, null, 2) + '\n', 'utf-8');
+  const json = JSON.stringify(meta, null, 2);
+  fs.writeFileSync(filePath, json + '\n', 'utf-8');
+  fs.writeFileSync(path.join(DATA_DIR, 'series-meta.js'), `module.exports = ${json};\n`, 'utf-8');
 }
 
 /** 为新产品生成下一个编号 */
@@ -270,7 +312,7 @@ interface SeriesResult {
   existingData: ModelEntry[];
 }
 
-async function scrapeSeries(seriesCode: string, config: Config): Promise<SeriesResult> {
+export async function scrapeSeries(seriesCode: string, config: Config): Promise<SeriesResult> {
   const brandPath = BRAND_URLS[seriesCode];
   if (!brandPath) {
     console.error(`  未知系列: ${seriesCode}`);
@@ -278,42 +320,50 @@ async function scrapeSeries(seriesCode: string, config: Config): Promise<SeriesR
   }
 
   const existingData = loadData(seriesCode);
-  const existingUrls = new Set(existingData.map((m) => m.productUrl));
+  const existingByUrl = new Map(existingData.filter((m) => m.productUrl).map((m) => [normalizeProductUrl(m.productUrl), m]));
+  const existingByTitle = new Map<string, ModelEntry | null>();
+  for (const model of existingData) {
+    const title = productKey(model);
+    existingByTitle.set(title, existingByTitle.has(title) ? null : model);
+  }
+  const findExisting = (product: ScrapedProduct) => existingByUrl.get(product.productUrl) || existingByTitle.get(productKey(product));
   console.log(`  现有数据: ${existingData.length} 条`);
 
   // --- 爬取列表页 ---
   const firstUrl = `${BASE_URL}${brandPath}`;
   const firstHtml = await fetchPage(firstUrl);
-  if (!firstHtml) {
-    console.error(`  无法获取列表页: ${firstUrl}`);
-    return { newProducts: [], updatedCount: 0, existingData };
-  }
 
   const maxPage = getMaxPage(firstHtml);
   const pagesToFetch = config.maxPages > 0 ? Math.min(config.maxPages, maxPage) : maxPage;
   console.log(`  官网共 ${maxPage} 页，本次扫描 ${pagesToFetch} 页`);
 
-  let allScraped: ScrapedProduct[] = parseListingPage(firstHtml);
+  const allScraped: ScrapedProduct[] = parseListingPage(firstHtml, firstUrl);
+  if (allScraped.length === 0) throw new Error(`${seriesCode} 第 1 页未解析到产品`);
+  const seenUrls = new Set(allScraped.map((p) => p.productUrl));
+  const sourcePages = new Map(allScraped.map((p) => [p.productUrl, firstUrl]));
   console.log(`  第 1 页: ${allScraped.length} 条`);
 
-  let consecutiveKnownPages = allScraped.every((p) => existingUrls.has(p.productUrl)) ? 1 : 0;
+  let consecutiveKnownPages = allScraped.every(findExisting) ? 1 : 0;
+  const scanAllPages = config.maxPages === 0 || config.force || config.updatePrices;
 
   for (let page = 2; page <= pagesToFetch; page++) {
     await sleep(config.delay);
 
-    const pageHtml = await fetchPage(`${BASE_URL}${brandPath}?p=${page}`);
-    if (!pageHtml) {
-      console.warn(`  第 ${page} 页获取失败，跳过`);
-      continue;
+    const pageUrl = `${BASE_URL}${brandPath}?p=${page}`;
+    const pageHtml = await fetchPage(pageUrl);
+    const pageProducts = parseListingPage(pageHtml, pageUrl);
+    if (pageProducts.length === 0) throw new Error(`${seriesCode} 第 ${page} 页未解析到产品`);
+    const newCount = pageProducts.filter((p) => !findExisting(p)).length;
+    console.log(`  第 ${page} 页: ${pageProducts.length} 条 (新发现 ${newCount} 条)`);
+    for (const product of pageProducts) {
+      if (seenUrls.has(product.productUrl)) continue;
+      seenUrls.add(product.productUrl);
+      sourcePages.set(product.productUrl, pageUrl);
+      allScraped.push(product);
     }
 
-    const pageProducts = parseListingPage(pageHtml);
-    const newCount = pageProducts.filter((p) => !existingUrls.has(p.productUrl)).length;
-    console.log(`  第 ${page} 页: ${pageProducts.length} 条 (新发现 ${newCount} 条)`);
-    allScraped.push(...pageProducts);
-
     if (newCount === 0) {
-      if (++consecutiveKnownPages >= 3) {
+      if (++consecutiveKnownPages >= 3 && !scanAllPages) {
         console.log(`  连续 ${consecutiveKnownPages} 页无新产品，停止扫描`);
         break;
       }
@@ -322,31 +372,39 @@ async function scrapeSeries(seriesCode: string, config: Config): Promise<SeriesR
     }
   }
 
-  // --- 识别新产品 ---
-  const newScraped = allScraped.filter((p) => !existingUrls.has(p.productUrl));
-  console.log(`  扫描完成: 共 ${allScraped.length} 条, 新发现 ${newScraped.length} 条`);
-
-  // --- force 模式: 更新已有产品价格/日期 ---
-  let updatedCount = 0;
-  if (config.force) {
-    const urlToScraped = new Map(allScraped.map((p) => [p.productUrl, p]));
-    for (const m of existingData) {
-      const s = urlToScraped.get(m.productUrl);
-      if (!s) continue;
+  // URL 优先；换链仅回退到旧目录中唯一的完整标题，限定标签可能随官网变化。
+  const newScraped: ScrapedProduct[] = [];
+  const seenTitles = new Set<string>();
+  const updatedIds = new Set<string>();
+  const processedIds = new Set<string>();
+  const processedUrls = new Set<string>();
+  for (const product of allScraped) {
+    if (processedUrls.has(product.productUrl)) continue;
+    processedUrls.add(product.productUrl);
+    const existing = findExisting(product);
+    if (existing) {
+      if (processedIds.has(existing.id)) continue;
+      processedIds.add(existing.id);
       let changed = false;
-      if (s.price && s.price !== m.price) {
-        m.price = s.price;
-        m.priceTaxFree = s.priceTaxFree;
+      if ((config.force || config.updatePrices) && product.price &&
+          (product.price !== existing.price || product.priceTaxFree !== existing.priceTaxFree)) {
+        existing.price = product.price;
+        existing.priceTaxFree = product.priceTaxFree;
         changed = true;
       }
-      if (s.releaseDate && s.releaseDate !== m.releaseDate) {
-        m.releaseDate = s.releaseDate;
+      if (config.force && product.releaseDate && product.releaseDate !== existing.releaseDate) {
+        existing.releaseDate = product.releaseDate;
         changed = true;
       }
-      if (changed) updatedCount++;
+      if (changed) updatedIds.add(existing.id);
+    } else if (!seenTitles.has(productKey(product))) {
+      newScraped.push(product);
+      seenTitles.add(productKey(product));
     }
-    if (updatedCount > 0) console.log(`  更新 ${updatedCount} 条已有产品信息`);
   }
+  const updatedCount = updatedIds.size;
+  console.log(`  扫描完成: 共 ${allScraped.length} 条, 新发现 ${newScraped.length} 条`);
+  if (updatedCount > 0) console.log(`  更新 ${updatedCount} 条已有产品信息`);
 
   // --- 生成新条目 ---
   let nextRegular = getNextNumber(existingData, false);
@@ -372,11 +430,30 @@ async function scrapeSeries(seriesCode: string, config: Config): Promise<SeriesR
     };
   });
 
+  if (config.downloadImages && !config.dryRun) {
+    const freshImagesByPage = new Map<string, Map<string, string>>();
+    for (const model of newProducts) {
+      const sourcePage = sourcePages.get(model.productUrl)!;
+      let freshImages = freshImagesByPage.get(sourcePage);
+      if (!freshImages) {
+        // 列表图片签名只有几分钟有效期，下载前绕过缓存刷新所在页。
+        await sleep(config.delay);
+        const freshPage = new URL(sourcePage);
+        freshPage.searchParams.set('_', String(Date.now()));
+        const freshHtml = await fetchPage(freshPage.href);
+        freshImages = new Map(parseListingPage(freshHtml, freshPage.href).map((p) => [p.productUrl, p.imageUrl]));
+        freshImagesByPage.set(sourcePage, freshImages);
+      }
+      const imageUrl = freshImages.get(model.productUrl);
+      if (!imageUrl) throw new Error(`${model.id} 在刷新后的列表页中缺少首图: ${sourcePage}`);
+      model.imageUrl = await downloadCover({ ...model, imageUrl });
+    }
+  }
   return { newProducts, updatedCount, existingData };
 }
 
 // ---- 数据库同步 ----
-async function syncToDatabase(seriesToSync: string[]) {
+export async function syncToDatabase(seriesToSync: string[]) {
   console.log('[DB] 同步数据到数据库...');
   const pool = (await import('../db/pool')).default;
 
@@ -424,22 +501,23 @@ async function syncToDatabase(seriesToSync: string[]) {
       );
     }
 
-    await pool.end();
     console.log('[DB] 数据库同步完成');
   } catch (err) {
     console.error('[DB] 数据库同步失败:', err);
+    throw err;
+  } finally {
+    await pool.end();
   }
 }
 
 // ---- 主流程 ----
-async function main() {
-  const config = parseArgs();
+export async function main(config = parseArgs()) {
   const startTime = Date.now();
 
   console.log('========================================');
   console.log('  万代官网数据爬取脚本');
   console.log('========================================');
-  console.log(`  配置: maxPages=${config.maxPages || '全部'}, delay=${config.delay}ms, dryRun=${config.dryRun}, force=${config.force}`);
+  console.log(`  配置: maxPages=${config.maxPages || '全部'}, delay=${config.delay}ms, dryRun=${config.dryRun}, force=${config.force}, updatePrices=${config.updatePrices}, downloadImages=${config.downloadImages}`);
   console.log('');
 
   const seriesToScrape = config.series ? [config.series] : ['hg', 'rg', 'mg', 'pg'];
@@ -501,7 +579,9 @@ async function main() {
   console.log('========================================');
 }
 
-main().catch((err) => {
-  console.error('[scrape] 致命错误:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error('[scrape] 致命错误:', err);
+    process.exit(1);
+  });
+}

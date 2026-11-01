@@ -1,0 +1,71 @@
+<view class="page">
+  <header title="{{title}}" showBack bind:back="handleBack" />
+  <scroll-view class="content" scroll-y>
+    <view class="discovery-body">
+      <text class="eyebrow">DISCOVERY / {{mode === 'compare' ? 'VERSUS' : mode === 'lineage' ? 'LINEAGE' : 'CATALOG'}}</text>
+      <text class="notice" wx:if="{{modeNotice}}">{{modeNotice}}</text>
+      <view class="search-bar" wx:if="{{mode === 'search' || mode === 'compare'}}">
+        <input class="search-input" value="{{keyword}}" placeholder="名称 / 型号 / 编号" placeholder-class="input-placeholder" maxlength="100" confirm-type="search" bindinput="handleKeywordInput" bindconfirm="handleSearch" />
+        <button class="search-button" bindtap="handleSearch">搜索</button>
+      </view>
+      <text class="footnote search-note" wx:if="{{mode === 'search' || mode === 'compare'}}">支持中日文；英文支持已收录名称及常用别名</text>
+      <view class="notice" wx:if="{{refreshing || refreshError}}"><text>{{refreshing ? '正在更新目录…' : '目录更新失败，已保留当前结果'}}</text><button wx:if="{{refreshError}}" class="text-button" bindtap="refreshCatalog">重试</button></view>
+
+      <block wx:if="{{mode === 'lineage'}}">
+        <text class="intro">精选机体关系，非完整设定年表</text>
+        <view class="lineage-tabs"><button wx:for="{{lineageTabs}}" wx:key="id" class="lineage-tab {{lineageId === item.id ? 'tab-active' : ''}}" data-id="{{item.id}}" bindtap="handleLineage">{{item.name}}</button></view>
+        <view class="lineage-summary">
+          <view class="summary-heading"><text class="lineage-title">{{lineage.name}}</text><text class="progress-number">{{lineage.progressText}}</text></view>
+          <text class="lineage-subtitle">{{lineage.subtitle}}</text>
+          <view class="progress-track"><view class="progress-fill" style="width: {{lineage.percent}}%;"></view></view>
+          <text class="footnote">已入手 / 本组已映射目录 · 不代表全系列收集进度</text>
+        </view>
+        <view class="notice" wx:if="{{purchasesLoading || purchasesError}}"><text>{{purchasesLoading ? '正在同步入手记录…' : purchasesKnown ? '入手记录同步失败，已保留上次状态' : '入手记录同步失败，暂无法判断入手状态'}}</text><button wx:if="{{purchasesError}}" class="text-button" bindtap="refreshPurchases">重试</button></view>
+        <view class="lineage-entry" wx:for="{{lineage.entries}}" wx:key="modelId">
+          <view class="lineage-node"><view class="node-dot {{item.owned ? 'node-owned' : ''}}"></view><view class="node-line"></view></view>
+          <view class="entry-body">
+            <view class="entry-heading"><text class="variant">{{item.variant}}</text><text class="ownership {{item.owned ? 'is-owned' : ''}}">{{item.status}}</text></view>
+            <view class="entry-model" wx:if="{{item.model}}" data-id="{{item.modelId}}" bindtap="handleModel" hover-class="card-hover">
+              <image class="entry-image" src="{{item.model.imageUrl}}" mode="aspectFit" lazy-load />
+              <view class="model-info"><text class="model-meta">{{item.model.grade}} / {{item.model.scale}}</text><text class="model-name">{{item.model.name}}</text><text class="model-detail">{{item.model.dateText}} · {{item.model.priceText}}</text></view>
+              <text class="model-arrow">↗</text>
+            </view>
+            <text class="footnote" wx:else>该映射暂不在当前目录中，不计入进度分母</text>
+            <button class="source-button" data-url="{{item.productUrl}}" bindtap="handleSource">复制万代官方商品来源 ↗</button>
+          </view>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view class="compare-panel" wx:if="{{mode === 'compare'}}">
+          <view class="summary-heading"><text class="section-title">下一台，选谁出击</text><text class="progress-number">{{selectedIds.length}} / 2</text></view>
+          <text class="footnote">在下方选择两台；再次点击已选模型可移除</text>
+          <view class="compare-slots">
+            <view class="compare-model" wx:for="{{selectedModels}}" wx:key="id">
+              <button class="remove-button" data-id="{{item.id}}" bindtap="handleSelectModel">移除 ×</button>
+              <image class="compare-image" src="{{item.imageUrl}}" mode="aspectFit" />
+              <text class="compare-name" data-id="{{item.id}}" bindtap="handleModel">{{item.name}}</text>
+            </view>
+            <view class="empty-slot" wx:if="{{selectedIds.length < 2}}"><text class="slot-cross">＋</text><text>选择{{selectedIds.length ? '第二' : '第一'}}台模型</text></view>
+          </view>
+          <view class="comparison-row" wx:for="{{comparisonRows}}" wx:key="label"><text class="comparison-label">{{item.label}}</text><view class="comparison-values"><text>{{item.left}}</text><text>{{item.right}}</text></view></view>
+          <text class="footnote" wx:if="{{selectedIds.length === 2}}">价格为目录收录的官方日元价；日期非市场到货或再版时间。</text>
+          <view class="share-actions" wx:if="{{selectedIds.length === 2}}">
+            <button wx:if="{{shareId}}" class="primary-button" open-type="share">分享这张对比卡 ↗</button>
+            <button wx:else class="primary-button" loading="{{generatingShare}}" disabled="{{generatingShare}}" bindtap="handlePrepareShare">{{generatingShare ? '正在生成对比卡' : '生成对比卡'}}</button>
+            <text wx:if="{{shareError}}" class="error-text">{{shareError}}</text>
+          </view>
+        </view>
+        <view class="list-heading"><text class="section-title">{{mode === 'new' ? '近期发售目录' : mode === 'compare' ? '选择对比模型' : keyword ? '搜索结果' : '全部模型'}}</text><text class="result-count">{{total}} 台</text></view>
+        <text class="footnote date-note" wx:if="{{mode === 'new'}}">按目录发售日期降序 · 含已公布的未来发售产品 · 非市场或再版时间</text>
+        <view class="empty-state" wx:if="{{!models.length}}"><text class="empty-symbol">∅</text><text>{{mode === 'new' ? '暂无已收录发售日期' : '没有找到匹配的模型'}}</text><text class="footnote">试试机体名称、RX-78-2 或 RG-032</text></view>
+        <view class="catalog-card {{item.selected ? 'card-selected' : ''}}" wx:for="{{models}}" wx:key="id">
+          <view class="catalog-model" data-id="{{item.id}}" bindtap="handleModel" hover-class="card-hover"><image class="catalog-image" src="{{item.imageUrl}}" mode="aspectFit" lazy-load /><view class="model-info"><text class="model-meta">{{item.grade}} / {{item.id}} {{item.isLimited ? '· 限定' : ''}}</text><text class="model-name">{{item.name}}</text><text class="model-detail">{{item.dateText}} · {{item.priceText}}</text></view></view>
+          <button class="select-button {{item.selected ? 'selected-button' : ''}}" wx:if="{{mode === 'compare'}}" data-id="{{item.id}}" bindtap="handleSelectModel">{{item.selected ? '已选 · 移除' : '加入 PK ＋'}}</button>
+        </view>
+        <button class="load-more" wx:if="{{models.length < total}}" bindtap="handleLoadMore">载入更多 · 已显示 {{models.length}} / {{total}}</button>
+      </block>
+    </view>
+    <view class="bottom-space"></view>
+  </scroll-view>
+</view>

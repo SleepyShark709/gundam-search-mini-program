@@ -66,6 +66,7 @@
   flex: 1;
   min-height: 0;
   padding: @spacing-lg;
+  box-sizing: border-box;
 }
 
 .form-container {
@@ -102,6 +103,24 @@
   font-size: @font-size-md;
 }
 
+.date-field {
+  display: flex;
+  align-items: center;
+  gap: @spacing-xs;
+}
+
+.date-picker {
+  flex: 1;
+  min-width: 0;
+}
+
+.date-clear {
+  flex-shrink: 0;
+  color: @color-text-secondary;
+  font-size: @font-size-md;
+  white-space: nowrap;
+}
+
 .form-picker {
   height: 88rpx;
   padding: 0 @spacing-md;
@@ -123,8 +142,10 @@
 }
 
 .form-textarea {
+  width: 100%;
   min-height: 160rpx;
   padding: @spacing-md;
+  box-sizing: border-box;
   background: @color-bg-tertiary;
   border: 2rpx solid @color-border;
   border-radius: @radius-md;

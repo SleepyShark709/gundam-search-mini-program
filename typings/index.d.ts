@@ -1,4 +1,7 @@
-/// <reference path="./types/index.d.ts" />
+/// <reference types="miniprogram-api-typings" />
+
+// Canvas 2D follows the WeChat API types without loading browser DOM globals.
+type CanvasRenderingContext2D = WechatMiniprogram.CanvasRenderingContext.CanvasRenderingContext2D;
 
 interface IAppOption {
   globalData: {

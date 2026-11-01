@@ -7,6 +7,8 @@ import wishlistRouter from './routes/wishlist';
 import purchasesRouter from './routes/purchases';
 import userRouter from './routes/user';
 import forumRouter from './routes/forum';
+import sharesRouter, { publicSharesRouter } from './routes/shares';
+import buildsRouter from './routes/builds';
 
 const app = express();
 const PORT = 80;
@@ -25,6 +27,7 @@ app.get('/', (_req, res) => {
 
 // ---- 公开 API 路由（不需要认证） ----
 app.use('/api', modelsRouter);
+app.use('/api/shares', publicSharesRouter);
 
 // ---- 需要认证的 API 路由 ----
 app.use('/api', authMiddleware);
@@ -32,6 +35,8 @@ app.use('/api/wishlist', wishlistRouter);
 app.use('/api/purchases', purchasesRouter);
 app.use('/api/user', userRouter);
 app.use('/api/forum', forumRouter);
+app.use('/api/shares', sharesRouter);
+app.use('/api/builds', buildsRouter);
 
 // ---- 全局错误处理 ----
 app.use(errorHandler);

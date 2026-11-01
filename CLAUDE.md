@@ -10,15 +10,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **前端**：微信小程序（WebView 渲染器 + glass-easel 组件框架），TypeScript + Less
 - **后端**：Express + MySQL（腾讯云 CynosDB），部署在微信云托管
-- 前端无外部 npm 运行时依赖，仅 `miniprogram-api-typings` 作为 devDependency
+- 前端无外部 npm 运行时依赖；根目录 devDependencies 提供微信类型、TypeScript、ESLint 和测试工具
 
 ## 开发方式
 
-使用**微信开发者工具**打开项目根目录进行开发和预览。TS 和 Less 由开发者工具自动编译，无需手动构建步骤。无 lint、test 配置。
+使用**微信开发者工具**打开项目根目录进行开发和预览。TS 和 Less 由开发者工具自动编译，无需手动构建步骤。
+
+质量检查使用 Node.js `^20.19.0 || ^22.13.0 || >=24`（本次验证为 22.23.2）。首次运行先在根目录、`server` 和 `admin` 分别执行 `npm ci`，然后在根目录运行：
+
+```sh
+npm run typecheck # 分别检查小程序、server、admin，保留 strict 检查
+npm run lint      # 全仓 ESLint，不允许 warning
+npm test          # 隔离微信接口的回归测试，不访问真实账户数据
+```
+
+小程序类型统一来自 npm 包 `miniprogram-api-typings`；旧 `typings/types` 保留为历史文件，不再进入根 TypeScript 检查。系列页和心愿单每批渲染 40 个模型，完整目录保存在逻辑层，不能再把完整目录重复放进页面 `data`。
 
 ### 本地调试 Server
 
-`api.ts` 中 `USE_LOCAL` 已改为**自动检测**：通过 `wx.getAccountInfoSync()` 读取 `envVersion`，`develop` 走本地、`trial`/`release` 走云托管。**无需手动切换**，发布前也不用改回。如需在开发者工具中临时强制走云托管，把 `FORCE_USE_CLOUD` 改为 `true`。
+`api.ts` 中 `FORCE_USE_CLOUD` 默认为 `true`，开发者工具、真机调试及体验／正式版均使用现有云托管。仅需联调本地 server 时，手动改为 `false`；此时 `envVersion === 'develop'` 才走本地，体验／正式版仍走云托管。本地联调结束后改回 `true`。
 
 启动本地 server：
 
@@ -30,7 +40,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 #### 本地调试的关键差异（不直观）
 
 - **mock openid**：本地模式下 `callLocal` 在请求头注入 `X-WX-OPENID: local-dev-user`，所有用户数据都挂在这个 mock 用户名下，**与云上真实 openid 数据隔离**。本地看到心愿单/已购为空是正常的。
-- **图片始终走云端**：`cdn-config.ts` 中的 `getImageBase()` 始终返回 `CONTAINER_DOMAIN`，因为本地 server 的 `public/images/` 通常是空的。API 走本地、图片走云端。
+- **图片始终走云端**：`cdn-config.ts` 中的 `getImageBase()` 始终返回 `CONTAINER_DOMAIN`，因为本地 server 的 `public/images/` 通常是空的。启用本地模式后，API 走本地、图片仍走云端。
 - **数据库连接**：本地 server 直连云上 CynosDB（外网地址），即可使用线上完整模型数据。
 
 #### 数据库迁移脚本
@@ -66,16 +76,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `GET/POST/PUT/DELETE /api/purchases` — 已购记录 CRUD（需认证）
 - `GET/POST /api/user/profile` — 用户昵称和头像（需认证）
 
-### 页面结构（5 个页面）
+### 页面结构（11 个页面）
 
 TabBar 页面（底部导航栏）：
-- `pages/home` — 首页，展示系列卡片轮播（swiper），入口导航到 series
+- `pages/home` — 首页，展示全局搜索、近期目录、玩法入口和系列卡片轮播（swiper）
 - `pages/profile` — "我的"页面，展示心愿单/已购计数，入口导航到 wishlist 和 purchased
 
 非 TabBar 页面（通过 `wx.navigateTo` 打开）：
 - `pages/series` — 系列详情页，接收 `?code=hg|rg|mg|pg` 参数，支持搜索/筛选/排序/收藏/模型详情弹窗
 - `pages/wishlist` — 心愿单页面，展示所有已加入心愿单的模型
 - `pages/purchased` — 已购页面，展示所有已购买的模型
+
+新增机库页面：
+- `pages/model` — 独立模型档案和模型直达分享，接收 `?id=`
+- `pages/discover` — 全局检索、近期目录、精选谱系、两台 PK，接收 `?mode=`
+- `pages/squad` — 六机编队、本地草稿与 Canvas 海报
+- `pages/quiz` — 三题默契局创建
+- `pages/share` — 公开快照、答题与判分，接收 `?id=`
+- `pages/builds` — 多盒拼装进度、今日目标和整备战报
+
+分享/整备的接口合同在 `utils/hangar-service.ts`，迁移 `server/src/scripts/migrate-hangar.ts` 必须先在目标环境执行。公开 `GET /api/shares/:id` 与 `POST /api/shares/:id/answers` 挂在认证前；`POST /api/shares` 与 `GET/PUT /api/builds` 需认证。快照不包含私人购买字段，答案不通过 GET 返回。具体范围和发布验收见 `UPGRADE_NOTES.md`。
 
 ### 心愿单与已购系统
 

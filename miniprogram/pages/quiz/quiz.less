@@ -1,0 +1,35 @@
+@import '../../styles/variables.less';
+.page, .picker-page { height: 100%; min-height: 0; display: flex; flex-direction: column; background: @color-bg-primary; }
+.picker-page { flex: 1; }
+.scroll-area { flex: 1; min-height: 0; }
+.body { padding: 32rpx 28rpx; }
+button { margin: 0; padding: 0; line-height: 1.5; font-size: 25rpx; &::after { border: 0; } }
+.hero { display: flex; flex-direction: column; gap: 14rpx; padding: 12rpx 0 36rpx; }
+.eyebrow { font: 20rpx monospace; letter-spacing: 2rpx; color: @color-accent-primary; }
+.hero-title { font-size: 42rpx; font-weight: 700; }
+.subtitle, .helper { color: @color-text-secondary; font-size: 23rpx; line-height: 1.8; }
+.helper { display: block; margin-top: 16rpx; }
+.title-input { height: 90rpx; background: @color-bg-secondary; border: 1rpx solid @color-border; border-left: 4rpx solid @color-accent-primary; padding: 0 20rpx; margin-bottom: 28rpx; font-size: 29rpx; }
+.question-card { padding: 24rpx; background: @gradient-card; border: 1rpx solid @color-border; border-radius: @radius-lg; margin-bottom: 24rpx; }
+.question-heading { display: flex; justify-content: space-between; align-items: center; }
+.question-number { font: 23rpx monospace; color: @color-accent-primary; }
+.answer-status { font-size: 21rpx; color: @color-text-muted; }
+.answer-status.ready { color: @color-accent-success; }
+.prompt-selector { display: flex; justify-content: space-between; gap: 20rpx; margin: 22rpx 0; font-size: 29rpx; font-weight: 600; }
+.picker-chevron { color: @color-accent-primary; }
+.question-empty { font-size: 24rpx; color: @color-text-muted; padding: 35rpx 0; text-align: center; }
+.option { display: flex; align-items: center; gap: 18rpx; padding: 15rpx; margin-bottom: 12rpx; border: 1rpx solid @color-border; background: @color-bg-primary; border-radius: @radius-sm; }
+.option.chosen { border-color: @color-accent-warning; }
+.option-image { width: 84rpx; height: 84rpx; flex-shrink: 0; }
+.option-copy { flex: 1; min-width: 0; }
+.model-code { display: block; text-transform: uppercase; color: @color-text-muted; font: 18rpx monospace; margin-bottom: 7rpx; }
+.option-name { display: block; font-size: 24rpx; }
+.answer-radio { width: 34rpx; height: 34rpx; border-radius: 50%; border: 1rpx solid @color-text-muted; color: @color-bg-primary; text-align: center; line-height: 34rpx; flex-shrink: 0; font-size: 22rpx; }
+.chosen .answer-radio { border-color: @color-accent-warning; background: @color-accent-warning; }
+.secondary-button { padding: 18rpx; background: transparent; border: 1rpx solid @color-border-active; color: @color-accent-primary; border-radius: @radius-sm; font-size: 24rpx; margin-top: 20rpx; }
+.primary-button { padding: 25rpx; background: @color-accent-primary; color: @color-bg-primary; border-radius: @radius-md; font-weight: 600; }
+.primary-button[disabled] { opacity: .5; }
+.error-text { display: block; margin-top: 16rpx; color: @color-accent-danger; font-size: 24rpx; }
+.picker-toolbar { display: flex; align-items: center; justify-content: space-between; border-bottom: 1rpx solid @color-border; padding: 22rpx 28rpx; font-size: 25rpx; }
+.picker-toolbar button { color: @color-accent-primary; background: transparent; font-size: 25rpx; }
+.use-squad { margin: 0 0 24rpx; }

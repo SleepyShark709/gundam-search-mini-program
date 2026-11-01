@@ -275,8 +275,8 @@
     "number": 19,
     "name": "PG 1/60 RX-0 独角兽高达",
     "nameJa": "PG 1/60 RX-0 ユニコーンガンダム",
-    "price": 22000,
-    "priceTaxFree": 20000,
+    "price": 24200,
+    "priceTaxFree": 22000,
     "releaseDate": "2014-12",
     "isLimited": false,
     "imageUrl": "https://cdn.jsdelivr.net/gh/SleepyShark709/gundam-menu@68f259b/public/images/bandai/ecms_154_1223_o_1bqu1ua0979jdt935r1lt31v0523.jpg",
@@ -290,8 +290,8 @@
     "number": 20,
     "name": "PG 1/60 RX-0 独角兽高达用 LED组件",
     "nameJa": "PG 1/60 RX-0 ユニコーンガンダム用 LEDユニット",
-    "price": 13200,
-    "priceTaxFree": 12000,
+    "price": 14300,
+    "priceTaxFree": 13000,
     "releaseDate": "2014-12",
     "isLimited": false,
     "imageUrl": "https://cdn.jsdelivr.net/gh/SleepyShark709/gundam-menu@68f259b/public/images/bandai/ecms_154_1224_o_1bqu220ns15e21hgjqit9c11eu23.jpg",
@@ -478,6 +478,21 @@
     "productUrl": "https://bandai-hobby.net/item/01_6784/",
     "_limitedSource": "",
     "_limitedMethod": "method_a"
+  },
+  {
+    "id": "pg-033",
+    "series": "pg",
+    "number": 33,
+    "name": "PG 1/60 ガンダムエクシア",
+    "nameJa": "PG 1/60 ガンダムエクシア",
+    "price": 19800,
+    "priceTaxFree": 18000,
+    "releaseDate": "2017-12",
+    "isLimited": false,
+    "imageUrl": "/images/pg-033/cover.jpg",
+    "productUrl": "https://bandai-hobby.net/item/01_1203/",
+    "_limitedSource": "",
+    "_limitedMethod": "scrape"
   },
   {
     "id": "pg-l-001",
@@ -798,5 +813,21 @@
     "limitedType": "pbandai",
     "_limitedSource": "URL域名:P-Bandai",
     "_limitedMethod": "method_a"
+  },
+  {
+    "id": "pg-l-021",
+    "series": "pg",
+    "number": 21,
+    "name": "PG UNLEASHED 1/60 νガンダム用 フィン・ファンネル & クリアカラーボディ",
+    "nameJa": "PG UNLEASHED 1/60 νガンダム用 フィン・ファンネル & クリアカラーボディ",
+    "price": 16500,
+    "priceTaxFree": 15000,
+    "releaseDate": "2026-12",
+    "isLimited": true,
+    "limitedType": "pbandai",
+    "imageUrl": "/images/pg-l-021/cover.jpg",
+    "productUrl": "https://p-bandai.jp/item/item-1000255597/",
+    "_limitedSource": "",
+    "_limitedMethod": "scrape"
   }
 ]

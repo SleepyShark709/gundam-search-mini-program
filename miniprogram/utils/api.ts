@@ -1,9 +1,8 @@
-// ---- 环境自动检测 ----
-// 根据小程序运行版本自动选择 API 后端，无需手动切换：
-//   develop（开发者工具/真机调试）→ 本地 server
-//   trial / release（体验版/正式版）→ 微信云托管
-// 如需在开发者工具中临时强制走云托管，把下面 FORCE_USE_CLOUD 改为 true 即可。
-const FORCE_USE_CLOUD = false;
+// ---- API 环境选择 ----
+// 默认所有版本（含开发者工具/真机调试）均走微信云托管。
+// 本地联调时手动将 FORCE_USE_CLOUD 改为 false，并确认 LOCAL_BASE 可达：
+//   develop → 本地 server；trial / release → 微信云托管。
+const FORCE_USE_CLOUD = true;
 
 function detectUseLocal(): boolean {
   if (FORCE_USE_CLOUD) return false;
@@ -38,8 +37,16 @@ interface CallOptions {
 
 const DEFAULT_TIMEOUT = 5000;
 
+class NetworkRequestError extends Error {}
+
+export function isNetworkError(error: unknown): boolean {
+  return error instanceof NetworkRequestError;
+}
+
 function callLocal<T>(options: CallOptions): Promise<T> {
-  const timeout = options.timeout ?? DEFAULT_TIMEOUT;
+  const timeout = options.method === 'GET'
+    ? options.timeout ?? DEFAULT_TIMEOUT
+    : options.timeout;
 
   return new Promise<T>((resolve, reject) => {
     wx.request({
@@ -59,7 +66,7 @@ function callLocal<T>(options: CallOptions): Promise<T> {
         }
       },
       fail: (err: any) => {
-        reject(new Error(err.errMsg || '网络请求失败'));
+        reject(new NetworkRequestError(err.errMsg || '网络请求失败'));
       },
     });
   });
@@ -90,16 +97,20 @@ function callCloud<T>(options: CallOptions): Promise<T> {
         }
       },
       fail: (err: any) => {
-        reject(new Error(err.errMsg || '网络请求失败'));
+        reject(new NetworkRequestError(err.errMsg || '网络请求失败'));
       },
     });
   });
 
+  // 写操作等待 SDK 的最终回调，避免客户端先报失败、服务端随后提交。
+  if (options.method !== 'GET') return request;
+
+  let timerId: ReturnType<typeof setTimeout>;
   const timer = new Promise<never>((_, reject) => {
-    setTimeout(() => reject(new Error(`请求超时 (${timeout}ms)`)), timeout);
+    timerId = setTimeout(() => reject(new Error(`请求超时 (${timeout}ms)`)), timeout);
   });
 
-  return Promise.race([request, timer]);
+  return Promise.race([request, timer]).finally(() => clearTimeout(timerId));
 }
 
 export function callAPI<T = any>(options: CallOptions): Promise<T> {

@@ -18,11 +18,16 @@
 
         <view class="form-group">
           <text class="form-label">购买日期</text>
-          <picker mode="date" value="{{formDate}}" bindchange="handleDateChange">
-            <view class="form-picker">
-              <text class="{{formDate ? 'picker-value' : 'picker-placeholder'}}">{{formDate || '选填'}}</text>
+          <view class="date-field">
+            <picker class="date-picker" mode="date" value="{{formDate}}" bindchange="handleDateChange">
+              <view class="form-picker">
+                <text class="{{formDate ? 'picker-value' : 'picker-placeholder'}}">{{formDate || '选填'}}</text>
+              </view>
+            </picker>
+            <view wx:if="{{formDate}}" class="form-picker date-clear" catch:tap="handleDateClear" hover-class="close-hover">
+              <text>清空日期</text>
             </view>
-          </picker>
+          </view>
         </view>
 
         <view class="form-group">

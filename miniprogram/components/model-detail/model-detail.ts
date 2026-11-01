@@ -1,13 +1,15 @@
 import { formatJPY, formatCNY, calcTaxFree } from '../../utils/price';
 import { formatDate } from '../../utils/format';
 import { getModelImages } from '../../utils/model-service';
+import { GundamModel, SeriesCode } from '../../utils/types';
 
 Component({
   options: {
     virtualHost: true,
+    pureDataPattern: /^_/,
   },
   properties: {
-    model: { type: Object, value: null },
+    model: { type: null, value: null as GundamModel | null },
     open: { type: Boolean, value: false },
     isFavorite: { type: Boolean, value: false },
     isPurchased: { type: Boolean, value: false },
@@ -29,17 +31,19 @@ Component({
     // 入场/出场动画
     rendered: false,
     visible: false,
+    _openTimer: 0,
+    _closeTimer: 0,
+    _imageRequestId: 0,
   },
-  _openTimer: 0 as any,
-  _closeTimer: 0 as any,
   lifetimes: {
     attached() {
       const app = getApp<IAppOption>();
       this.setData({ safeAreaBottom: app.globalData.safeAreaBottom });
     },
     detached() {
-      if (this._openTimer) clearTimeout(this._openTimer);
-      if (this._closeTimer) clearTimeout(this._closeTimer);
+      this.data._imageRequestId += 1;
+      if (this.data._openTimer) clearTimeout(this.data._openTimer);
+      if (this.data._closeTimer) clearTimeout(this.data._closeTimer);
     },
   },
   pageLifetimes: {
@@ -47,8 +51,11 @@ Component({
       // Skyline 渲染器从后台恢复时图片可能丢失渲染，强制重建 swiper
       if (this.data.open && this.data.model && this.data.images.length > 0) {
         const currentImages = this.data.images;
+        const modelId = this.data.model.id;
+        const requestId = this.data._imageRequestId;
         this.setData({ images: [], imgLoadedMap: {} });
         wx.nextTick(() => {
+          if (!this.data.open || this.data.model?.id !== modelId || this.data._imageRequestId !== requestId) return;
           this.setData({ images: currentImages, currentImageIndex: 0 });
         });
       }
@@ -56,17 +63,17 @@ Component({
   },
   observers: {
     'open': function (open: boolean) {
-      if (this._openTimer) { clearTimeout(this._openTimer); this._openTimer = 0; }
-      if (this._closeTimer) { clearTimeout(this._closeTimer); this._closeTimer = 0; }
+      if (this.data._openTimer) { clearTimeout(this.data._openTimer); this.data._openTimer = 0; }
+      if (this.data._closeTimer) { clearTimeout(this.data._closeTimer); this.data._closeTimer = 0; }
       if (open) {
         this.setData({ rendered: true });
-        this._openTimer = setTimeout(() => this.setData({ visible: true }), 20);
+        this.data._openTimer = setTimeout(() => this.setData({ visible: true }), 20);
       } else {
         this.setData({ visible: false });
-        this._closeTimer = setTimeout(() => this.setData({ rendered: false }), 280);
+        this.data._closeTimer = setTimeout(() => this.setData({ rendered: false }), 280);
       }
     },
-    'model, exchangeRate': function (model: any, rate: number) {
+    'model, exchangeRate': function (model: GundamModel | null, rate: number) {
       if (!model || !model.id) return;
       const cny = model.price * rate;
       this.setData({
@@ -79,8 +86,11 @@ Component({
         hasTags: !!(model.tags && model.tags.length > 0),
       });
     },
-    'model, open': function (model: any, open: boolean) {
-      if (!model || !model.id || !open) return;
+    'model, open': function (model: GundamModel | null, open: boolean) {
+      if (!model || !model.id || !open) {
+        this.data._imageRequestId += 1;
+        return;
+      }
 
       // 立即显示主图
       this.setData({
@@ -90,12 +100,24 @@ Component({
       });
 
       // 异步加载多图
-      this._loadImages(model.series, model.id, model.imageUrl);
+      this._loadImages(model.series, model.id);
     },
   },
   methods: {
-    async _loadImages(seriesCode: string, modelId: string, fallbackUrl: string) {
-      const images = await getModelImages(seriesCode as any, modelId);
+    handleDossier() {
+      const model = this.data.model;
+      if (!model) return;
+      const pages = getCurrentPages();
+      if (pages[pages.length - 1]?.route === 'pages/model/model') {
+        this.triggerEvent('close');
+      } else {
+        wx.navigateTo({ url: `/pages/model/model?id=${encodeURIComponent(model.id)}` });
+      }
+    },
+    async _loadImages(seriesCode: SeriesCode, modelId: string) {
+      const requestId = ++this.data._imageRequestId;
+      const images = await getModelImages(seriesCode, modelId);
+      if (!this.data.open || this.data.model?.id !== modelId || this.data._imageRequestId !== requestId) return;
       if (images.length > 0) {
         this.setData({ images, imgLoadedMap: {} });
       }

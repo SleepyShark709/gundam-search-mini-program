@@ -125,6 +125,11 @@ export async function refreshSeriesMeta(): Promise<SeriesMeta[]> {
  * 失败则静默降级返回当前缓存
  */
 export async function refreshModels(code: SeriesCode): Promise<GundamModel[]> {
+  return (await refreshModelsWithStatus(code)).models;
+}
+
+/** 返回是否取得有效的服务端目录；失败或空响应仍保留现有缓存。 */
+export async function refreshModelsWithStatus(code: SeriesCode): Promise<{ models: GundamModel[]; refreshed: boolean }> {
   try {
     const res = await callAPI<{ data: GundamModel[]; version: string }>({
       path: `/api/models/${code}`,
@@ -138,12 +143,27 @@ export async function refreshModels(code: SeriesCode): Promise<GundamModel[]> {
       }));
       modelsCache[code] = models;
       writeCache(CACHE_KEY_MODELS_PREFIX + code, models, res.version);
-      return models;
+      return { models, refreshed: true };
     }
   } catch (e) {
     console.error(`[refreshModels:${code}] failed, using fallback`, e);
   }
-  return getModels(code);
+  return { models: getModels(code), refreshed: false };
+}
+
+/** 只刷新用户记录中尚未关联到模型的系列。 */
+export async function refreshMissingModels(modelIds: string[]): Promise<GundamModel[]> {
+  const knownIds = new Set(getAllModels().map((model) => model.id));
+  const missingSeries = new Set<SeriesCode>();
+  for (const id of modelIds) {
+    if (knownIds.has(id)) continue;
+    const code = id.split('-')[0];
+    if (code === 'hg' || code === 'rg' || code === 'mg' || code === 'pg') {
+      missingSeries.add(code);
+    }
+  }
+  await Promise.all([...missingSeries].map((code) => refreshModels(code)));
+  return getAllModels();
 }
 
 /**

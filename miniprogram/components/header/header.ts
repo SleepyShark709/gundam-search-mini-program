@@ -11,14 +11,6 @@ Component({
       type: Boolean,
       value: false,
     },
-    showFilter: {
-      type: Boolean,
-      value: false,
-    },
-    filterActive: {
-      type: Boolean,
-      value: false,
-    },
   },
   data: {
     statusBarHeight: 0,
@@ -32,9 +24,6 @@ Component({
   methods: {
     handleBack() {
       this.triggerEvent('back');
-    },
-    handleFilter() {
-      this.triggerEvent('filtertap');
     },
   },
 });

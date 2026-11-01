@@ -1,0 +1,38 @@
+<view class="page">
+  <header title="好友的机库" showBack bind:back="handleBack" />
+  <scroll-view class="scroll-area" scroll-y>
+    <view class="body" style="padding-bottom: calc(60rpx + {{safeAreaBottom}}px)">
+      <view class="state" wx:if="{{loading}}"><text class="state-code">CONNECTING // HANGAR</text><text class="state-title">正在接收机库信号…</text></view>
+      <view class="state" wx:elif="{{loadError}}"><text class="state-code">SIGNAL LOST</text><text class="state-title">机库信号暂未连接</text><text class="helper">{{loadError}}</text><button class="primary-button" bind:tap="loadSnapshot">重新连接</button><button class="secondary-button" bind:tap="handleExplore">浏览模型目录</button></view>
+      <block wx:elif="{{snapshot}}">
+        <view class="hero"><text class="eyebrow">PUBLIC HANGAR / {{kindLabel}}</text><text class="hero-title">{{snapshot.title}}</text><text class="subtitle">{{snapshot.kind === 'quiz' ? '3 道题，每题选 1 台。完成后揭晓你们的默契。' : '来自好友的公开机库快照'}}</text></view>
+
+        <block wx:if="{{snapshot.kind === 'quiz'}}">
+          <view class="result-panel" wx:if="{{result}}"><text class="eyebrow">CHEMISTRY RESULT</text><view class="score"><text>{{result.score}}</text><text class="score-total"> / {{result.total}}</text></view><text class="result-copy">{{result.score === 3 ? '满分默契，王牌搭档！' : result.score === 2 ? '机库同频，再了解一点！' : '新的了解，从这三台机体开始。'}}</text></view>
+          <view class="question-card" wx:for="{{snapshot.questions}}" wx:key="id" wx:for-item="question" wx:for-index="questionIndex">
+            <text class="question-number">0{{questionIndex + 1}} / 03</text><text class="prompt">{{question.prompt}}</text>
+            <view wx:for="{{question.options}}" wx:key="id" class="quiz-option {{question.selectedId === item.id ? 'selected' : ''}} {{result && question.correctId === item.id ? 'correct' : ''}}" data-index="{{questionIndex}}" data-id="{{item.id}}" bind:tap="handleAnswer">
+              <image class="option-image" src="{{item.imageUrl}}" mode="aspectFit" /><view class="option-copy"><text class="model-code">{{item.series}} / {{item.number}}</text><text>{{item.name}}</text></view><text class="option-marker">{{result && question.correctId === item.id ? '✓' : question.selectedId === item.id ? '●' : '○'}}</text>
+            </view>
+            <view class="answer-reveal" wx:if="{{result}}"><text>正确答案：{{question.correctName}}</text><text class="answer-outcome">{{question.selectedId === question.correctId ? '答对了' : '下次一定'}}</text></view>
+          </view>
+          <button wx:if="{{!result}}" class="primary-button" loading="{{submitting}}" disabled="{{submitting}}" bind:tap="handleSubmitQuiz">{{submitError ? '重试提交答案' : '提交答案 · 揭晓默契'}}</button><text wx:if="{{submitError}}" class="error-text">{{submitError}}</text>
+          <view wx:if="{{result}}" class="model-links"><text class="section-title">认识这些机体</text><button wx:for="{{snapshot.models}}" wx:key="id" class="model-link" data-id="{{item.id}}" bind:tap="handleModel">{{item.name}} →</button></view>
+        </block>
+
+        <block wx:else>
+          <view class="report-panel" wx:if="{{snapshot.kind === 'report' && snapshot.report}}"><text class="eyebrow">BUILD PROGRESS</text><view class="report-total"><text>{{snapshot.report.quantity}}</text><text class="report-unit">台入库</text></view><view class="report-stats"><view><text class="stat-number">{{snapshot.report.completedCount}}</text><text>已完成</text></view><view><text class="stat-number building">{{snapshot.report.buildingCount}}</text><text>制作中</text></view></view><text class="helper">这份报告仅展示模型与完成汇总。</text></view>
+          <view class="compare-intro" wx:if="{{snapshot.kind === 'compare'}}">按系列、编号、发售时间和限定属性对照，点击机体查看完整信息。</view>
+          <view class="collection-meta"><text>{{snapshot.models.length}} 台机体</text><text>{{snapshot.kind === 'squad' ? 'DEPLOYMENT ORDER' : 'PUBLIC COLLECTION'}}</text></view>
+          <view wx:if="{{!snapshot.models.length}}" class="empty-collection">这份快照没有附带机体，先看看好友的机库汇总吧。</view>
+          <view class="model-card {{snapshot.kind === 'squad' && item.id === snapshot.captainId ? 'captain' : ''}}" wx:for="{{snapshot.models}}" wx:key="id" data-id="{{item.id}}" bind:tap="handleModel">
+            <text class="roster-number" wx:if="{{snapshot.kind === 'squad'}}">{{index + 1 < 10 ? '0' : ''}}{{index + 1}}</text><image class="model-image" src="{{item.imageUrl}}" mode="aspectFit" /><view class="model-copy"><view class="model-topline"><text class="model-code">{{item.series}} / {{item.number}}</text><text class="captain-label" wx:if="{{snapshot.kind === 'squad' && item.id === snapshot.captainId}}">★ 队长</text></view><text class="model-name">{{item.name}}</text><view class="compare-fields" wx:if="{{snapshot.kind === 'compare'}}"><text>发售 {{item.releaseDate || '暂无'}}</text><text>{{item.isLimited ? '限定机体' : '常规机体'}}</text></view><text class="detail-link">查看机体 →</text></view>
+          </view>
+          <button wx:if="{{snapshot.kind === 'squad'}}" class="secondary-button" bind:tap="handleCopySquad">以此编队为起点，组建我的阵容</button>
+        </block>
+
+        <view class="footer-actions"><button class="primary-button" bind:tap="handleCreate">{{snapshot.kind === 'quiz' ? '我也来出一套测试' : '创建我的六机阵容'}}</button><button class="secondary-button" open-type="share">把这份机库分享给好友</button><text class="helper">{{snapshot.kind === 'quiz' ? '题目答案由出题者亲自选择。' : '公开快照仅供查看，自己的机库由自己编辑。'}}</text></view>
+      </block>
+    </view>
+  </scroll-view>
+</view>

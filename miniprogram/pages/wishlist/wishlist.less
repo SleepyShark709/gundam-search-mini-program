@@ -1,4 +1,5 @@
 @import '../../styles/variables.less';
+@import '../../styles/load-state.less';
 
 .page {
   position: relative;
@@ -21,52 +22,6 @@
   min-height: 0;
 }
 
-.skeleton-card {
-  border-radius: @radius-lg;
-  background: @color-bg-secondary;
-  border: 2rpx solid @color-border;
-  overflow: hidden;
-}
-
-.skeleton-image {
-  width: 100%;
-  height: 339rpx;
-  background: linear-gradient(90deg, @color-bg-tertiary 25%, @color-bg-secondary 50%, @color-bg-tertiary 75%);
-  background-size: 400% 100%;
-  animation: shimmer 1.6s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.skeleton-info {
-  display: flex;
-  flex-direction: column;
-  gap: @spacing-xs;
-  padding: @spacing-sm;
-}
-
-.skeleton-text {
-  height: 24rpx;
-  border-radius: @radius-sm;
-  background: linear-gradient(90deg, @color-bg-tertiary 25%, @color-bg-secondary 50%, @color-bg-tertiary 75%);
-  background-size: 400% 100%;
-  animation: shimmer 1.6s infinite;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: @spacing-lg;
-  flex: 1;
-  text-align: center;
-  padding: @spacing-2xl;
-}
-
 .empty-icon {
   font-size: 128rpx;
   color: @color-text-muted;
@@ -85,7 +40,9 @@
 }
 
 .explore-button {
-  padding: @spacing-sm @spacing-2xl;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 @spacing-2xl;
   background: @color-accent-primary;
   color: @color-bg-primary;
   border-radius: @radius-md;
@@ -107,12 +64,42 @@
   margin-right: -6rpx;
 
   > model-card,
-  > .skeleton-cell {
+  > .missing-cell {
     width: 50%;
     box-sizing: border-box;
   }
 
-  > .skeleton-cell {
-    padding: 6rpx;
-  }
+}
+
+.missing-cell {
+  padding: 6rpx;
+}
+
+.missing-card {
+  min-height: 440rpx;
+  padding: @spacing-md;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: @spacing-md;
+  background: @color-bg-secondary;
+  border: 2rpx solid @color-border;
+  border-radius: @radius-lg;
+}
+
+.missing-title {
+  font-size: @font-size-sm;
+  color: @color-text-secondary;
+}
+
+.missing-id {
+  font-size: @font-size-xs;
+  color: @color-text-muted;
+  word-break: break-all;
+}
+
+.missing-remove {
+  font-size: @font-size-sm;
+  color: @color-accent-primary;
 }

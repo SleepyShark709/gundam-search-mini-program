@@ -5,9 +5,12 @@
     "pages/profile/profile",
     "pages/wishlist/wishlist",
     "pages/purchased/purchased",
-    "pages/forum/forum",
-    "pages/post-detail/post-detail",
-    "pages/post-create/post-create"
+    "pages/model/model",
+    "pages/discover/discover",
+    "pages/squad/squad",
+    "pages/quiz/quiz",
+    "pages/share/share",
+    "pages/builds/builds"
   ],
   "window": {
     "navigationBarTextStyle": "white",
@@ -27,12 +30,6 @@
         "text": "浏览",
         "iconPath": "assets/tab-browse.png",
         "selectedIconPath": "assets/tab-browse-active.png"
-      },
-      {
-        "pagePath": "pages/forum/forum",
-        "text": "论坛",
-        "iconPath": "assets/tab-profile.png",
-        "selectedIconPath": "assets/tab-profile-active.png"
       },
       {
         "pagePath": "pages/profile/profile",

@@ -1,6 +1,6 @@
 import { getModels, filterModels, sortModels, refreshModels } from '../../utils/model-service';
-import { getWishlist, isInWishlist, toggleWishlist } from '../../utils/cloud-favorites';
-import { isPurchased, getPurchaseRecord, addPurchase, updatePurchase } from '../../utils/purchase-service';
+import { loadWishlist, getWishlist, isInWishlist, toggleWishlist } from '../../utils/cloud-favorites';
+import { loadPurchases, isPurchased, getPurchaseRecord, addPurchase, updatePurchase } from '../../utils/purchase-service';
 import type { GundamModel, SeriesCode, FilterConfig, SortConfig } from '../../utils/types';
 
 const SERIES_NAMES: Record<string, string> = {
@@ -26,17 +26,20 @@ function parseSortValue(value: string): SortConfig {
   return { field, order };
 }
 
-let debounceTimer: number | null = null;
+const PAGE_SIZE = 40;
 
 Page({
+  _allModels: [] as GundamModel[],
+  _processedModels: [] as GundamModel[],
+  _debounceTimer: 0,
+  _active: false,
   data: {
     seriesCode: 'hg' as string,
     seriesTitle: '',
-    allModels: [] as GundamModel[],
-    regularModels: [] as GundamModel[],
-    limitedModels: [] as GundamModel[],
+    regularCount: 0,
+    limitedCount: 0,
+    limitedCounts: {} as Record<string, number>,
     processedModels: [] as GundamModel[],
-    favorites: [] as string[],
     favMap: {} as Record<string, boolean>,
 
     // Search
@@ -89,35 +92,33 @@ Page({
     const code = (options.code || 'hg') as SeriesCode;
     const app = getApp<IAppOption>();
 
-    const allModels = getModels(code);
-    const regularModels = allModels.filter((m) => !m.isLimited);
-    const limitedModels = allModels.filter((m) => m.isLimited);
+    this._active = true;
+    this._allModels = getModels(code);
 
     this.setData({
       seriesCode: code,
       seriesTitle: SERIES_NAMES[code] || code.toUpperCase(),
-      allModels,
-      regularModels,
-      limitedModels,
       statusBarHeight: app.globalData.statusBarHeight,
       loading: false,
       exchangeRate: app.globalData.exchangeRate || 0.05,
       safeAreaBottom: app.globalData.safeAreaBottom,
     });
 
+    this._updateCounts();
     this.applyFilters();
 
     // 异步从服务器刷新模型数据（5s 超时后降级为本地数据）
     refreshModels(code).then((newModels) => {
-      if (newModels.length === 0) return;
-      const newRegular = newModels.filter((m) => !m.isLimited);
-      const newLimited = newModels.filter((m) => m.isLimited);
-      this.setData({ allModels: newModels, regularModels: newRegular, limitedModels: newLimited });
+      if (!this._active || newModels.length === 0 || newModels === this._allModels) return;
+      this._allModels = newModels;
+      this._updateCounts();
       this.applyFilters();
     });
   },
 
-  onShow() {
+  async onShow() {
+    await Promise.all([loadWishlist(), loadPurchases()]);
+    if (!this._active) return;
     this._refreshFavMap();
     const app = getApp<IAppOption>();
     if (app.globalData.exchangeRate) {
@@ -129,7 +130,7 @@ Page({
     const favorites = getWishlist();
     const favMap: Record<string, boolean> = {};
     favorites.forEach((id) => { favMap[id] = true; });
-    this.setData({ favorites, favMap });
+    this.setData({ favMap });
     if (this.data.selectedModel) {
       this.setData({
         selectedIsFav: isInWishlist(this.data.selectedModel.id),
@@ -143,11 +144,12 @@ Page({
     const value = (e.detail && e.detail.value) || '';
     this.setData({ searchInput: value });
 
-    if (debounceTimer) clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
+    if (this._debounceTimer) clearTimeout(this._debounceTimer);
+    this._debounceTimer = setTimeout(() => {
+      if (!this._active) return;
       this.setData({ debouncedKeyword: value });
       this.applyFilters();
-    }, 300) as unknown as number;
+    }, 300);
   },
 
   // Tab
@@ -217,11 +219,12 @@ Page({
 
   async handleToggleFavorite(e: any) {
     const id = e.detail.id;
-    const nowFav = await toggleWishlist(id);
+    const result = await toggleWishlist(id);
     this._refreshFavMap();
     if (this.data.selectedModel && this.data.selectedModel.id === id) {
-      this.setData({ selectedIsFav: nowFav });
+      this.setData({ selectedIsFav: result.isFavorite });
     }
+    if (!result.success) wx.showToast({ title: '操作失败，请重试', icon: 'none' });
   },
 
   handlePurchaseAction(e: any) {
@@ -246,15 +249,17 @@ Page({
     const data = e.detail;
     const existing = getPurchaseRecord(data.modelId);
     try {
-      if (existing) {
-        await updatePurchase(data.modelId, data);
-      } else {
-        await addPurchase(data);
+      const saved = existing
+        ? await updatePurchase(data.modelId, data)
+        : await addPurchase(data);
+      if (!saved) {
+        wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+        return;
       }
       this.setData({ formOpen: false, selectedIsPurchased: true });
       this._refreshFavMap();
       wx.showToast({ title: '保存成功', icon: 'success' });
-    } catch (err) {
+    } catch {
       wx.showToast({ title: '保存失败', icon: 'none' });
     }
   },
@@ -270,6 +275,19 @@ Page({
 
   handleBackTop() {
     this.setData({ scrollTop: 0 });
+  },
+
+  handleLoadMore() {
+    const offset = this.data.processedModels.length;
+    const next: GundamModel[] = this._processedModels.slice(offset, offset + PAGE_SIZE);
+    const update: Record<string, GundamModel> = {};
+    next.forEach((model, index) => { update[`processedModels[${offset + index}]`] = model; });
+    if (next.length) this.setData(update);
+  },
+
+  onUnload() {
+    this._active = false;
+    if (this._debounceTimer) clearTimeout(this._debounceTimer);
   },
 
   onShareAppMessage() {
@@ -289,10 +307,24 @@ Page({
   },
 
   // Apply all filters and sorting
-  applyFilters() {
-    const { activeTab, regularModels, limitedModels, limitedSubFilter, debouncedKeyword, releaseDateFrom, releaseDateTo, numberFrom, numberTo, sortValue } = this.data;
+  _updateCounts() {
+    const limitedCounts: Record<string, number> = { all: 0 };
+    let regularCount = 0;
+    const allModels: GundamModel[] = this._allModels;
+    allModels.forEach((model) => {
+      if (!model.isLimited) { regularCount++; return; }
+      limitedCounts.all++;
+      const type = model.limitedType || 'other';
+      limitedCounts[type] = (limitedCounts[type] || 0) + 1;
+    });
+    this.setData({ regularCount, limitedCount: limitedCounts.all, limitedCounts });
+  },
 
-    let tabModels = activeTab === 'regular' ? regularModels : limitedModels;
+  applyFilters() {
+    const { activeTab, limitedSubFilter, debouncedKeyword, releaseDateFrom, releaseDateTo, numberFrom, numberTo, sortValue } = this.data;
+
+    const allModels: GundamModel[] = this._allModels;
+    let tabModels = allModels.filter((model) => Boolean(model.isLimited) === (activeTab === 'limited'));
 
     if (activeTab === 'limited' && limitedSubFilter !== 'all') {
       tabModels = tabModels.filter((m) => (m.limitedType || 'other') === limitedSubFilter);
@@ -310,9 +342,10 @@ Page({
     const filtered = filterModels(tabModels, filterConfig);
     const sortConfig = parseSortValue(sortValue);
     const processed = sortModels(filtered, sortConfig);
+    this._processedModels = processed;
 
     this.setData({
-      processedModels: processed,
+      processedModels: processed.slice(0, PAGE_SIZE),
       resultCount: processed.length,
     });
   },

@@ -1,0 +1,22 @@
+<view class="page">
+  <header title="机体档案" showBack bind:back="handleBack" />
+  <scroll-view scroll-y class="body">
+    <view class="state" wx:if="{{loading}}">正在展开机体档案…</view>
+    <view class="state" wx:elif="{{error}}"><text>{{error}}</text><button bind:tap="loadModel">重试</button><button bind:tap="handleHome">返回目录</button></view>
+    <view class="dossier" wx:elif="{{model}}">
+      <view class="eyebrow">MOBILE SUIT / {{model.series}} / #{{model.number}}</view>
+      <image class="hero" src="{{model.imageUrl}}" mode="aspectFit" />
+      <text class="name">{{model.name}}</text><text class="name-ja">{{model.nameJa}}</text>
+      <view class="facts"><text>官方日元定价</text><text>{{model.price > 0 ? '¥' + model.price : '未收录'}}</text></view>
+      <view class="facts"><text>目录发售日期</text><text>{{model.releaseDate || '未收录'}}</text></view>
+      <text class="note">人民币换算与日元官方定价仅供参考，不代表市场成交价。</text>
+      <button class="primary" bind:tap="handleDetails">查看完整资料与多图</button>
+      <view class="actions"><button bind:tap="handleFavorite" disabled="{{syncing || syncError}}">{{favorite ? '移出心愿单' : '加入心愿单'}}</button><button bind:tap="handlePurchase" disabled="{{syncing || syncError}}">{{purchased ? '编辑入手记录' : '记录入手'}}</button></view>
+      <text class="note" wx:if="{{syncing}}">正在同步你的收藏…</text>
+      <button wx:if="{{syncError}}" bind:tap="syncPersonal">收藏同步失败，点击重试</button>
+      <button class="share" open-type="share">分享这台机体</button>
+    </view>
+  </scroll-view>
+  <model-detail model="{{model}}" open="{{detailOpen}}" isFavorite="{{favorite}}" isPurchased="{{purchased}}" exchangeRate="{{exchangeRate}}" bind:close="handleClose" bind:togglefavorite="handleFavorite" bind:purchase="handlePurchase" />
+  <purchase-form open="{{formOpen}}" modelId="{{model.id}}" modelName="{{model.name}}" priceCny="{{formPriceCny}}" purchaseDate="{{formPurchaseDate}}" channel="{{formChannel}}" note="{{formNote}}" bind:close="handleFormClose" bind:submit="handleFormSubmit" />
+</view>

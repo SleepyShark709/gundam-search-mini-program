@@ -1,43 +1,71 @@
 <view class="page">
   <header title="心愿单" showBack bind:back="handleBack" />
 
+  <collection-share wx:if="{{shareModelIds.length > 0 && !loadError && !loading}}" kind="wishlist" modelIds="{{shareModelIds}}" bind:prepared="handleSharePrepared" />
+
   <view class="content">
-    <!-- Loading skeleton -->
-    <view class="model-grid" wx:if="{{loading}}" style="padding: 0 24rpx;">
-      <view class="skeleton-card skeleton-cell" wx:for="{{[1,2,3,4]}}" wx:key="*this">
-        <view class="skeleton-image"></view>
-        <view class="skeleton-info">
-          <view class="skeleton-text" style="width: 40%;"></view>
-          <view class="skeleton-text" style="width: 90%;"></view>
-          <view class="skeleton-text" style="width: 55%;"></view>
-        </view>
+    <view class="status-state" wx:if="{{loading && totalCount === 0}}">
+      <view class="status-art loading-art">
+        <view class="loading-scan"></view>
+        <image class="loading-image" src="/assets/gundam-loading.png" mode="aspectFit" />
+      </view>
+      <text class="status-title">正在加载心愿单</text>
+      <text class="status-subtitle">正在同步你的模型收藏</text>
+      <view class="status-action">
+        <view class="loading-dots"><view></view><view></view><view></view></view>
+      </view>
+    </view>
+
+    <view class="status-state" wx:elif="{{loadError && totalCount === 0}}">
+      <image class="status-art" src="/assets/gundam-loading.png" mode="aspectFit" />
+      <text class="status-title">心愿单加载失败</text>
+      <text class="status-subtitle">请检查网络后重试</text>
+      <view class="status-action">
+        <button class="retry-button" bind:tap="handleRetry" hover-class="explore-hover">点击重试</button>
       </view>
     </view>
 
     <!-- Empty state -->
-    <view class="empty-state" wx:elif="{{!loading && wishlistModels.length === 0}}">
-      <text class="empty-icon">♡</text>
-      <text class="empty-title">还没有心愿单中的模型</text>
-      <text class="empty-subtitle">浏览系列添加你想要的模型</text>
-      <view class="explore-button" bind:tap="handleExplore" hover-class="explore-hover">
-        <text>去探索</text>
+    <view class="status-state" wx:elif="{{totalCount === 0}}">
+      <view class="status-art"><text class="empty-icon">♡</text></view>
+      <text class="status-title empty-title">还没有心愿单中的模型</text>
+      <text class="status-subtitle empty-subtitle">浏览系列添加你想要的模型</text>
+      <view class="status-action">
+        <view class="explore-button" bind:tap="handleExplore" hover-class="explore-hover">
+          <text>去探索</text>
+        </view>
       </view>
     </view>
 
     <!-- Wishlist grid -->
-    <scroll-view class="scroll-area" scroll-y wx:elif="{{!loading}}">
-      <view class="model-grid" style="padding: 0 24rpx; padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
-        <model-card
-          wx:for="{{wishlistModels}}"
-          wx:key="id"
-          model="{{item}}"
-          isFavorite="{{true}}"
-          exchangeRate="{{exchangeRate}}"
-          bind:select="handleModelSelect"
-          bind:togglefavorite="handleToggleWishlist"
-        />
+    <view class="list-state" wx:else>
+      <view class="refresh-banner" wx:if="{{loading || loadError}}">
+        <view class="inline-spinner" wx:if="{{loading}}"></view>
+        <text class="refresh-message">{{loading ? '正在更新心愿单…' : '加载失败，已保留上次的心愿单'}}</text>
+        <button class="inline-retry" size="mini" wx:if="{{loadError && !loading}}" bind:tap="handleRetry" hover-class="explore-hover">重试</button>
       </view>
-    </scroll-view>
+      <scroll-view class="scroll-area" scroll-y bind:scrolltolower="handleLoadMore">
+        <view class="model-grid" style="padding: 0 24rpx; padding-bottom: calc(64rpx + {{safeAreaBottom}}px);">
+          <block wx:for="{{wishlistItems}}" wx:key="id">
+            <model-card
+              wx:if="{{item.model}}"
+              model="{{item.model}}"
+              isFavorite="{{true}}"
+              exchangeRate="{{exchangeRate}}"
+              bind:select="handleModelSelect"
+              bind:togglefavorite="handleToggleWishlist"
+            />
+            <view class="missing-cell" wx:else>
+              <view class="missing-card">
+                <text class="missing-title">模型信息暂未同步</text>
+                <text class="missing-id">{{item.id}}</text>
+                <view class="missing-remove" bind:tap="handleRemoveMissing" data-id="{{item.id}}">移出心愿单</view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </scroll-view>
+    </view>
   </view>
 
   <!-- Model detail bottom sheet -->

@@ -9,6 +9,7 @@ const automator = require('miniprogram-automator');
 const { createMysqlFixture } = require('../tests/helpers/mysql-fixture.cjs');
 
 const root = path.resolve(__dirname, '..');
+const tabPagePaths = new Set(require('../miniprogram/app.json').tabBar.list.map((tab) => tab.pagePath));
 const testOpenid = 'gundam-simulator-test-user';
 const privateMarker = 'SIMULATOR_PRIVATE_DO_NOT_SHARE';
 const cliPath = process.env.WECHAT_CLI_PATH || '/Applications/wechatwebdevtools.app/Contents/MacOS/cli';
@@ -36,6 +37,7 @@ let originalDraft;
 let draftRead = false;
 let draftExisted = false;
 let interrupted = false;
+let asynchronousFailure;
 
 function remaining(timeout = 20000) {
   const duration = Math.min(timeout, runDeadline - Date.now());
@@ -48,6 +50,7 @@ async function bounded(label, operation, timeout = 20000, cleanup = false) {
   try {
     return await Promise.race([
       operation,
+      ...(!cleanup && asynchronousFailure ? [asynchronousFailure] : []),
       new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`${label}超时`)), cleanup ? timeout : remaining(timeout)); }),
     ]);
   } finally { clearTimeout(timer); }
@@ -72,10 +75,10 @@ async function dataReady(page, predicate, label = '页面数据', timeout) {
   }, timeout);
 }
 
-async function capture(label) {
+async function capture(label, cleanup = false) {
   if (!miniProgram) return null;
   const file = `${String(++screenshotIndex).padStart(3, '0')}-${label.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 75)}.png`;
-  await bounded('原生模拟器截图', miniProgram.screenshot({ path: path.join(evidenceDir, file) }), 15000);
+  await bounded('原生模拟器截图', miniProgram.screenshot({ path: path.join(evidenceDir, file) }), 15000, cleanup);
   const png = await fs.readFile(path.join(evidenceDir, file));
   assert.equal(png.subarray(1, 4).toString(), 'PNG', '截图必须为真实 PNG');
   report.screenshots.push({ file, step: activeStep, source: 'MiniProgram.screenshot', sha256: createHash('sha256').update(png).digest('hex') });
@@ -95,23 +98,49 @@ async function findScrollContainer(scope, page) {
   return await page.$('.editor scroll-view') || await page.$('scroll-view');
 }
 
+async function waitForStableOffset(label, target, inViewport) {
+  let previous;
+  let stableReads = 0;
+  const samePosition = (left, right) => Math.abs(Number(left.left) - Number(right.left)) < 1
+    && Math.abs(Number(left.top) - Number(right.top)) < 1;
+  const offset = await poll(label, () => target.offset(), (position) => {
+    stableReads = inViewport(position) ? (previous && samePosition(previous, position) ? stableReads + 1 : 1) : 0;
+    previous = position;
+    return stableReads >= 3;
+  }, 5000);
+  await bounded('等待滚动事件结束', new Promise((resolve) => setTimeout(resolve, 500)));
+  const settled = await bounded('确认滚动后元素位置', target.offset());
+  assert.ok(inViewport(settled) && samePosition(offset, settled), `${label}结束后元素仍须稳定且在视口内`);
+  return settled;
+}
+
 async function visible(scope, selector, index = 0) {
   const target = await element(scope, selector, index);
   const size = await bounded('元素尺寸', target.size());
   assert.ok(Number(size.width) > 0 && Number(size.height) > 0, `${selector} 必须具备可见尺寸`);
-  const viewport = report.automation.systemInfo;
-  const inViewport = (position) => Number(position.left) < viewport.windowWidth && Number(position.left) + Number(size.width) > 0
-    && Number(position.top) >= (viewport.statusBarHeight || 0) && Number(position.top) < viewport.windowHeight - 30;
+  const page = await bounded('当前页面', miniProgram.currentPage());
+  const frame = await bounded('当前页面渲染根', page.$('.page'));
+  assert.ok(frame, '当前应用页面必须具备固定高度的 .page 渲染根');
+  const frameSize = await bounded('页面渲染根尺寸', frame.size());
+  const frameOffset = await bounded('页面渲染根位置', frame.offset());
+  assert.ok(Number(frameSize.width) > 0 && Number(frameSize.height) > 0, '页面渲染根必须具备可见尺寸');
+  const systemInfo = await bounded('当前页面模拟器系统信息', miniProgram.systemInfo());
+  const viewport = {
+    left: Number(frameOffset.left), right: Number(frameOffset.left) + Number(frameSize.width),
+    top: Math.max(Number(frameOffset.top), systemInfo.statusBarHeight || 0),
+    bottom: Number(frameOffset.top) + (tabPagePaths.has(page.path) ? Math.min(Number(frameSize.height), Number(systemInfo.windowHeight)) : Number(frameSize.height)) - 30,
+  };
+  const inViewport = (position) => Number(position.left) < viewport.right && Number(position.left) + Number(size.width) > viewport.left
+    && Number(position.top) >= viewport.top && Number(position.top) < viewport.bottom;
   let offset = await bounded('元素位置', target.offset());
   if (!inViewport(offset)) {
-    const page = await bounded('当前滚动页面', miniProgram.currentPage());
     const scroll = await bounded('查找作用域内滚动容器', findScrollContainer(scope, page));
     assert.ok(scroll, `${selector} 不在视口内，且页面无滚动容器`);
     const scrollTop = Number(await bounded('读取滚动位置', scroll.property('scrollTop'))) || 0;
     await bounded('滚动真实页面', scroll.scrollTo(0, Math.max(0, scrollTop + Number(offset.top) - 120)));
-    offset = await poll(`${selector} 滚入视口`, () => target.offset(), inViewport, 5000);
+    offset = await waitForStableOffset(`${selector} 滚入视口`, target, inViewport);
   }
-  report.actions.push({ step: activeStep, type: 'visible-size', selector, index, size, offset });
+  report.actions.push({ step: activeStep, type: 'visible-size', selector, index, size, offset, viewport });
   return target;
 }
 
@@ -304,8 +333,8 @@ async function homeAndSeries() {
   await dataReady(page, (data) => data.mode === 'new' && !data.refreshing && data.total > 0);
   await checkpoint('recent-directory', page, '.catalog-card');
   page = await open('/pages/home/home');
-  const card = await element(page, 'series-card');
-  await interact(card, '.card');
+  // series-card 为虚拟宿主，点击实际渲染的卡片根节点。
+  await interact(page, '[class~="card--card"]');
   page = await current('pages/series/series');
   await dataReady(page, (data) => !data.loading && data.resultCount > 0);
   await checkpoint('series-navigation', page, '.result-count');
@@ -318,11 +347,14 @@ async function modelCollection() {
   await dataReady(page, (data) => data.favorite);
   await interact(page, '.actions button', 'tap', undefined, 1);
   await dataReady(page, (data) => data.formOpen);
-  const form = await element(page, 'purchase-form');
-  await interact(form, '.form-input', 'input', '123.45');
-  await interact(form, '.form-input', 'input', privateMarker, 1);
-  await interact(form, '.form-textarea', 'input', `${privateMarker}_NOTE`);
-  await interact(form, '.submit-button');
+  // virtualHost 没有组件标签；使用原生验收确认的实际渲染类，保留弹层内的元素作用域。
+  const forms = await poll('唯一购买弹层', () => page.$$('[class~="form--overlay"]'), (matches) => matches.length === 1);
+  const form = forms[0];
+  assert.match(await bounded('确认购买弹层标题', form.text()), /记录已购买/);
+  await interact(form, '[class~="form--form-input"]', 'input', '123.45');
+  await interact(form, '[class~="form--form-input"]', 'input', privateMarker, 1);
+  await interact(form, '[class~="form--form-textarea"]', 'input', `${privateMarker}_NOTE`);
+  await interact(form, '[class~="form--submit-button"]');
   await dataReady(page, (data) => data.purchased && !data.formOpen);
   const [purchases] = await bounded('校验真实购买记录', fixture.connection.execute('SELECT price_cny, channel, note FROM purchases WHERE openid = ? AND model_id = ?', [testOpenid, 'rg-001']));
   assert.equal(purchases.length, 1);
@@ -499,7 +531,7 @@ async function compare() {
   await checkpoint('compare-public-snapshot', shared, '.compare-fields');
 }
 
-async function main() {
+async function runVerification() {
   const suites = [
     ['01-home-search-recent-series', homeAndSeries], ['02-model-favorite-purchase', modelCollection],
     ['03-wishlist-purchased-public-shares', collectionShares], ['04-squad-draft-share-canvas', squad],
@@ -516,19 +548,26 @@ async function main() {
     report.backend = { ...report.backend, baseUrl: fixture.baseUrl, database: fixture.database, openid: testOpenid, compiledSource: await backendHash() };
     await seedCatalog(fixture.connection);
     await configureLocalCopy();
-    miniProgram = await bounded('官方开发者工具 launch', automator.launch({ cliPath, projectPath, timeout: 90000 }), 95000);
+    miniProgram = await bounded('官方开发者工具 launch', automator.launch({ cliPath, projectPath, trustProject: true, timeout: 90000 }), 95000);
     miniProgram.on('exception', (exception) => report.exceptions.push({ step: activeStep, time: new Date().toISOString(), exception }));
-    miniProgram.on('console', (entry) => report.console.push({ step: activeStep, entry }));
     report.automation.systemInfo = await bounded('模拟器系统信息', miniProgram.systemInfo());
+    miniProgram.on('console', (entry) => report.console.push({ step: activeStep, entry }));
     draftExisted = (await bounded('读取草稿存储状态', miniProgram.callWxMethod('getStorageInfoSync'))).keys.includes('gundam-squad-draft-v1');
     originalDraft = await bounded('备份本地编队草稿', miniProgram.callWxMethod('getStorageSync', 'gundam-squad-draft-v1'));
     draftRead = true;
     await bounded('移除测试副本的旧草稿', miniProgram.callWxMethod('removeStorageSync', 'gundam-squad-draft-v1'));
-    for (const [name, operation] of suites) await step(name, operation);
+    for (const [name, operation] of suites) {
+      remaining();
+      await step(name, operation);
+    }
     report.status = report.steps.every((result) => result.status === 'pass') && report.exceptions.length === 0 ? 'simulator-validated-with-device-boundaries' : 'failed';
   } catch (error) {
     report.status = 'failed'; report.setupError = error.stack || error.message;
     console.error(`[simulator] ${error.message}`);
+    if (miniProgram) {
+      try { report.setupScreenshot = await capture('setup-failure', true); }
+      catch (captureError) { report.setupScreenshotError = captureError.message; }
+    }
   } finally {
     for (const [name] of suites) if (!report.steps.some((result) => result.name === name)) report.steps.push({ name, status: 'not-run', reason: '环境准备失败或运行中断' });
     if (miniProgram) {
@@ -553,7 +592,28 @@ async function main() {
   }
 }
 
-module.exports = { findScrollContainer };
+async function main() {
+  let rejectAsynchronousFailure;
+  asynchronousFailure = new Promise((_, reject) => { rejectAsynchronousFailure = reject; });
+  // SDK on('console') 内部的 App.enableLog Promise 没有返回给调用方。
+  // 将这类未处理拒绝转入验收失败通道，让 finally 仍可保存证据和清理 fixture。
+  asynchronousFailure.catch(() => {});
+  const onUnhandledRejection = (reason) => {
+    const error = reason instanceof Error ? reason : new Error(String(reason));
+    (report.unhandledRejections ||= []).push({ step: activeStep, error: error.stack || error.message });
+    interrupted = true;
+    report.status = 'failed';
+    rejectAsynchronousFailure(error);
+  };
+  process.on('unhandledRejection', onUnhandledRejection);
+  try { await runVerification(); }
+  finally {
+    process.removeListener('unhandledRejection', onUnhandledRejection);
+    asynchronousFailure = undefined;
+  }
+}
+
+module.exports = { findScrollContainer, waitForStableOffset, main };
 
 if (require.main === module) {
   process.once('SIGINT', () => { interrupted = true; });
